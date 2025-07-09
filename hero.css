@@ -29,6 +29,21 @@ body {
     contain: layout style;
 }
 
+/* Dark blur background overlay */
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 0;
+    pointer-events: none;
+}
+
 /* Ensure content sections are properly spaced */
 section:not(.hero) {
     position: relative;
@@ -72,6 +87,16 @@ html.js .hero-content.visible {
     visibility: visible;
     opacity: 1;
     animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+/* Ensure hero content appears above the dark blur overlay */
+.hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: #fff;
+    max-width: 800px;
+    padding: 0 20px;
 }
 
 @keyframes fadeIn {
