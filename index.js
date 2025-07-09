@@ -1,6 +1,6 @@
 // Configuration
 const displayDistance = 60; // distance in px to display another photo
-const nDisplay = 12; // number of pictures to display at once
+const nDisplay = 20; // number of pictures to display at once
 
 // State
 let globalIndex = 0; // used to count up the images
