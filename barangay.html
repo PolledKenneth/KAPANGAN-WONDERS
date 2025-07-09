@@ -1577,8 +1577,12 @@
                             </div>
                         </div>
                         <div class="summary-row">
+                            <span>Entrance Fee:</span>
+                            <span id="entranceFee">₱50 x 1 = ₱50</span>
+                        </div>
+                        <div class="summary-row">
                             <span>Environmental Fee:</span>
-                            <span id="envFee">₱100</span>
+                            <span id="envFee">₱100 x 1 = ₱100</span>
                         </div>
                         <div class="summary-row summary-total">
                             <span>Total Amount:</span>
@@ -1624,6 +1628,14 @@
                     <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                         <span>Group Size:</span>
                         <span><strong id="successGroup">-</strong></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Entrance Fee:</span>
+                        <span><strong id="successEntranceFee">-</strong></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Environmental Fee:</span>
+                        <span><strong id="successEnvFee">-</strong></span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                         <span>Total Amount:</span>
@@ -1831,13 +1843,15 @@
             const childrenInput = document.getElementById('childrenInput');
             const spotNameEl = document.getElementById('touristSpotName');
             const envFeeEl = document.getElementById('envFee');
+            const entranceFeeEl = document.getElementById('entranceFee');
 
             if (adultsInput) adultsInput.value = visitor.groupSize;
             if (seniorsInput) seniorsInput.value = 0;
             if (kidsInput) kidsInput.value = 0;
             if (childrenInput) childrenInput.value = 0;
             if (spotNameEl) spotNameEl.textContent = visitor.spot;
-            if (envFeeEl) envFeeEl.textContent = '₱100';
+            if (entranceFeeEl) entranceFeeEl.textContent = 'Adults: ₱50 x 1 = ₱50';
+            if (envFeeEl) envFeeEl.textContent = '₱100 x 1 = ₱100';
 
             updateTotalAmount();
             const scanStatusEl = document.getElementById('modalScanStatus');
@@ -1891,19 +1905,26 @@
         function processPayment() {
             const visitorName = document.getElementById('visitorName').textContent;
             const spotName = document.getElementById('touristSpotName').textContent;
-            const adults = document.getElementById('adultsInput').value;
-            const seniors = document.getElementById('seniorsInput').value;
-            const kids = document.getElementById('kidsInput').value;
-            const children = document.getElementById('childrenInput').value;
+            const adults = parseInt(document.getElementById('adultsInput').value) || 0;
+            const seniors = parseInt(document.getElementById('seniorsInput').value) || 0;
+            const kids = parseInt(document.getElementById('kidsInput').value) || 0;
+            const children = parseInt(document.getElementById('childrenInput').value) || 0;
             const total = document.getElementById('totalAmount').textContent;
+            const entranceFeeText = document.getElementById('entranceFee').textContent;
+            const envFeeText = document.getElementById('envFee').textContent;
+            
             document.getElementById('successVisitor').textContent = visitorName;
             document.getElementById('successSpot').textContent = spotName;
+            document.getElementById('successEntranceFee').textContent = entranceFeeText;
+            document.getElementById('successEnvFee').textContent = envFeeText;
+            
             let groupText = `${adults} Adult(s)`;
             if (seniors > 0) groupText += `, ${seniors} Senior/PWD(s)`;
             if (kids > 0) groupText += `, ${kids} Kid(s)`;
             if (children > 0) groupText += `, ${children} Child(ren) <6`;
             document.getElementById('successGroup').textContent = groupText;
             document.getElementById('successAmount').textContent = total;
+            
             closeModal('qrModal');
             setTimeout(() => {
                 showModal('successModal');
@@ -2628,13 +2649,26 @@
             const kids = parseInt(document.getElementById('kidsInput').value) || 0;
             const children = parseInt(document.getElementById('childrenInput').value) || 0;
             const groupSize = adults + seniors + kids + children;
-            // Entrance fee (discounts apply)
+            
+            // Calculate entrance fee breakdown
             const entranceTotal = (adults * prices.adults) + (seniors * prices.seniors) + (kids * prices.kids) + (children * prices.children);
+            
             // Environmental fee (no discount, per person)
             const envTotal = groupSize * prices.env;
             const total = entranceTotal + envTotal;
+            
+            // Build entrance fee display text
+            let entranceText = '';
+            if (adults > 0) entranceText += `Adults: ₱${prices.adults} x ${adults} = ₱${adults * prices.adults}`;
+            if (seniors > 0) entranceText += entranceText ? `, Seniors: ₱${prices.seniors} x ${seniors} = ₱${seniors * prices.seniors}` : `Seniors: ₱${prices.seniors} x ${seniors} = ₱${seniors * prices.seniors}`;
+            if (kids > 0) entranceText += entranceText ? `, Kids: ₱${prices.kids} x ${kids} = ₱${kids * prices.kids}` : `Kids: ₱${prices.kids} x ${kids} = ₱${kids * prices.kids}`;
+            if (children > 0) entranceText += entranceText ? `, Children: ₱${prices.children} x ${children} = ₱${children * prices.children}` : `Children: ₱${prices.children} x ${children} = ₱${children * prices.children}`;
+            if (!entranceText) entranceText = '₱0';
+            
             document.getElementById('totalAmount').textContent = `₱${total}`;
+            document.getElementById('entranceFee').textContent = entranceText;
             document.getElementById('envFee').textContent = `₱${prices.env} x ${groupSize} = ₱${envTotal}`;
+            
             if (window.currentVisitor) {
                 window.currentVisitor.groupBreakdown = { adults, seniors, kids, children };
                 window.currentVisitor.groupSize = groupSize;
