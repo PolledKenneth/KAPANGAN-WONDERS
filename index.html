@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kapangan Wonders - Discover Benguet's Hidden Gem</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <!-- jQuery UI CSS -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="hero.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Custom Scripts -->
+    <script src="index.js"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        
+        <div class="nav-container">
+            <a href="main.html" class="logo">Kapangan Wonders</a>
+            
+            <nav class="nav-menu" id="navMenu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showHome()">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showAllTouristSpots()">Tourist Spots</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showAccommodations()">Eat and Stay</i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showBlogsCustom()">Blogs</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showContact()">Contact Us</a>
+                </li>
+            </nav>
+
+            <div class="auth-buttons">
+                <button class="btn btn-outline" onclick="openAuthModal('signin')">Sign In</button>
+                <button class="btn btn-primary" onclick="openAuthModal('signup')">Sign Up</button>
+                <div class="user-menu" id="userMenu" style="display: none;">
+                    <button class="btn btn-primary" onclick="showDashboard()">
+                        <i class="fas fa-user"></i> <span id="userNameDisplay">User</span>
+                    </button>
+                    <button class="btn btn-outline" onclick="logout()">Logout</button>
+                    <button class="btn btn-primary" id="scheduleVisitBtn" style="margin-left: 10px;" onclick="scheduleVisit()">Schedule a Visit</button>
+                </div>
+                
+            </div>
+
+            <div class="mobile-menu" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="mainContent">
+        <!-- Hero Section -->
+        <script>document.documentElement.classList.add('js');</script>
+        <section class="hero">
+      <!-- Add width and height attributes to prevent layout shifts -->
+      <img src="assets/Amburayan Bridge (Cuba).jpg" data-index="0" class="image" width="400" height="400" loading="lazy" alt="Amburayan Bridge">
+      <img src="assets/Badi Falls (Sagubo).jpg" data-index="1" class="image" width="400" height="400" loading="lazy" alt="Badi Falls">
+      <img src="assets/Beleng-Belis Viewing Area.jpg" data-index="2" class="image" width="400" height="400" loading="lazy" alt="Beleng-Belis Viewing Area">
+      <img src="assets/Camp Utopia (Sagubo).jpg" data-index="3" class="image" width="400" height="400" loading="lazy" alt="Camp Utopia">
+      <img src="assets/Dangwa Cave (Taba-ao).jpg" data-index="4" class="image" width="400" height="400" loading="lazy" alt="Dangwa Cave">
+      <img src="assets/Kilong Hanging Coffin (Central).jpg" data-index="5" class="image" width="400" height="400" loading="lazy" alt="Kilong Hanging Coffin">
+      <img src="assets/Mt. Dakiwagan (Balakbak).jpg" data-index="6" class="image" width="400" height="400" loading="lazy" alt="Mt. Dakiwagan">
+      <img src="assets/Mt. Kalukasog (Cuba).jpg" data-index="7" class="image" width="400" height="400" loading="lazy" alt="Mt. Kalukasog">
+      <img src="assets/Pey-og Falls (Boklaoan).jpg" data-index="8" class="image" width="400" height="400" loading="lazy" alt="Pey-og Falls">
+      <img src="assets/Puga Coffin Cave (Sagubo).jpg" data-index="9" class="image" width="400" height="400" loading="lazy" alt="Puga Coffin Cave">
+      <img src="assets/Taba-ao Viewdeck (Taba-ao).jpg" data-index="10" class="image" width="400" height="400" loading="lazy" alt="Taba-ao Viewdeck">
+      <img src="assets/Toplac Falls (Pudong).jpg" data-index="11" class="image" width="400" height="400" loading="lazy" alt="Toplac Falls">
+        
+        <div class="hero-content" id="heroContent">
+            <h1>Welcome to Kapangan</h1>
+            <p>Discover the natural beauty and cultural heritage of Benguet's hidden gem. Explore majestic mountains, cascading waterfalls, and vibrant traditions.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="showAllTouristSpots()">Browse Tourist Spots</button>
+                    <button class="btn btn-outline" onclick="openAuthModal('signup')">Sign Up Now</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Advisories Section -->
+        <section class="advisories-section" id="advisoriesSection">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Advisories</h2>
+                    <p>Important updates and announcements for visitors</p>
+                </div>
+                <div class="advisory-carousel-container">
+                    <button class="carousel-btn prev" onclick="moveAdvisoryCarousel(-1)"><i class="fas fa-chevron-left"></i></button>
+                    <div class="advisory-carousel" id="advisoryCarousel">
+                        <div class="advisory-card">
+                            <h3>Weather Alert: Heavy Rainfall Expected</h3>
+                            <p>Please be advised that heavy rainfall is expected this weekend. Exercise caution when visiting waterfalls and rivers. Some trails may be slippery or temporarily closed.</p>
+                            <p class="advisory-author">By Kapangan Tourism</p>
+                            <p class="advisory-date">June 10, 2025</p>
+                        </div>
+                        <div class="advisory-card">
+                            <h3>Barangay Fiesta: Road Closures in Cuba</h3>
+                            <p>Barangay Cuba will celebrate its annual fiesta on June 15. Expect road closures and rerouting from 8:00 AM to 5:00 PM. Plan your visit accordingly.</p>
+                            <p class="advisory-author">By Barangay Cuba</p>
+                            <p class="advisory-date">June 8, 2025</p>
+                        </div>
+                        <div class="advisory-card">
+                            <h3>Trail Maintenance: Temporary Closure</h3>
+                            <p>The hiking trail to Mt. Dakiwagan will be closed for maintenance from July 1 to July 7, 2025. Please plan your hikes accordingly and check for updates before your visit.</p>
+                            <p class="advisory-author">By Kapangan Tourism Office</p>
+                            <p class="advisory-date">June 20, 2025</p>
+                        </div>
+                        <div class="advisory-card">
+                            <h3>COVID-19 Safety Reminder</h3>
+                            <p>All visitors are reminded to follow health protocols, including wearing masks in crowded areas and frequent hand sanitizing. Stay safe and enjoy your visit!</p>
+                            <p class="advisory-author">By Municipal Health Office</p>
+                            <p class="advisory-date">June 5, 2025</p>
+                        </div>
+                    </div>
+                    <button class="carousel-btn next" onclick="moveAdvisoryCarousel(1)"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Tourist Spots -->
+        <section class="featured-spots" id="featuredSpots">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Featured Tourist Spots</h2>
+                    <p>Discover the most popular destinations in Kapangan</p>
+                </div>
+
+                <div class="spots-grid" id="featuredSpotsGrid">
+                    <!-- Featured tourist spots will be populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- All Tourist Spots Section -->
+        <section class="all-tourist-spots" id="allTouristSpots" style="display: none;">
+            <div class="container">
+                <div class="section-header">
+                    <h2>All Tourist Spots</h2>
+                    <p>Explore all the amazing destinations in Kapangan</p>
+                </div>
+
+                <div class="filter-tabs">
+                    <div class="filter-tab active" onclick="filterSpots('all')">All</div>
+                    <div class="filter-tab" onclick="filterSpots('waterfalls')">Waterfalls</div>
+                    <div class="filter-tab" onclick="filterSpots('mountains')">Mountains</div>
+                    <div class="filter-tab" onclick="filterSpots('rivers')">Rivers</div>
+                    <div class="filter-tab" onclick="filterSpots('viewpoint')">Viewpoints</div>
+                    <div class="filter-tab" onclick="filterSpots('private')">Private Spot</div>
+                </div>
+
+                <div class="spots-grid" id="spotsGrid">
+                    <!-- All tourist spots will be populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+         <!-- Blog Section -->
+
+         <section class="blog-section" id="blogSection" style="display: none;">
+
+            <div class="container">
+
+                <div class="section-header">
+
+                    <h2>Kapangan Tourism Blog</h2>
+
+                    <p>Stay updated with travel tips, local stories, and destination guides</p>
+
+                </div>
+                <!-- Blog Category Tabs -->
+                <div class="filter-tabs" id="blogCategoryTabs" style="margin-bottom: 1.5rem;">
+                    <!-- Tabs will be populated by JavaScript -->
+                </div>
+                <div class="blog-grid" id="blogGrid">
+
+                    <!-- Blog posts will be populated by JavaScript -->
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+<!-- Accommodations Section -->
+<section class="accommodations-section" id="accommodationsSection" style="display: none;">
+    <div class="container">
+        <div class="section-header">
+            <h2>Eat and Stay in Kapangan</h2>
+            <p>Discover comfortable accommodations and delicious dining options</p>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="accommodations">Accommodations</button>
+                <button class="tab-btn" data-tab="restaurants">Restaurants</button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- Accommodations Tab -->
+                <div id="accommodations" class="tab-pane active">
+                    <div class="accommodations-grid">
+                        <div class="accommodation-card">
+                            <img src="assets/Avong Nen Suvani (Datakan).jpg" alt="Avong Nen Suvani">
+                            <div class="accommodation-info">
+                                <h4>Avong Nen Suvani</h4>
+                                <p>Enjoy a cozy stay with stunning mountain views and genuine Cordilleran hospitality.</p>
+                                <p><strong>Location:</strong> Barangay Datakan</p>
+                                <p><strong>Rate:</strong> ₱800 per night</p>
+                                <a href="https://www.facebook.com/p/Avong-Nen-Suvani-100069230178126/" target="_blank" class="fb-link">
+                                    <i class="fab fa-facebook"></i> Avong Nen Suvani
+                                </a>
+                                <p><strong>Contact Us:</strong> 0950 322 7830</p>
+                            </div>
+                        </div>
+
+                        <div class="accommodation-card">
+                            <img src="assets/mayflor.jpg" alt="Mayflor Fastfood Haus and Lodging">
+                            <div class="accommodation-info">
+                                <h4>Mayflor Fastfood Haus and Lodging</h4>
+                                <p>Experience rural living and traditional Cordilleran life with a local host family.</p>
+                                <p><strong>Location:</strong> Barangay Cuba</p>
+                                <p><strong>Rate:</strong> ₱600 per night</p>
+                                <a href="https://www.facebook.com/maylorzzz/" target="_blank" class="fb-link">
+                                    <i class="fab fa-facebook"></i> Mayflor Fastfood Haus and Lodging
+                                </a>
+                                <p><strong>Contact Us:</strong> 0921 243 5406</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Restaurants Tab -->
+                <div id="restaurants" class="tab-pane">
+                    <div class="accommodations-grid">
+                        <div class="accommodation-card">
+                            <img src="assets/Image.jpg" alt="Marianos Restaurant">
+                            <div class="accommodation-info">
+                                <h4>Marianos Restaurant</h4>
+                                <p>Marianos Rice is our best selling come and have a taste of it.</p>
+                                <p><strong>Location:</strong> Barangay Lomon</p>
+                                <a href="https://www.facebook.com/profile.php?id=61559563714525" target="_blank" class="fb-link">
+                                    <i class="fab fa-facebook"></i> Marianos Restaurant
+                                </a>
+                                <p><strong>Contact Us:</strong> 09454520117</p>
+                            </div>
+                        </div>
+
+                        <div class="accommodation-card">
+                            <img src="assets/Image (1).jpg" alt="Pakawan Restaurant">
+                            <div class="accommodation-info">
+                                <h4>Pakawan Restaurant</h4>
+                                <p>Enjoy our Pakawan style dishes!</p>
+                                <p><strong>Location:</strong> Barangay Cuba</p>
+                                <a href="https://www.facebook.com/p/Pakawan-Restaurant-61556526209239/" target="_blank" class="fb-link">
+                                    <i class="fab fa-facebook"></i> Pakawan Restaurant
+                                </a>
+                                <p><strong>Contact Us:</strong> 090724810971</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Contact Us Section -->
+<section id="contactSection" style="display: none;">
+    <div class="container">
+        <div class="section-header">
+            <h2>Contact Us</h2>
+            <p>Reach out to the Municipal Tourism Office for inquiries and assistance.</p>
+        </div>
+
+        <div class="contact-container">
+            <div class="contact-details">
+                <h3>Our Office</h3>
+                <div class="contact-info">
+                    <h4>Office Location:</h4>
+                    <p>Municipal Tourism Office, Kapangan, Benguet</p>
+
+                    <h4>Phone:</h4>
+                    <p>+63 (123) 456-7890</p>
+
+                    <h4>Email:</h4>
+                    <p><a href="mailto:info@kapanganwonders.com">info@kapanganwonders.com</a></p>
+                </div>
+            </div>
+
+            <div class="getting-there">
+                <h3>Getting to Kapangan</h3>
+                <div class="travel-info">
+                    <p>Travel information to help you plan your journey:</p>
+
+                    <h4>By Private Vehicle:</h4>
+                    <p>From Baguio City: Take the Naguilian Road towards La Trinidad. Continue to Kapangan via the Benguet-Nueva Vizcaya Road. Travel time is approximately 1.5–2 hours.</p>
+
+                    <h4>By Public Transportation:</h4>
+                    <p>Regular buses and jeepneys depart from Baguio's Dangwa Terminal to Kapangan. Travel time is about 2 hours. Fare is approximately ₱80–₱100.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    </main>
+
+    <!-- User Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <div class="dashboard-container">
+            <aside class="sidebar">
+                <div class="user-header">
+                    <div class="user-avatar" id="dashboardAvatar">U</div>
+                    <div>
+                        <h3 id="dashboardUserName">User Name</h3>
+                        <p>Tourist</p>
+                    </div>
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link active" onclick="showDashboardSection('profile')">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showDashboardSection('travels')">
+                            <i class="fas fa-map-marker-alt"></i> My Travels
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showDashboardSection('announcements')">
+                            <i class="fas fa-bullhorn"></i> Announcements
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showDashboardSection('placesVisited')">
+                            <i class="fas fa-map"></i> Places Visited
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+
+            <div class="main-content">
+                <div id="profileSection">
+                    <h2>Profile Information</h2>
+                    <form id="profileForm">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="profileName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="profileEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" id="profilePhone">
+                        </div>
+                        <div class="form-group">
+                            <label>Address</label>
+                            <textarea id="profileAddress" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </form>
+                </div>
+
+                <div id="travelsSection" style="display: none;">
+                    <h2>My Scheduled Travels</h2>
+                    <div class="table-responsive">
+                        <table class="travels-table">
+                            <thead>
+                                <tr>
+                                    <th>Spot</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Visitors</th>
+                                    <th>Status</th>
+                                    <th>Companions</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="travelsList">
+                                <!-- Scheduled travels will be displayed here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="announcementsSection" style="display: none;">
+                    <h2>Announcements</h2>
+                    <div class="announcement-tabs" style="display: flex; gap: 10px; margin-bottom: 1rem;">
+                        <button class="announcement-tab active" id="tabAnnouncement" onclick="switchAnnouncementTab('announcement')" style="padding:8px 20px;border:none;background:#eee;cursor:pointer;border-radius:5px 5px 0 0;font-weight:600;transition:background 0.2s;">Announcement</button>
+                        <button class="announcement-tab" id="tabNotice" onclick="switchAnnouncementTab('notice')" style="padding:8px 20px;border:none;background:#eee;cursor:pointer;border-radius:5px 5px 0 0;font-weight:600;transition:background 0.2s;">Notice</button>
+                    </div>
+                    <div class="announcements-container" id="announcementsContainer" style="display: block; background: #fff; border-radius: 0 0 10px 10px; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                        <!-- Regular announcements go here -->
+                        <div class="announcement">
+                            <h3>New Tourist Spot Added!</h3>
+                            <p>We are excited to announce the addition of "Manahongkong Falls" to our list of tourist spots. Visit now!</p>
+                        </div>
+                        <div class="announcement">
+                            <h3>Maintenance Notice</h3>
+                            <p>The "Puga Coffin Cave" will be closed for maintenance from July 15 to July 20, 2025.</p>
+                        </div>
+                    </div>
+                    <div class="announcements-container" id="noticesContainer" style="display: none; background: #fff; border-radius: 0 0 10px 10px; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                        <!-- Violation notices will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Places Visited Section -->
+                <div id="placesVisitedSection" style="display: none;">
+                    <h2>Places Visited</h2>
+                    <div class="table-responsive">
+                        <table class="travels-table">
+                            <thead>
+                                <tr>
+                                    <th>Spot</th>
+                                    <th>Barangay</th>
+                                    <th>Date Visited</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Amburayan Bridge</td>
+                                    <td>Cuba</td>
+                                    <td>2025-06-10</td>
+                                </tr>
+                                <tr>
+                                    <td>Badi Falls</td>
+                                    <td>Sagubo</td>
+                                    <td>2025-05-22</td>
+                                </tr>
+                                <tr>
+                                    <td>Beleng-Belis Viewing Area</td>
+                                    <td>Beleng-Belis</td>
+                                    <td>2025-04-15</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Code Modal -->
+    <div id="qrModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <span class="close" onclick="closeQRModal()">&times;</span>
+            <h3>Your Visit QR Code</h3>
+            <p>Show this QR code when you arrive at the tourist spot.</p>
+            <div id="qrCode"></div>
+            <div class="qr-info" id="qrInfo">
+                <!-- Visit information will be displayed here -->
+            </div>
+            <div class="qr-actions" style="display: flex; gap: 10px; margin-top: 1rem;">
+                <button class="btn btn-primary" onclick="downloadQRCode()" style="flex: 1;">
+                    <i class="fas fa-download"></i> Download
+                </button>
+                <button class="btn btn-outline" onclick="closeQRModal()" style="flex: 1;">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Companion Modal -->
+    <div id="addCompanionModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <span class="close" onclick="closeAddCompanionModal()">&times;</span>
+            <h3>Add Companion</h3>
+            <form id="addCompanionForm" onsubmit="handleAddCompanion(event)">
+                <div class="form-group">
+                    <label>Companion Name</label>
+                    <input type="text" id="companionName" required>
+                </div>
+                <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" id="companionAge" required min="1" max="120">
+                </div>
+                <button type="submit" class="btn btn-primary">Add Companion</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tourist Spot Modal -->
+    <div id="spotModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div class="spot-modal-content" id="spotModalContent">
+                <!-- Spot content will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <span class="close" onclick="closeAuthModal()">&times;</span>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" onclick="switchAuthTab('signin')">Sign In</div>
+                <div class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</div>
+            </div>
+
+            <form class="auth-form active" id="signinForm" onsubmit="handleSignIn(event)">
+                <div class="form-group">
+                    <label for="signinEmail">Email</label>
+                    <input type="email" id="signinEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signinPassword">Password</label>
+                    <input type="password" id="signinPassword" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+            </form>
+
+            <div style="max-height: 400px; overflow-y: auto; padding: 10px; border: 1px solid #ccc;">
+                <form class="auth-form" id="signupForm">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="signupName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="signupEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="signupPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" id="signupConfirmPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="signupPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea id="signupAddress" rows="2" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Age</label>
+                        <input type="number" id="signupAge" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Sign Up</button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+
+<!-- Schedule Visit Modal -->
+<div id="scheduleModal" class="auth-modal">
+    <div class="auth-modal-content">
+        <span class="close" onclick="closeScheduleModal()">&times;</span>
+        <h3>Schedule Your Visit</h3>
+
+        <form id="scheduleForm" class="schedule-form-wide" onsubmit="handleScheduleSubmit(event)">
+            
+            <!-- Waiver Notice -->
+            <div class="form-group waiver">
+                <p>
+                    <strong>Waiver:</strong> By proceeding, I acknowledge that I am responsible for my personal health and safety during the visit. I accept any risks associated with outdoor activities, weather conditions, or physical exertion. I also agree to follow all Barangay tourism guidelines.
+                </p>
+            </div>
+
+            <!-- Auto-filled User Info -->
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="scheduleUserName" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="scheduleUserEmail" required>
+            </div>
+
+            <div class="form-group">
+                <label>Age</label>
+                <input type="number" id="scheduleUserAge" required>
+            </div>
+
+            <!-- Barangay Selection with Checkboxes -->
+            <div class="form-group">
+                <label>Select Barangay(s) <span style="font-size: 0.85rem; color: gray;">(Select one or more)</span></label>
+                <div class="checkbox-group" id="barangayCheckboxGroup">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="barangay" value="Balakbak" onchange="updateSpotCheckboxes()">
+                        <span>Balakbak</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="barangay" value="Cuba" onchange="updateSpotCheckboxes()">
+                        <span>Cuba</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="barangay" value="Beleng-Belis" onchange="updateSpotCheckboxes()">
+                        <span>Beleng-Belis</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="barangay" value="Taba-ao" onchange="updateSpotCheckboxes()">
+                        <span>Taba-ao</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="barangay" value="Toplac" onchange="updateSpotCheckboxes()">
+                        <span>Toplac</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="barangay" value="Labueg" onchange="updateSpotCheckboxes()">
+                        <span>Labueg</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="barangay" value="Payapay" onchange="updateSpotCheckboxes()">
+                        <span>Payapay</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="barangay" value="Pudtong" onchange="updateSpotCheckboxes()">
+                        <span>Pudtong</span>
+                    </label>
+                </div>
+                <small id="barangayError" style="color: red; display: none;">Please select at least one barangay</small>
+            </div>
+
+            <!-- Tourist Spots Checkboxes -->
+            <div class="form-group">
+                <label>Select Tourist Spot(s) <span style="font-size: 0.85rem; color: gray;">(Select one or more)</span></label>
+                <div class="checkbox-group" id="spotCheckboxGroup">
+                    <!-- Spots will be populated by JavaScript -->
+                    <p>Please select one or more barangays first</p>
+                </div>
+                <small id="spotError" style="color: red; display: none;">Please select at least one tourist spot</small>
+            </div>
+
+            <!-- NEW: Barangay-specific schedule forms -->
+            <div id="barangaySchedulesGroup"></div>
+
+            <!-- Declaration of Medical Condition Checkbox -->
+            <div class="form-group">
+                <label>
+                    I declare that I have no known serious medical condition that would prevent me from participating in this visit.
+                    <input type="checkbox" id="medicalDeclaration" required>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Schedule</button>
+        </form>
+    </div>
+</div>
+
+<!-- Add Companion Modal -->
+<div id="addCompanionModal" class="auth-modal" style="display: none;">
+    <div class="auth-modal-content">
+        <span class="close" onclick="closeAddCompanionModal()">&times;</span>
+        <h3>Add Companion</h3>
+        <form id="addCompanionForm" onsubmit="handleAddCompanion(event)">
+            <div class="form-group">
+                <label>Companion Name</label>
+                <input type="text" id="companionName" required>
+            </div>
+            <div class="form-group">
+                <label>Companion Age</label>
+                <input type="number" id="companionAge" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Add Companion</button>
+        </form>
+    </div>
+</div>
+
+<!-- Blog Modal -->
+<div id="blogModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeBlogModal()">&times;</span>
+        <div class="blog-modal-content" id="blogModalContent">
+            <!-- Blog content will be dynamically inserted here -->
+        </div>
+    </div>
+</div>
+
+    <!-- Blog functionality script - load before script.js to avoid conflicts -->
+    <script>
+    // --- BLOG DATA & RENDERING ---
+    const sampleBlogs = [
+        {
+            barangay: "Balakbak",
+            blogs: [
+                {
+                    title: "Exploring the Hidden Trails of Balakbak",
+                    date: "2025-06-01",
+                    author: "Maria Santos",
+                    image: "assets/Mt. Dakiwagan (Balakbak).jpg",
+                    content: "Balakbak offers scenic trails perfect for hiking enthusiasts. Discover lush forests and panoramic views as you trek through this beautiful barangay. The trails lead to breathtaking viewpoints and hidden waterfalls that showcase the natural beauty of the Cordilleras.",
+                },
+                {
+                    title: "Balakbak's Local Cuisine: A Foodie's Guide",
+                    date: "2025-06-05",
+                    author: "Juan Dela Cruz",
+                    image: "assets/Obellan-Catampan Rice Terraces (Balakbak).jpg",
+                    content: "Taste the unique flavors of Balakbak! From traditional Cordilleran dishes to modern twists, this barangay is a haven for food lovers. Experience the rich culinary heritage that has been passed down through generations.",
+                },
+                {
+                    title: "Cultural Festivals in Balakbak",
+                    date: "2025-06-10",
+                    author: "Ana Reyes",
+                    image: "assets/Longog Cave (Balakbak).jpg",
+                    content: "Experience vibrant festivals and learn about the rich cultural heritage of Balakbak. Join the locals in their celebrations and discover the deep-rooted traditions that make this barangay special.",
+                }
+            ]
+        },
+        {
+            barangay: "Cuba",
+            blogs: [
+                {
+                    title: "A Day at Amburayan Bridge",
+                    date: "2025-06-02",
+                    author: "Pedro Martinez",
+                    image: "assets/Amburayan Bridge (Cuba).jpg",
+                    content: "Amburayan Bridge is not just a crossing—it's a destination! Enjoy the river views and the friendly community of Cuba. This iconic bridge connects communities and offers stunning views of the Amburayan River below.",
+                },
+                {
+                    title: "Cuba's Best Homestays Reviewed",
+                    date: "2025-06-07",
+                    author: "Carmen Garcia",
+                    image: "assets/Amburayan River (Taba-ao).jpg",
+                    content: "Looking for a place to stay? We review the top homestays in Cuba for comfort, hospitality, and value. Experience authentic Cordilleran hospitality in the heart of this beautiful barangay.",
+                },
+                {
+                    title: "Barangay Cuba Fiesta: A Photo Story",
+                    date: "2025-06-15",
+                    author: "Luis Fernandez",
+                    image: "assets/Mt. Kalukasog (Cuba).jpg",
+                    content: "Relive the excitement of Cuba's annual fiesta with our exclusive photo story. See the colors, dances, and smiles that make this celebration a must-experience event for visitors.",
+                }
+            ]
+        },
+        {
+            barangay: "Beleng-Belis",
+            blogs: [
+                {
+                    title: "Beleng-Belis Viewing Area: Sunrise Magic",
+                    date: "2025-06-03",
+                    author: "Isabella Torres",
+                    image: "assets/Beleng-Belis Viewing Area.jpg",
+                    content: "Wake up early and catch the breathtaking sunrise at Beleng-Belis Viewing Area. Tips for the best experience and the perfect timing to capture the most stunning views of the Cordilleras.",
+                },
+                {
+                    title: "Eco-Friendly Travel in Beleng-Belis",
+                    date: "2025-06-08",
+                    author: "Roberto Silva",
+                    image: "assets/Kapangan Museum.jpg",
+                    content: "Learn how to travel sustainably in Beleng-Belis and help preserve its natural wonders for future generations. Discover eco-friendly practices and responsible tourism initiatives.",
+                },
+                {
+                    title: "Meet the Artisans of Beleng-Belis",
+                    date: "2025-06-12",
+                    author: "Elena Rodriguez",
+                    image: "assets/Municipal Hall (Paykek).jpg",
+                    content: "Discover the talented artisans of Beleng-Belis and their beautiful handwoven crafts. Learn about traditional weaving techniques and support local craftsmanship.",
+                }
+            ]
+        },
+        {
+            barangay: "Sagubo",
+            blogs: [
+                {
+                    title: "Camp Utopia: A Hiker's Paradise",
+                    date: "2025-06-04",
+                    author: "Miguel Lopez",
+                    image: "assets/Camp Utopia (Sagubo).jpg",
+                    content: "Camp Utopia offers the perfect escape for nature lovers and hiking enthusiasts. With its pristine trails and stunning mountain views, it's a paradise for outdoor adventures.",
+                },
+                {
+                    title: "Badi Falls: Nature's Hidden Gem",
+                    date: "2025-06-09",
+                    author: "Sofia Mendoza",
+                    image: "assets/Badi Falls (Sagubo).jpg",
+                    content: "Discover the hidden beauty of Badi Falls, a natural wonder that showcases the pristine beauty of Sagubo's landscape. Perfect for nature photography and peaceful contemplation.",
+                },
+                {
+                    title: "Puga Coffin Cave: Cultural Heritage",
+                    date: "2025-06-14",
+                    author: "Carlos Ruiz",
+                    image: "assets/Puga Coffin Cave (Sagubo).jpg",
+                    content: "Explore the historical significance of Puga Coffin Cave and learn about the ancient burial traditions of the Cordilleran people. A journey through time and culture.",
+                }
+            ]
+        },
+        {
+            barangay: "Taba-ao",
+            blogs: [
+                {
+                    title: "Taba-ao Viewdeck: Panoramic Views",
+                    date: "2025-06-06",
+                    author: "Gabriela Santos",
+                    image: "assets/Taba-ao Viewdeck (Taba-ao).jpg",
+                    content: "Experience breathtaking panoramic views from the Taba-ao Viewdeck. This vantage point offers some of the most spectacular views of the Cordilleras and surrounding valleys.",
+                },
+                {
+                    title: "Dangwa Cave: Underground Adventure",
+                    date: "2025-06-11",
+                    author: "Diego Morales",
+                    image: "assets/Dangwa Cave (Taba-ao).jpg",
+                    content: "Embark on an underground adventure at Dangwa Cave. Discover the fascinating rock formations and learn about the geological history of this natural wonder.",
+                },
+                {
+                    title: "Ampongot Rice Terraces: Agricultural Heritage",
+                    date: "2025-06-16",
+                    author: "Patricia Vega",
+                    image: "assets/Ampongot Rice Terraces (Sagubo).jpg",
+                    content: "Witness the beauty of traditional rice terraces at Ampongot. Learn about sustainable farming practices and the cultural significance of rice cultivation in the Cordilleras.",
+                }
+            ]
+        },
+        {
+            barangay: "Private Spot",
+            blogs: [
+                {
+                    title: "Badol Camping Grounds: A Secluded Paradise",
+                    date: "2025-06-18",
+                    author: "Kapangan Wonders Team",
+                    image: "assets/badolcamping.jpg",
+                    content: "Escape to the serene Badol Camping Grounds, a private paradise nestled in the heart of Kapangan. This exclusive spot offers a perfect blend of adventure and tranquility, away from the crowds. Wake up to the sounds of nature and enjoy breathtaking mountain views.",
+                },
+                {
+                    title: "Why Badol Camping Grounds Should Be Your Next Getaway",
+                    date: "2025-06-20",
+                    author: "Kapangan Wonders Team",
+                    image: "assets/badolcamping.jpg",
+                    content: "Discover why Badol Camping Grounds is becoming a favorite among nature lovers. With its well-maintained facilities, stunning landscapes, and peaceful atmosphere, it's the perfect destination for those seeking a private retreat in nature's embrace.",
+                },
+                {
+                    title: "Stargazing at Badol: A Night Under the Stars",
+                    date: "2025-06-22",
+                    author: "Kapangan Wonders Team",
+                    image: "assets/badolcamping.jpg",
+                    content: "Experience the magic of stargazing at Badol Camping Grounds. Far from city lights, the night sky comes alive with countless stars, making it an ideal spot for astronomy enthusiasts and romantics alike. Don't forget to bring your camera for some amazing astrophotography!",
+                }
+            ]
+        }
+    ];
+
+    // Render blog category tabs
+    function renderBlogCategoryTabs(selectedBarangay) {
+        const tabs = document.getElementById('blogCategoryTabs');
+        if (!tabs) {
+            console.error('blogCategoryTabs element not found');
+            return;
+        }
+        tabs.innerHTML = '';
+        sampleBlogs.forEach((cat, idx) => {
+            const tab = document.createElement('div');
+            tab.className = 'filter-tab' + (cat.barangay === selectedBarangay ? ' active' : '');
+            tab.textContent = cat.barangay;
+            tab.style.cursor = 'pointer';
+            tab.onclick = () => {
+                // Update active tab
+                document.querySelectorAll('#blogCategoryTabs .filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                // Render blogs for selected barangay
+                renderBlogs(cat.barangay);
+            };
+            tabs.appendChild(tab);
+        });
+    }
+
+    // Render blogs for selected barangay
+    function renderBlogs(selectedBarangay) {
+        const blogGrid = document.getElementById('blogGrid');
+        if (!blogGrid) {
+            console.error('blogGrid element not found');
+            return;
+        }
+        blogGrid.innerHTML = '';
+        const category = sampleBlogs.find(cat => cat.barangay === selectedBarangay) || sampleBlogs[0];
+        if (!category) {
+            console.error('No category found for:', selectedBarangay);
+            return;
+        }
+        
+        category.blogs.forEach((blog, idx) => {
+            const card = document.createElement('div');
+            card.className = "blog-card";
+            card.style.cursor = "pointer";
+            card.onclick = (e) => {
+                console.log('Blog card clicked:', blog.title);
+                e.preventDefault();
+                e.stopPropagation();
+                openBlogModalCustom(blog, category.barangay);
+            };
+
+            card.innerHTML = `
+                <div class="blog-image">
+                    <img src="${blog.image}" alt="${blog.title}">
+                </div>
+                <div class="blog-content">
+                    <div class="blog-date">${blog.date}</div>
+                    <h3 class="blog-title">${blog.title}</h3>
+                    <p class="blog-excerpt">${blog.content.substring(0, 120)}...</p>
+                    <a href="#" class="read-more">Read more</a>
+                </div>
+            `;
+            blogGrid.appendChild(card);
+        });
+    }
+
+    function openBlogModalCustom(blog, barangay) {
+        try {
+            console.log('openBlogModalCustom called with:', blog.title);
+            const modal = document.getElementById('blogModal');
+            const modalContent = document.getElementById('blogModalContent');
+            
+            if (!modal || !modalContent) {
+                console.error('Blog modal elements not found');
+                console.log('Modal elements check:', {
+                    modal: !!modal,
+                    modalContent: !!modalContent
+                });
+                return;
+            }
+            
+            // Create the blog content HTML
+            const blogHTML = `
+                <h2>${blog.title}</h2>
+                <div class="blog-meta">
+                    <span>Published: ${blog.date}</span> | 
+                    <span>Barangay: ${barangay}</span> | 
+                    <span>By: ${blog.author || 'Kapangan Tourism'}</span>
+                </div>
+                ${blog.image ? `<img src="${blog.image}" alt="${blog.title}" class="blog-image">` : ''}
+                <div class="blog-content">
+                    ${blog.content}
+                </div>
+            `;
+            
+            // Set the content
+            modalContent.innerHTML = blogHTML;
+            
+            // Show the modal
+            modal.style.display = 'flex';
+            // Force reflow to ensure the display property is applied before adding the show class
+            void modal.offsetHeight;
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+            
+            console.log('Blog modal opened successfully');
+        } catch (error) {
+            console.error('Error opening blog modal:', error);
+        }
+    }
+    
+    function closeBlogModal() {
+        try {
+            const modal = document.getElementById('blogModal');
+            if (modal) {
+                modal.classList.remove('show');
+                document.body.style.overflow = ''; // Re-enable scrolling
+                // Wait for the fade-out transition to complete before hiding the modal
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            }
+        } catch (error) {
+            console.error('Error closing blog modal:', error);
+        }
+    }
+
+    // Show blogs when blog section is visible
+    function showBlogsCustom() {
+        try {
+            document.getElementById('mainContent').querySelectorAll('section').forEach(s => s.style.display = 'none');
+            document.getElementById('blogSection').style.display = 'block';
+            // Default to first barangay
+            const defaultBarangay = sampleBlogs[0]?.barangay || '';
+            renderBlogCategoryTabs(defaultBarangay);
+            renderBlogs(defaultBarangay);
+        } catch (error) {
+            console.error('Error in showBlogsCustom:', error);
+        }
+    }
+    
+    // Initialize blog modal functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add click outside to close functionality
+        const blogModal = document.getElementById('blogModal');
+        if (blogModal) {
+            // Make sure clicks on the modal content don't close the modal
+            const modalContent = blogModal.querySelector('.modal-content');
+            if (modalContent) {
+                modalContent.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+            
+            // Close when clicking on the modal background
+            blogModal.addEventListener('click', function(e) {
+                if (e.target === blogModal) {
+                    closeBlogModal();
+                }
+            });
+        }
+        
+        
+    });
+    </script>
+
+    <!-- Move script.js here to ensure all DOM elements exist before script runs -->
+    <script src="script.js"></script>
+    <footer class="site-footer">
+        <div class="container footer-container">
+            <div class="footer-about">
+                <h3>Kapangan Wonders</h3>
+                <p>Discover the natural beauty and hidden gems of Kapangan, Benguet. Our tourism management system helps you explore and plan your visit to these magnificent destinations.</p>
+            </div>
+    
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#" onclick="showHome()">Home</a></li>
+                    <li><a href="#" onclick="showAllTouristSpots()">Tourist Spots</a></li>
+                    <li><a href="#" onclick="showBlogsCustom()">Blogs</a></li>
+                    <li><a href="#" onclick="showAccommodations()">Accommodations</a></li>
+                    <li><a href="#" onclick="showContact()">Contact Us</a></li>
+                </ul>
+            </div>
+    
+            <div class="footer-contact">
+                <h4>Contact Us</h4>
+                <p>Municipal Tourism Office, Kapangan, Benguet</p>
+                <p>+63 (123) 456-7890</p>
+                <p><a href="mailto:info@kapanganwonders.com">info@kapanganwonders.com</a></p>
+            </div>
+        </div>
+    
+        <div class="footer-bottom">
+            <p>&copy; 2025 Kapangan Wonders. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+        </div>
+    </footer>
+    
+    <script>
+    function switchAnnouncementTab(tab) {
+        const tabAnnouncement = document.getElementById('tabAnnouncement');
+        const tabNotice = document.getElementById('tabNotice');
+        const announcementsContainer = document.getElementById('announcementsContainer');
+        const noticesContainer = document.getElementById('noticesContainer');
+        if (tab === 'announcement') {
+            tabAnnouncement.classList.add('active');
+            tabNotice.classList.remove('active');
+            announcementsContainer.style.display = 'block';
+            noticesContainer.style.display = 'none';
+            tabAnnouncement.style.background = '#fff';
+            tabAnnouncement.style.color = '#3498db';
+            tabNotice.style.background = '#eee';
+            tabNotice.style.color = '';
+        } else {
+            tabAnnouncement.classList.remove('active');
+            tabNotice.classList.add('active');
+            announcementsContainer.style.display = 'none';
+            noticesContainer.style.display = 'block';
+            tabNotice.style.background = '#fff';
+            tabNotice.style.color = '#3498db';
+            tabAnnouncement.style.background = '#eee';
+            tabAnnouncement.style.color = '';
+        }
+    }
+    // --- Violation Announcements ---
+    function renderViolationAnnouncements() {
+        const container = document.getElementById('noticesContainer');
+        if (!container) return;
+        // Get current user email (if available)
+        let userEmail = null;
+        try {
+            userEmail = localStorage.getItem('currentUserEmail') || null;
+            if (!userEmail) {
+                const emailInput = document.getElementById('profileEmail');
+                if (emailInput) userEmail = emailInput.value;
+            }
+        } catch (e) { userEmail = null; }
+        // Fetch violations from localStorage
+        let violations = [];
+        try {
+            violations = JSON.parse(localStorage.getItem('userViolations') || '[]');
+        } catch (e) { violations = []; }
+        // Only show for this user if logged in
+        if (userEmail) {
+            violations = violations.filter(v => v.email === userEmail);
+        }
+        // Remove old violation announcements
+        container.innerHTML = '';
+        // Add violation announcements
+        violations.forEach(v => {
+            const div = document.createElement('div');
+            div.className = 'announcement violation-announcement';
+            div.innerHTML = `
+                <h3 style="color:#e63946;">Violation Notice</h3>
+                <p><strong>Reason:</strong> ${v.violation}</p>
+                <p style="font-size:0.95em;color:#888;">Date: ${new Date(v.date).toLocaleString()}</p>
+            `;
+            container.appendChild(div);
+        });
+    }
+    // Call on dashboard load
+    if (document.getElementById('noticesContainer')) {
+        renderViolationAnnouncements();
+    }
+    </script>
+
+    <!-- Spot Modal -->
+    <div id="spotModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div class="spot-modal-content" id="spotModalContent">
+                <!-- Spot content will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Blog Modal -->
+    <div id="blogModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeBlogModal()">&times;</span>
+            <div class="blog-modal-content" id="blogModalContent">
+                <!-- Blog content will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

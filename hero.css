@@ -1,0 +1,113 @@
+body {
+    background-color: rgb(20, 20, 20);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    min-height: -webkit-fill-available; /* For mobile viewport height */
+    overflow-x: hidden;
+    overflow-y: auto;
+    font-size: 16px;
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.hero {
+    position: relative;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    z-index: 1;
+    padding: 80px 0 20px;
+    box-sizing: border-box;
+    contain: layout style;
+}
+
+/* Ensure content sections are properly spaced */
+section:not(.hero) {
+    position: relative;
+    z-index: 2;
+    padding: 80px 0;
+    background: #fff;
+    /* Prevent margin collapse */
+    overflow: auto;
+}
+
+/* Trailing images */
+.image {
+    width: 40vmin;
+    height: 40vmin;
+    object-fit: cover;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+    display: block;
+    visibility: hidden;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    contain: layout style;
+}
+
+.image.loaded {
+    visibility: visible;
+}
+
+/* Prevent FOUC (Flash of Unstyled Content) */
+html.js .hero-content {
+    visibility: hidden;
+    opacity: 0;
+}
+
+html.js .hero-content.visible {
+    visibility: visible;
+    opacity: 1;
+    animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+    from { 
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ensure images don't cause layout shifts */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Fix for iOS viewport height */
+@supports (-webkit-touch-callout: none) {
+    .hero {
+        height: -webkit-fill-available;
+    }
+}
+
+/* Prevent content from jumping when scrollbar appears/disappears */
+html {
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+/* Smooth scrolling for anchor links */
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
+    }
+}

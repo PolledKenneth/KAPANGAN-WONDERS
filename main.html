@@ -1,0 +1,3752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kapangan Tourism Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #2c6e49;
+            --secondary: #4c956c;
+            --accent: #fefee3;
+            --light: #f5f5f5;
+            --dark: #1d3557;
+            --success: #38b000;
+            --warning: #ff9e00;
+            --danger: #e63946;
+            --gray: #6c757d;
+            --border-radius: 12px;
+            --box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            background-color: #f0f2f5;
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            color: white;
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            box-shadow: var(--box-shadow);
+            padding: 20px 0;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .logo img {
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            margin-right: 15px;
+            padding: 5px;
+        }
+        
+        .logo h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .nav-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.1);
+            border-left: 4px solid var(--accent);
+        }
+        
+        .nav-item i {
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 25px;
+            transition: margin-left 0.3s ease;
+        }
+        
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info {
+            text-align: right;
+            margin-right: 15px;
+        }
+        
+        .user-info h4 {
+            font-weight: 600;
+            margin-bottom: 3px;
+            color: var(--dark);
+        }
+        
+        .user-info small {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+        
+        .user-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .page-title {
+            margin-bottom: 25px;
+        }
+        
+        .page-title h1 {
+            font-size: 1.8rem;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+        
+        .page-title p {
+            color: var(--gray);
+            font-size: 1.05rem;
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 22px;
+            transition: transform 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--secondary);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .icon-blue { background: #4361ee; }
+        .icon-green { background: var(--success); }
+        .icon-orange { background: var(--warning); }
+        .icon-red { background: var(--danger); }
+        .icon-purple { background: #6f42c1; }
+        
+        .card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+        
+        .card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+        
+        /* Tables */
+        .table-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 25px;
+            margin-bottom: 35px;
+            overflow-x: auto;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .table-header h3 {
+            color: var(--dark);
+            font-size: 1.4rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        tr:hover {
+            background-color: rgba(44, 110, 73, 0.03);
+        }
+        
+        .status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+        
+        .status.active {
+            background: #d1e7dd;
+            color: #0a3622;
+        }
+        
+        .status.inactive {
+            background: #f8d7da;
+            color: #58151c;
+        }
+        
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status.completed {
+            background: #d1e7dd;
+            color: #0a3622;
+        }
+        
+        .status.visiting {
+            background: #cfe2ff;
+            color: #084298;
+        }
+        
+        .status.staying {
+            background: #e2e3e5;
+            color: #41464b;
+        }
+        
+        /* Tourist Tracker specific styles */
+        #tourist-tracker .table-container {
+            margin-bottom: 30px;
+        }
+        
+        #tourist-tracker table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        #tourist-tracker th, 
+        #tourist-tracker td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        #tourist-tracker th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+        
+        #tourist-tracker tr:hover {
+            background-color: rgba(44, 110, 73, 0.03);
+        }
+        
+        #tourist-tracker .status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-block;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            margin-right: 5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .view-btn {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .edit-btn {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .delete-btn {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .approve-btn {
+            background: #007bff;
+            color: white;
+        }
+        
+        .action-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        /* Charts */
+        .charts {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 25px;
+            height: 350px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-header h3 {
+            color: var(--dark);
+            font-size: 1.25rem;
+        }
+        
+        .filter-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .filter-btn {
+            padding: 6px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .download-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .download-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        /* Form Styles */
+        .form-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            flex: 1;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(44, 110, 73, 0.1);
+        }
+        
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--gray);
+            color: white;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gray);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            color: var(--primary);
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Announcements */
+        .announcement-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .announcement-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--primary);
+        }
+        
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .announcement-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .announcement-date {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .announcement-content {
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            width: 100%;
+            max-width: 100vw;
+            max-height: 96vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            position: relative;
+            margin: 2rem 0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            background: var(--primary);
+            color: white;
+            border-top-left-radius: var(--border-radius);
+            border-top-right-radius: var(--border-radius);
+        }
+        
+        .modal-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.3s;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .close-modal:hover {
+            background: rgba(255,255,255,0.2);
+            transform: rotate(90deg);
+        }
+        
+        .modal-body {
+            padding: 30px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        /* Form Styles */
+        #addUserForm {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        #addUserForm label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        #addUserForm input[type="text"],
+        #addUserForm input[type="email"],
+        #addUserForm input[type="password"],
+        #addUserForm select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background-color: #f9f9f9;
+        }
+        
+        #addUserForm input:focus,
+        #addUserForm select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(44, 110, 73, 0.2);
+            background-color: #fff;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .password-field {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 42px;
+            cursor: pointer;
+            color: #666;
+            background: none;
+            border: none;
+            font-size: 16px;
+        }
+        
+        .detail-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .detail-value {
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        /* Floating Buttons */
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+            font-size: 1.6rem;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            text-decoration: none;
+        }
+        
+        .floating-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-3px) scale(1.08);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+        
+        .floating-btn.back-btn {
+            bottom: 100px;
+            background: var(--dark);
+        }
+        
+        .floating-btn.back-btn:hover {
+            background: #333;
+        }
+        
+        @media (max-width: 600px) {
+            .floating-btn, .floating-btn.back-btn {
+                right: 16px;
+                width: 48px;
+                height: 48px;
+                font-size: 1.2rem;
+            }
+            .floating-btn.back-btn {
+                bottom: 80px;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+            }
+            
+            .logo h2, .nav-item span {
+                display: none;
+            }
+            
+            .logo {
+                justify-content: center;
+                padding: 0 0 20px;
+            }
+            
+            .nav-item {
+                justify-content: center;
+                padding: 15px;
+            }
+            
+            .nav-item i {
+                margin-right: 0;
+                font-size: 1.3rem;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+            }
+            
+            .charts {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .chart-container {
+                height: auto;
+                min-height: 300px;
+            }
+        }
+        
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 200;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 576px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+                padding-top: 70px;
+            }
+            
+            .mobile-toggle {
+                display: block;
+            }
+            
+            .topbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+        
+        /* Add these to the style section */
+        .suspend-btn {
+            background: #e63946 !important;
+            color: #fff !important;
+        }
+        .suspend-btn:hover {
+            background: #b71c1c !important;
+        }
+        .reinstate-btn {
+            background: #38b000 !important;
+            color: #fff !important;
+        }
+        .reinstate-btn:hover {
+            background: #218838 !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Toggle Button -->
+    <button class="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="#" alt="Logo">
+            <h2>Kapangan Wonders</h2>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item active" data-target="dashboard">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" data-target="accommodations">
+                <i class="fas fa-hotel"></i>
+                <span>Accommodations</span>
+            </div>
+            <div class="nav-item" data-target="tourist-spots">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Tourist Spots</span>
+            </div>
+            <div class="nav-item" data-target="restaurants">
+                <i class="fas fa-utensils"></i>
+                <span>Restaurants</span>
+            </div>
+            <div class="nav-item" data-target="users">
+                <i class="fas fa-users"></i>
+                <span>User Management</span>
+            </div>
+            <div class="nav-item" data-target="analytics">
+                <i class="fas fa-chart-line"></i>
+                <span>Reports & Analytics</span>
+            </div>
+            <div class="nav-item" data-target="barangay-reports">
+                <i class="fas fa-file-alt"></i>
+                <span>Barangay Reports</span>
+            </div>
+            <div class="nav-item" onclick="window.location.href='barangay.html'">
+                <i class="fas fa-map-marked"></i>
+                <span>Barangay Admin</span>
+            </div>
+            <div class="nav-item" onclick="window.location.href='privatespot.html'">
+                <i class="fas fa-map-marked-alt"></i>
+                <span>Private Spots</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div class="user-profile">
+                <div class="user-info">
+                    <h4>Admin User</h4>
+                    <small>Main Administrator</small>
+                </div>
+                <div class="user-img">AU</div>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div class="content-section active" id="dashboard">
+            <!-- Page Title -->
+            <div class="page-title">
+                <h1>Admin Dashboard</h1>
+                <p>Manage tourism activities, content, users, and analytics</p>
+            </div>
+
+            <!-- Dashboard Cards -->
+            <div class="dashboard-cards">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3>1,254</h3>
+                            <p>Total Visits</p>
+                        </div>
+                        <div class="card-icon icon-blue">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <small>+12% from last month</small>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3>842</h3>
+                            <p>Unique Tourists</p>
+                        </div>
+                        <div class="card-icon icon-purple">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                    </div>
+                    <small>+15% from last month</small>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3>₱100,134</h3>
+                            <p>Total Revenue</p>
+                        </div>
+                        <div class="card-icon icon-green">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                    </div>
+                    <small>+8% from last quarter</small>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3>10</h3>
+                            <p>Tourist Spots</p>
+                        </div>
+                        <div class="card-icon icon-orange">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                    </div>
+                    <small>5 pending approval</small>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3>7</h3>
+                            <p>Barangay Admins</p>
+                        </div>
+                        <div class="card-icon icon-red">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                    </div>
+            
+                </div>
+            </div>
+            
+            <!-- Recent Activities -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Recent Activities</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Activity</th>
+                            <th>User</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activitiesList">
+                        <!-- Activities will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Accommodations Section -->
+        <div class="content-section" id="accommodations">
+            <div class="page-title">
+                <h1>Accommodations</h1>
+                <p>Manage tourist accommodations</p>
+            </div>
+            <div class="table-container">
+                <div class="table-header">
+                    <div>
+                        <h3>Hotels & Lodging</h3>
+                        <p>Manage tourist accommodations in Kapangan</p>
+                    </div>
+                    <button class="btn btn-primary" id="addAccommodationBtn">
+                        <i class="fas fa-plus"></i> Add New
+                    </button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>Contact Number</th>
+                            <th>Profile FB Link</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="accommodationsTable">
+                        <!-- Accommodations will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Tourist Spots Section -->
+        <div class="content-section" id="tourist-spots">
+            <div class="page-title">
+                <h1>Tourist Spots</h1>
+                <p>Manage tourist attractions and destinations</p>
+            </div>
+            
+            <div class="table-container">
+                <div class="table-header">
+                    <div>
+                        <h3>Tourist Spots Management</h3>
+                        <p>Manage and confirm tourist spots added by barangay admins</p>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Spot Name</th>
+                            <th>Barangay</th>
+                            <th>Added By</th>
+                            <th>Date Added</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="touristSpotsTable">
+                        <!-- Tourist spots will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Restaurants Section -->
+        <div class="content-section" id="restaurants">
+            <div class="page-title">
+                <h1>Restaurants</h1>
+                <p>Manage food establishments</p>
+            </div>
+            <div class="table-container">
+                <div class="table-header">
+                    <div>
+                        <h3>Dining Options</h3>
+                        <p>Restaurants and eateries in Kapangan</p>
+                    </div>
+                    <button class="btn btn-primary" id="addRestaurantBtn">
+                        <i class="fas fa-plus"></i> Add New
+                    </button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Location</th>
+                            <th>Contact Number</th>
+                            <th>Profile FB Link</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="restaurantsTable">
+                        <!-- Restaurants will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- User Management Section -->
+        <div class="content-section" id="users">
+            <div class="page-title">
+                <h1>User Management</h1>
+                <p>Manage system users and permissions</p>
+            </div>
+            <!-- Tabs for Admins and Users -->
+            <div class="tabs" id="userTabs">
+                <div class="tab active" data-tab="admins">Admins</div>
+                <div class="tab" data-tab="users">Users</div>
+            </div>
+            <div class="tab-content active" id="adminsTabContent">
+                <div class="table-container">
+                    <div class="table-header">
+                        <div>
+                            <h3>Admins</h3>
+                            <p>Barangay Admins and Private Tourist Owners</p>
+                        </div>
+                        <button class="btn btn-primary" id="addUserBtn">
+                            <i class="fas fa-plus"></i> Add New Admin
+                        </button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Barangay / Tourist Spot</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminsTable">
+                            <!-- Admins will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-content" id="usersTabContent">
+                <div class="table-container">
+                    <div class="table-header">
+                        <div>
+                            <h3>Registered Users</h3>
+                            <p>Registered users of the website</p>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                                <th>Join Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="registeredUsersTable">
+                            <!-- Registered users will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Reports & Analytics Section -->
+        <div class="content-section" id="analytics">
+            <div class="page-title" style="display: flex; flex-direction: column; gap: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div>
+                        <h1>Reports & Analytics</h1>
+                        <p>Tourism statistics and insights</p>
+                    </div>
+                    <button class="download-btn" id="downloadAllChartsPdf">
+                        <i class="fas fa-download"></i> Download All Charts (PDF)
+                    </button>
+                </div>
+                <div class="filter-options" style="justify-content: flex-start; margin-top: 10px;">
+                    <button class="filter-btn active" data-period="monthly">Monthly</button>
+                    <button class="filter-btn" data-period="quarterly">Quarterly</button>
+                    <button class="filter-btn" data-period="yearly">Yearly</button>
+                </div>
+            </div>
+            
+            <div class="dashboard-cards">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3>1,352</h3>
+                            <p>Total Visitors (Year)</p>
+                        </div>
+                        <div class="card-icon icon-blue">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <small>+18% from last year</small>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3>₱100,153</h3>
+                            <p>Total Revenue (Year)</p>
+                        </div>
+                        <div class="card-icon icon-green">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                    </div>
+                    <small>+15% from last year</small>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3>64%</h3>
+                            <p>Repeat Visitors</p>
+                        </div>
+                        <div class="card-icon icon-red">
+                            <i class="fas fa-redo"></i>
+                        </div>
+                    </div>
+                    <small>Up 7% from last year</small>
+                </div>
+            </div>
+            
+            <div class="charts">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Visitors per Tourist Spot</h3>
+                    </div>
+                    <canvas id="spotTotalsChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Monthly Total Visitors</h3>
+                    </div>
+                    <canvas id="monthlyTotalsChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Barangay Reports Section -->
+        <div class="content-section" id="barangay-reports">
+            <div class="page-title">
+                <h1>Barangay Reports</h1>
+                <p>View submitted reports from barangays</p>
+            </div>
+            <div class="table-container">
+                <div class="table-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>Submitted Reports</h3>
+                    <button class="btn btn-primary" onclick="showBarangayReportModal(0, barangayReportsSample)">
+                        <i class="fas fa-eye"></i> Test View Report
+                    </button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Barangay</th>
+                            <th>Title</th>
+                            <th>Submitted By</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="barangayReportsTable">
+                        <!-- Reports will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barangay Report Modal -->
+    <div class="modal" id="barangayReportModal" style="display: none; align-items: center; justify-content: center; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow-y: auto; padding: 20px; box-sizing: border-box;">
+        <div class="modal-content" style="background: white; margin: auto; padding: 25px; border-radius: 10px; max-width: 900px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+            <div class="modal-header" style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                <h3 id="barangayReportModalTitle" style="margin: 0; color: #2c6e49;">Barangay Report</h3>
+                <button id="closeBarangayReportModal" class="close-modal" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666; padding: 5px 10px; border-radius: 4px; transition: all 0.2s;" onmouseover="this.style.backgroundColor='#f0f0f0'" onmouseout="this.style.backgroundColor='transparent'">&times;</button>
+            </div>
+            <div class="modal-body" id="barangayReportModalBody" style="padding: 10px 0;">
+                <!-- Report content will be loaded here -->
+            </div>
+            <div class="modal-footer" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; text-align: right;">
+                <button onclick="document.getElementById('barangayReportModal').style.display='none'" style="background-color: #6c757d; color: white; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-size: 14px; transition: background-color 0.2s;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Forms and Details -->
+    <div class="modal" id="formModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add New Item</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+
+                <!-- Modal content will be injected here -->
+                <form id="addUserForm" onsubmit="event.preventDefault(); return validateUserForm();">
+                    <label for="userName">Name</label>
+                    <input type="text" id="userName" name="userName" placeholder="Enter full name" required>
+
+                    <label for="userEmail">Email</label>
+                    <input type="email" id="userEmail" name="userEmail" placeholder="Enter email" required>
+                    
+                    <label for="userPassword">Password</label>
+                    <div style="position: relative;">
+                        <input type="password" id="userPassword" name="userPassword" placeholder="Enter password" required minlength="8" style="width: 100%;">
+                        <i class="fas fa-eye toggle-password" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;" onclick="togglePassword('userPassword')"></i>
+                    </div>
+                    
+                    <label for="confirmPassword">Confirm Password</label>
+                    <div style="position: relative;">
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm password" required style="width: 100%;">
+                        <i class="fas fa-eye toggle-password" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;" onclick="togglePassword('confirmPassword')"></i>
+                    </div>
+                    <div id="passwordError" style="color: red; display: none; font-size: 0.9em; margin-top: -8px;">
+                        Passwords do not match!
+                    </div>
+
+                    <label for="userRole">Role</label>
+                    <select id="userRole" name="userRole" required>
+                        <option value="Barangay Admin">Barangay Admin</option>
+                        <option value="Tourist Owner">Tourist Owner</option>
+                    </select>
+
+                    <label for="userBarangay">Barangay</label>
+                    <select id="userBarangay" name="userBarangay" required>
+                        <option value="">Select Barangay</option>
+                        <option value="Balakbak">Balakbak</option>
+                        <option value="Balintaugan">Balintaugan</option>
+                        <option value="Beling-Belis">Beling-Belis</option>
+                        <option value="Boklaoan">Boklaoan</option>
+                        <option value="Cuba">Cuba</option>
+                        <option value="Datakan">Datakan</option>
+                        <option value="Gadang">Gadang</option>
+                        <option value="Gaswiling">Gaswiling</option>
+                        <option value="Labueg">Labueg</option>
+                        <option value="Pongayan">Pongayan</option>
+                        <option value="Sagubo">Sagubo</option>
+                        <option value="Sapang">Sapang</option>
+                        <option value="Taba-ao">Taba-ao</option>
+                        <option value="Takong">Takong</option>
+                        <option value="Tanap">Tanap</option>
+                        <option value="Paykek">Paykek</option>
+                        <option value="Pudong">Pudong</option>
+                    </select>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Add User</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()" style="margin-left: 10px;">Cancel</button>
+                    </div>
+                </form>
+                <script>
+                    // Show the add user form in the modal
+                    function openAddUserForm() {
+                        const modal = document.getElementById('formModal');
+                        modal.style.display = 'flex';
+                        document.getElementById('modalTitle').innerText = 'Add New User';
+                        document.getElementById('addUserForm').style.display = 'flex';
+                        // Reset form when opening
+                        document.getElementById('addUserForm').reset();
+                        document.getElementById('passwordError').style.display = 'none';
+                    }
+                    
+                    // Toggle password visibility
+                    function togglePassword(fieldId) {
+                        const field = document.getElementById(fieldId);
+                        const icon = field.nextElementSibling;
+                        if (field.type === 'password') {
+                            field.type = 'text';
+                            icon.classList.remove('fa-eye');
+                            icon.classList.add('fa-eye-slash');
+                        } else {
+                            field.type = 'password';
+                            icon.classList.remove('fa-eye-slash');
+                            icon.classList.add('fa-eye');
+                        }
+                    }
+                    
+                    // Validate user form
+                    function validateUserForm() {
+                        const name = document.getElementById('userName').value;
+                        const email = document.getElementById('userEmail').value;
+                        const password = document.getElementById('userPassword').value;
+                        const confirmPassword = document.getElementById('confirmPassword').value;
+                        const role = document.getElementById('userRole').value;
+                        const barangay = document.getElementById('userBarangay').value;
+                        const errorElement = document.getElementById('passwordError');
+                        
+                        // Basic validation
+                        if (!name || !email || !password || !confirmPassword || !role || !barangay) {
+                            errorElement.textContent = 'Please fill in all fields';
+                            errorElement.style.display = 'block';
+                            return false;
+                        }
+                        
+                        if (password !== confirmPassword) {
+                            errorElement.textContent = 'Passwords do not match!';
+                            errorElement.style.display = 'block';
+                            return false;
+                        }
+                        
+                        errorElement.style.display = 'none';
+                        addUser();
+                        return false;
+                    }
+                    
+                    // Close modal function
+                    function closeModal() {
+                        document.getElementById('formModal').style.display = 'none';
+                        document.getElementById('addUserForm').style.display = 'none';
+                    }
+                    
+                    // Close modal when clicking the X button or outside the modal
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Close button
+                        document.querySelector('.close-modal').addEventListener('click', closeModal);
+                        
+                        // Close when clicking outside the modal content
+                        window.addEventListener('click', function(event) {
+                            const modal = document.getElementById('formModal');
+                            if (event.target === modal) {
+                                closeModal();
+                            }
+                        });
+                    });
+                </script>
+                <!-- End Add User Form -->
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Tourist Tracking (Registered User) -->
+    <div class="modal" id="touristTrackingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="touristTrackingTitle">Tourist Tracking</h3>
+                <button class="close-modal" id="closeTouristTracking">&times;</button>
+            </div>
+            <div class="modal-body" id="touristTrackingBody">
+                <!-- Tracking details will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Switch Button -->
+    <a href="barangay.html" class="floating-btn" title="Switch to Barangay Admin">
+        <i class="fas fa-exchange-alt"></i>
+    </a>
+    <a href="index.html" class="floating-btn back-btn" title="Back to Site">
+        <i class="fas fa-home"></i>
+    </a>
+
+    <!-- Modal for Chart PDF Preview -->
+    <div class="modal" id="pdfPreviewModal">
+        <div class="modal-content" style="max-width: 1000px;">
+            <div class="modal-header">
+                <h3>Preview PDF Report</h3>
+                <button class="close-modal" id="closePdfPreview">&times;</button>
+            </div>
+            <div class="modal-body" id="pdfPreviewBody" style="display: flex; flex-direction: column; gap: 30px; align-items: center;">
+                <!-- Chart previews will be injected here -->
+            </div>
+            <div class="form-actions" style="justify-content: flex-end; gap: 10px; padding: 20px;">
+                <button class="btn btn-secondary" id="cancelPdfPreview">Cancel</button>
+                <button class="btn btn-primary" id="confirmDownloadPdf">Download PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data for all sections
+        const barangayReportsSample = [
+            {
+                barangay: 'Barangay Balakbak',
+                title: 'Barangay Balakbak Monthly Report',
+                submittedBy: 'Barangay Admin',
+                date: '2023-06-30T14:30:00',
+                status: 'Submitted',
+                period: 'Monthly',
+                content: 'This report summarizes the tourism activities and statistics for Barangay Balakbak for the month of June 2023.',
+                charts: [
+                    { title: 'Visitor Trends', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACt...' },
+                    { title: 'Visitor Demographics', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACt...' },
+                    { title: 'Revenue Overview', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACt...' },
+                    { title: 'Most Visited Spots', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACt...' }
+                ],
+                rawData: {
+                    monthly: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        visitors: [120, 150, 180, 200, 250, 300],
+                        revenue: [3600, 4500, 5400, 6000, 7500, 9000]
+                    },
+                    spots: [
+                        { name: 'Balakbak Falls', visitors: 1500 },
+                        { name: 'Mount Tagpaya', visitors: 1200 },
+                        { name: 'Pine Tree Lodge', visitors: 900 }
+                    ],
+                    demographics: {
+                        local: 65,
+                        national: 30,
+                        foreign: 5
+                    }
+                }
+            },
+            {
+                barangay: 'Barangay Pudong',
+                title: 'Barangay Pudong Quarterly Report',
+                submittedBy: 'Barangay Secretary',
+                date: '2023-06-25T10:15:00',
+                status: 'Approved',
+                period: 'Quarterly',
+                content: 'This report summarizes the tourism activities and statistics for Barangay Pudong for Q2 2023.',
+                charts: [
+                    { title: 'Visitor Trends', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACt...' },
+                    { title: 'Visitor Demographics', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACt...' }
+                ],
+                rawData: {
+                    monthly: {
+                        labels: ['Q1 2022', 'Q2 2022', 'Q3 2022', 'Q4 2022', 'Q1 2023', 'Q2 2023'],
+                        visitors: [800, 950, 1100, 1250, 1300, 1450],
+                        revenue: [24000, 28500, 33000, 37500, 39000, 43500]
+                    },
+                    spots: [
+                        { name: 'Pudong Rice Terraces', visitors: 1800 },
+                        { name: 'Pine Forest', visitors: 1500 },
+                        { name: 'Hot Springs', visitors: 1200 }
+                    ],
+                    demographics: {
+                        local: 70,
+                        national: 25,
+                        foreign: 5
+                    }
+                }
+            }
+        ];
+
+        const sampleData = {
+            touristActivities: [
+                { id: 1, touristName: 'John Smith', contact: 'john.smith@email.com', barangay: 'Pudong', location: 'Mount Tagpaya', type: 'Tourist Spot', checkIn: '2023-06-15 09:30', checkOut: '2023-06-15 15:45', status: 'Completed' },
+                { id: 2, touristName: 'John Smith', contact: 'john.smith@email.com', barangay: 'Pudong', location: 'Pine Tree Lodge', type: 'Accommodation', checkIn: '2023-06-15 16:00', checkOut: '2023-06-18 12:00', status: 'Staying' },
+                { id: 3, touristName: 'Maria Garcia', contact: 'maria.g@email.com', barangay: 'Balakbak', location: 'Kapangan Falls', type: 'Tourist Spot', checkIn: '2023-06-16 10:15', checkOut: '2023-06-16 16:30', status: 'Completed' },
+                { id: 4, touristName: 'Robert Johnson', contact: 'robert.j@email.com', barangay: 'Taba-ao', location: 'Taba-ao Rice Terraces', type: 'Tourist Spot', checkIn: '2023-06-17 08:45', checkOut: '2023-06-17 17:30', status: 'Completed' },
+                { id: 5, touristName: 'Robert Johnson', contact: 'robert.j@email.com', barangay: 'Taba-ao', location: 'Mountain View Resort', type: 'Accommodation', checkIn: '2023-06-16 15:30', checkOut: '2023-06-19 11:00', status: 'Staying' },
+                { id: 6, touristName: 'Sarah Wilson', contact: 'sarah.w@email.com', barangay: 'Pudong', location: 'Pine Tree Lodge', type: 'Accommodation', checkIn: '2023-06-15 14:00', checkOut: '2023-06-18 12:00', status: 'Staying' }
+            ],
+            touristSpots: [
+                { id: 1, name: "Mount Tagpaya", barangay: "Pudong", addedBy: "Admin Pudong", date: "2023-10-15", status: "Approved", description: "A majestic mountain offering panoramic views of Kapangan", location: "Pudong, Kapangan", entranceFee: "50" },
+                { id: 2, name: "Kapangan Falls", barangay: "Balakbak", addedBy: "Admin Balakbak", date: "2023-11-02", status: "Approved", description: "Beautiful waterfall with natural pools for swimming", location: "Balakbak, Kapangan", entranceFee: "30" },
+                { id: 3, name: "Taba-ao Rice Terraces", barangay: "Taba-ao", addedBy: "Admin Taba-ao", date: "2023-11-20", status: "Pending", description: "Stunning rice terraces carved into the mountain slopes", location: "Taba-ao, Kapangan", entranceFee: "Free" },
+                { id: 4, name: "Lusod Cave", barangay: "Lusod", addedBy: "Admin Lusod", date: "2023-12-05", status: "Pending", description: "Mysterious cave system with unique rock formations", location: "Lusod, Kapangan", entranceFee: "40" },
+                { id: 5, name: "Amburayan River", barangay: "Sagubo", addedBy: "Admin Sagubo", date: "2023-12-10", status: "Pending", description: "Pristine river perfect for rafting and swimming", location: "Sagubo, Kapangan", entranceFee: "20" },
+                { id: 6, name: "Balakbak Hanging Bridge", barangay: "Balakbak", addedBy: "Admin Balakbak", date: "2023-12-12", status: "Pending", description: "Suspension bridge offering scenic views of the valley", location: "Balakbak, Kapangan", entranceFee: "Free" },
+                { id: 7, name: "Cayapes Hot Spring", barangay: "Cayapes", addedBy: "Admin Cayapes", date: "2023-12-13", status: "Pending", description: "Natural hot spring with therapeutic properties", location: "Cayapes, Kapangan", entranceFee: "60" }
+            ],
+            users: [
+                { id: 1, name: "Juan Dela Cruz", barangay: "Pudong", role: "Barangay Admin", status: "Active", daysActive: 120, lastLogin: "2023-12-10" },
+                { id: 2, name: "Maria Santos", barangay: "Balakbak", role: "Barangay Admin", status: "Active", daysActive: 85, lastLogin: "2023-12-08" },
+                { id: 3, name: "Pedro Reyes", barangay: "Taba-ao", role: "Barangay Admin", status: "Inactive", daysActive: 45, lastLogin: "2023-11-15" },
+                { id: 4, name: "Ana Torres", barangay: "Cayapes", role: "Barangay Admin", status: "Active", daysActive: 210, lastLogin: "2023-12-12" }
+            ],
+            allUsers: [
+                { id: 2, name: "Juan Dela Cruz", email: "juan@pudong.com", role: "Barangay Admin", barangay: "Pudong", status: "Active" },
+                { id: 3, name: "Maria Santos", email: "maria@balakbak.com", role: "Barangay Admin", barangay: "Balakbak", status: "Active" },
+                { id: 6, name: "Jose Villanueva", email: "jose@touristowner.com", role: "Tourist Owner", barangay: "Taba-ao", status: "Active" }
+            ],
+            accommodations: [
+                { id: 1, name: "Mountain View Lodge", type: "Hotel", location: "Pudong", contact: "09171234567", fbLink: "https://facebook.com/mountainviewlodge", status: "Active" },
+                { id: 2, name: "River Rock Homestay", type: "Homestay", location: "Balakbak", contact: "09179876543", fbLink: "https://facebook.com/riverrockhomestay", status: "Active" },
+                { id: 3, name: "Forest Retreat Cabins", type: "Cabin", location: "Lusod", contact: "09171239876", fbLink: "https://facebook.com/forestretreatcabins", status: "Active" }
+            ],
+            restaurants: [
+                { id: 1, name: "Highland Grill", location: "Pudong", contact: "09171234567", fbLink: "https://facebook.com/highlandgrill", status: "Active" },
+                { id: 2, name: "Riverbank Cafe", location: "Balakbak", contact: "09179876543", fbLink: "https://facebook.com/riverbankcafe", status: "Active" },
+                { id: 3, name: "Terraces Restaurant", location: "Taba-ao", contact: "09171239876", fbLink: "https://facebook.com/terracesrestaurant", status: "Active" }
+            ],
+            activities: [
+                { id: 1, user: "Juan Dela Cruz", action: "added a new tourist spot", target: "Mount Tagpaya", time: "10 minutes ago" },
+                { id: 2, user: "Maria Santos", action: "updated an announcement", target: "Christmas Festival 2023", time: "2 hours ago" },
+                { id: 3, user: "Admin User", action: "created a new blog post", target: "Sustainable Tourism", time: "5 hours ago" },
+                { id: 4, user: "Pedro Reyes", action: "edited restaurant information", target: "Terraces Restaurant", time: "Yesterday" },
+                { id: 5, user: "Ana Torres", action: "approved a new accommodation", target: "Forest Retreat Cabins", time: "2 days ago" }
+            ],
+            // Add registered users array
+            registeredUsers: [
+                { id: 101, name: "Alice Rivera", email: "alice@email.com", phone: "09171231234", address: "Baguio City", joinDate: "2024-01-10" },
+                { id: 102, name: "Bob Cruz", email: "bob@email.com", phone: "09179876543", address: "La Trinidad", joinDate: "2024-02-15" },
+                { id: 103, name: "Carla Dizon", email: "carla@email.com", phone: "09175554433", address: "Kapangan", joinDate: "2024-03-20" }
+            ]
+        };
+
+        // Current data state
+        let appData = { ...sampleData };
+        
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileToggle = document.querySelector('.mobile-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            
+            mobileToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+            
+            // Sidebar navigation
+            const navItems = document.querySelectorAll('.nav-item');
+            const contentSections = document.querySelectorAll('.content-section');
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    
+                    // Remove active class from all nav items and sections
+                    navItems.forEach(navItem => navItem.classList.remove('active'));
+                    contentSections.forEach(section => section.classList.remove('active'));
+                    
+                    // Add active class to clicked nav item and target section
+                    this.classList.add('active');
+                    if (target) {
+                        document.getElementById(target).classList.add('active');
+                    }
+                    
+                    // Close sidebar on mobile after selection
+                    if (window.innerWidth <= 576) {
+                        sidebar.classList.remove('active');
+                    }
+                    
+                    // Render content for the section
+                    renderSectionContent(target);
+                });
+            });
+            
+            // Render initial content
+            renderAllContent();
+            
+            // Add event listeners for all 'Add' buttons
+            const addUserBtn = document.getElementById('addUserBtn');
+            if (addUserBtn) {
+                // Remove any existing click handlers to prevent duplicates
+                addUserBtn.removeEventListener('click', handleAddUserClick);
+                addUserBtn.addEventListener('click', handleAddUserClick);
+            }
+            
+            const addTouristSpotBtn = document.getElementById('addTouristSpotBtn');
+            if (addTouristSpotBtn) addTouristSpotBtn.addEventListener('click', () => {
+                console.log('Add Tourist Spot button clicked');
+                openFormModal('tourist-spot');
+            });
+            
+            const addAccommodationBtn = document.getElementById('addAccommodationBtn');
+            if (addAccommodationBtn) addAccommodationBtn.addEventListener('click', () => {
+                console.log('Add Accommodation button clicked');
+                openFormModal('accommodation');
+            });
+            
+            const addRestaurantBtn = document.getElementById('addRestaurantBtn');
+            if (addRestaurantBtn) addRestaurantBtn.addEventListener('click', () => {
+                console.log('Add Restaurant button clicked');
+                openFormModal('restaurant');
+            });
+            
+            const downloadPdfBtn = document.getElementById('downloadPdf');
+            if (downloadPdfBtn) downloadPdfBtn.addEventListener('click', () => {
+                console.log('Download PDF button clicked');
+                downloadPdf();
+            });
+            
+            // Modal close functionality
+            // Ensure DOM is loaded before attaching event listeners
+            document.addEventListener('DOMContentLoaded', function() {
+                // Use event delegation for all .close-modal buttons
+                document.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('close-modal')) {
+                        // Find the closest parent with class 'modal' and hide it
+                        const modal = e.target.closest('.modal');
+                        if (modal) modal.style.display = 'none';
+                    }
+                });
+                // Add direct event listener to the close-modal button for reliability
+                var closeModalBtn = document.querySelector('.close-modal');
+                if (closeModalBtn) {
+                    closeModalBtn.addEventListener('click', function() {
+                        const modal = document.getElementById('formModal');
+                        if (modal) modal.style.display = 'none';
+                    });
+                }
+                // Clicking on the modal background closes the modal
+                document.querySelectorAll('.modal').forEach(function(modal) {
+                    modal.addEventListener('click', function(e) {
+                        if (e.target === modal) modal.style.display = 'none';
+                    });
+                });
+            });
+        });
+        
+        // Render all content
+        function renderAllContent() {
+            renderActivities();
+            renderTouristSpots();
+            renderAdminsTable();
+            renderRegisteredUsersTable();
+            renderRestaurants();
+            renderAccommodations();
+            renderTouristActivities();
+            initCharts();
+        }
+        
+        // Render section content when navigated to
+        function renderSectionContent(section) {
+            switch(section) {
+                case 'accommodations':
+                    renderAccommodations();
+                    break;
+                case 'tourist-spots':
+                    renderTouristSpots();
+                    break;
+                case 'restaurants':
+                    renderRestaurants();
+                    break;
+                case 'tourist-tracker':
+                    renderTouristActivities();
+                    break;
+                case 'users':
+                    renderAdminsTable();
+                    renderRegisteredUsersTable();
+                    break;
+                case 'analytics':
+                    initCharts();
+                    break;
+                case 'barangay-reports':
+                    renderBarangayReports();
+                    break;
+            }
+        }
+        
+        
+        // Render recent activities
+        function renderActivities() {
+            const container = document.getElementById('activitiesList');
+            container.innerHTML = '';
+            
+            appData.activities.forEach(activity => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${activity.action}: <strong>${activity.target}</strong></td>
+                    <td>${activity.user}</td>
+                    <td>${activity.time}</td>
+                `;
+                container.appendChild(row);
+            });
+        }
+        
+        // Render tourist spots
+        function renderTouristSpots() {
+            const container = document.getElementById('touristSpotsTable');
+            container.innerHTML = '';
+            
+            appData.touristSpots.forEach(spot => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${spot.name}</td>
+                    <td>${spot.barangay}</td>
+                    <td>${spot.addedBy}</td>
+                    <td>${spot.date}</td>
+                    <td><span class="status ${spot.status.toLowerCase()}">${spot.status}</span></td>
+                    ${spot.status === 'Approved' 
+                        ? '<td></td>' 
+                        : `<td>
+                            <button class="action-btn approve-btn" data-id="${spot.id}" data-type="touristSpot">Approve</button>
+                            <button class="action-btn decline-btn" data-id="${spot.id}" data-type="touristSpot">Decline</button>
+                          </td>`}
+                `;
+                container.appendChild(row);
+            });
+            
+            // Add event listeners for actions
+            addActionListeners('.approve-btn', approveTouristSpot);
+            addActionListeners('.decline-btn', declineItem);
+        }
+
+        function approveTouristSpot(id, type) {
+            const spot = appData.touristSpots.find(item => item.id == id);
+            if (spot && spot.status !== 'Approved') {
+                spot.status = 'Approved';
+                renderTouristSpots();
+                alert('Tourist spot approved!');
+            }
+        }
+        
+        // Render Admins (Barangay Admins and Tourist Owners)
+        function renderAdminsTable() {
+            const container = document.getElementById('adminsTable');
+            if (!container) return;
+            container.innerHTML = '';
+            appData.allUsers.forEach(user => {
+                if (user.role === 'Barangay Admin' || user.role === 'Tourist Owner') {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.role}</td>
+                        <td>${user.barangay}</td>
+                        <td><span class="status ${user.status && user.status.toLowerCase()}">${user.status || 'Active'}</span></td>
+                        <td>
+                            ${user.status === 'Active' ? `<button class="action-btn suspend-btn" data-id="${user.id}" data-type="allUser">Suspend</button>` : `<button class="action-btn reinstate-btn" data-id="${user.id}" data-type="allUser">Reinstate</button>`}
+                        </td>
+                    `;
+                    container.appendChild(row);
+                }
+            });
+            addActionListeners('.suspend-btn', suspendItem);
+            addActionListeners('.reinstate-btn', reinstateItem);
+        }
+
+        // Render Registered Users
+        function renderRegisteredUsersTable() {
+            const container = document.getElementById('registeredUsersTable');
+            if (!container) return;
+            container.innerHTML = '';
+            // Fetch users from localStorage
+            let users = [];
+            try {
+                users = JSON.parse(localStorage.getItem('users')) || [];
+            } catch (e) {
+                users = [];
+            }
+            // Only show users with role 'user' or no role (exclude admins/owners)
+            const filtered = users.filter(u => !u.role || u.role === 'user');
+            // Fallback to sample data if no users in localStorage
+            const displayUsers = filtered.length > 0 ? filtered : (appData.registeredUsers || []);
+            displayUsers.forEach(user => {
+                const row = document.createElement('tr');
+                // Add a data attribute for user id or email for flagging
+                row.setAttribute('data-user-email', user.email);
+                // Check flag status
+                let flag = (window.userFlags && window.userFlags[user.email]) || '';
+                let flagIcon = '';
+                if (flag === 'red') flagIcon = '<span style="color:#e63946;font-size:1.2em;">&#x1F534;</span> ';
+                if (flag === 'green') flagIcon = '<span style="color:#38b000;font-size:1.2em;">&#x1F7E2;</span> ';
+                row.innerHTML = `
+                    <td>${flagIcon}${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.phone || ''}</td>
+                    <td>${user.address || ''}</td>
+                    <td>${user.joinDate ? (user.joinDate.split('T')[0]) : ''}</td>
+                    <td>
+                        <button class="action-btn view-btn" data-email="${user.email}" title="View Logging"><i class="fas fa-eye"></i></button>
+                        <button class="action-btn flag-btn" data-flag="red" title="Flag Red" style="background:#e63946;color:#fff;"><i class="fas fa-flag"></i></button>
+                    </td>
+                `;
+                container.appendChild(row);
+            });
+            // Add event listeners for view buttons
+            container.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const email = this.getAttribute('data-email');
+                    showTouristTrackingModal(email);
+                });
+            });
+            // Add event listeners for flag buttons
+            if (!window.userFlags) window.userFlags = {};
+            // Red flag: open modal
+            container.querySelectorAll('.flag-btn[data-flag="red"]').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const row = this.closest('tr');
+                    const email = row.getAttribute('data-user-email');
+                    openRedFlagModal(email);
+                });
+            });
+            // Green flag: toggle flag
+            container.querySelectorAll('.flag-btn[data-flag="green"]').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const row = this.closest('tr');
+                    const email = row.getAttribute('data-user-email');
+                    if (window.userFlags[email] === 'green') {
+                        delete window.userFlags[email];
+                    } else {
+                        window.userFlags[email] = 'green';
+                    }
+                    renderRegisteredUsersTable();
+                });
+            });
+        }
+
+        // User Management Tabs Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('#userTabs .tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(tc => tc.classList.remove('active'));
+                    this.classList.add('active');
+                    const tabName = this.getAttribute('data-tab');
+                    if (tabName === 'admins') {
+                        document.getElementById('adminsTabContent').classList.add('active');
+                        renderAdminsTable();
+                    } else {
+                        document.getElementById('usersTabContent').classList.add('active');
+                        renderRegisteredUsersTable();
+                    }
+                });
+            });
+        });
+        
+        // View tourist details with separate statuses
+        function viewTouristDetails(e) {
+            const touristName = decodeURIComponent(e.target.closest('button').dataset.tourist);
+            const touristData = groupActivitiesByTourist()[touristName];
+            
+            // Group activities by type
+            const activitiesByType = {
+                'Tourist Spot': [],
+                'Accommodation': []
+            };
+            
+            touristData.activities.forEach(activity => {
+                if (activity.type === 'Tourist Spot') {
+                    activitiesByType['Tourist Spot'].push(activity);
+                } else if (activity.type === 'Accommodation') {
+                    activitiesByType['Accommodation'].push(activity);
+                }
+            });
+            
+            let details = `
+                <div class="tourist-details">
+                    <div class="tourist-info">
+                        <h3>${touristName}</h3>
+                        <p><strong>Contact:</strong> ${touristData.contact}</p>
+                        <p><strong>Barangay:</strong> ${touristData.barangay}</p>
+                    </div>
+            `;
+            
+            // Add Tourist Spots section if any
+            if (activitiesByType['Tourist Spot'].length > 0) {
+                details += `
+                    <div class="activity-section">
+                        <h4><i class="fas fa-map-marked-alt"></i> Tourist Spots Visited</h4>
+                        <ul class="activity-list">
+                `;
+                
+                activitiesByType['Tourist Spot'].forEach(activity => {
+                    details += `
+                        <li class="activity-item">
+                            <div class="activity-header">
+                                <strong>${activity.location}</strong>
+                                <span class="status ${activity.status.toLowerCase()}">${activity.status}</span>
+                            </div>
+                            <div class="activity-details">
+                                <span><i class="far fa-calendar-alt"></i> ${formatDate(activity.checkIn)}</span>
+                                <span><i class="far fa-clock"></i> ${formatTime(activity.checkIn)} - ${activity.checkOut ? formatTime(activity.checkOut) : 'Ongoing'}</span>
+                            </div>
+                        </li>
+                    `;
+                });
+                
+                details += `
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            // Add Accommodations section if any
+            if (activitiesByType['Accommodation'].length > 0) {
+                details += `
+                    <div class="activity-section">
+                        <h4><i class="fas fa-hotel"></i> Accommodations</h4>
+                        <ul class="activity-list">
+                `;
+                
+                activitiesByType['Accommodation'].forEach(activity => {
+                    const checkInDate = new Date(activity.checkIn);
+                    const checkOutDate = activity.checkOut ? new Date(activity.checkOut) : new Date();
+                    const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+                    
+                    details += `
+                        <li class="activity-item">
+                            <div class="activity-header">
+                                <strong>${activity.location}</strong>
+                                <span class="status ${activity.status.toLowerCase()}">${activity.status}</span>
+                            </div>
+                            <div class="activity-details">
+                                <span><i class="far fa-calendar-check"></i> ${formatDate(activity.checkIn)} - ${activity.checkOut ? formatDate(activity.checkOut) : 'Present'}</span>
+                                <span><i class="fas fa-moon"></i> ${nights} ${nights === 1 ? 'night' : 'nights'}</span>
+                                <span><i class="fas fa-door-open"></i> Room #${Math.floor(Math.random() * 100) + 1}</span>
+                            </div>
+                        </li>
+                    `;
+                });
+                
+                details += `
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            details += `
+                </div>
+                <style>
+                    .tourist-details { font-family: 'Segoe UI', sans-serif; }
+                    .tourist-info { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+                    .activity-section { margin-bottom: 25px; }
+                    .activity-section h4 { 
+                        color: var(--primary); 
+                        margin-bottom: 10px;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    }
+                    .activity-list { 
+                        list-style: none; 
+                        padding: 0;
+                        margin: 0;
+                    }
+                    .activity-item { 
+                        background: #f9f9f9; 
+                        border-radius: 8px; 
+                        padding: 15px; 
+                        margin-bottom: 10px;
+                        border-left: 4px solid var(--primary);
+                    }
+                    .activity-header { 
+                        display: flex; 
+                        justify-content: space-between; 
+                        align-items: center;
+                        margin-bottom: 8px;
+                    }
+                    .activity-details { 
+                        display: flex; 
+                        flex-wrap: wrap;
+                        gap: 15px;
+                        font-size: 0.9em;
+                        color: #555;
+                    }
+                    .activity-details i { 
+                        margin-right: 5px; 
+                        color: var(--primary);
+                        width: 16px;
+                        text-align: center;
+                    }
+                </style>
+            `;
+            
+            openDetailsModal(`Tourist Details: ${touristName}`, details);
+        }
+        
+        // Helper function to format date
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+        
+        // Helper function to format time
+        function formatTime(dateString) {
+            if (!dateString) return 'N/A';
+            const options = { hour: '2-digit', minute: '2-digit' };
+            return new Date(dateString).toLocaleTimeString('en-US', options);
+        }
+        
+        // Add event listeners to action buttons
+        function addActionListeners(selector, handler) {
+            document.querySelectorAll(selector).forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const id = btn.getAttribute('data-id');
+                    const type = btn.getAttribute('data-type');
+                    handler(id, type);
+                });
+            });
+        }
+        
+        // Add User button event handler
+        function handleAddUserClick(e) {
+            e.preventDefault();
+            document.getElementById('formModal').style.display = 'flex';
+            openAddUserForm();
+        }
+        
+        // Edit item (accommodation or restaurant)
+        function editItem(id, type) {
+            let item;
+            let isAccommodation = false;
+            let isRestaurant = false;
+            if (type === 'accommodation') {
+                item = appData.accommodations.find(i => i.id == id);
+                isAccommodation = true;
+            } else if (type === 'restaurant') {
+                item = appData.restaurants.find(i => i.id == id);
+                isRestaurant = true;
+            } else {
+                alert('Editing this type is not supported.');
+                return;
+            }
+            if (!item) {
+                alert('Item not found.');
+                return;
+            }
+            // Open the form modal with the relevant form
+            openFormModal(type);
+            // Change modal title
+            document.getElementById('modalTitle').textContent = `Edit ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+            // Pre-fill fields
+            if (isAccommodation) {
+                document.getElementById('accName').value = item.name || '';
+                document.getElementById('accType').value = item.type || '';
+                document.getElementById('accLocation').value = item.location || '';
+                document.getElementById('accContact').value = item.contact || '';
+                document.getElementById('accFbLink').value = item.fbLink || '';
+                // Change button text and id
+                const submitBtn = document.getElementById('submitAccommodation');
+                submitBtn.textContent = 'Save Changes';
+                // Remove previous listeners
+                const newBtn = submitBtn.cloneNode(true);
+                submitBtn.parentNode.replaceChild(newBtn, submitBtn);
+                newBtn.addEventListener('click', function() {
+                    // Validate
+                    const name = document.getElementById('accName').value;
+                    const typeVal = document.getElementById('accType').value;
+                    const location = document.getElementById('accLocation').value;
+                    const contact = document.getElementById('accContact').value;
+                    const fbLink = document.getElementById('accFbLink').value;
+                    if (!name || !typeVal || !location) {
+                        alert('Please fill in all required fields.');
+                        return;
+                    }
+                    // Update
+                    item.name = name;
+                    item.type = typeVal;
+                    item.location = location;
+                    item.contact = contact;
+                    item.fbLink = fbLink;
+                    renderAccommodations();
+                    closeModal();
+                    alert('Accommodation updated successfully!');
+                });
+            } else if (isRestaurant) {
+                document.getElementById('resName').value = item.name || '';
+                document.getElementById('resLocation').value = item.location || '';
+                document.getElementById('resContact').value = item.contact || '';
+                document.getElementById('resFbLink').value = item.fbLink || '';
+                // Change button text and id
+                const submitBtn = document.getElementById('submitRestaurant');
+                submitBtn.textContent = 'Save Changes';
+                // Remove previous listeners
+                const newBtn = submitBtn.cloneNode(true);
+                submitBtn.parentNode.replaceChild(newBtn, submitBtn);
+                newBtn.addEventListener('click', function() {
+                    // Validate
+                    const name = document.getElementById('resName').value;
+                    const location = document.getElementById('resLocation').value;
+                    const contact = document.getElementById('resContact').value;
+                    const fbLink = document.getElementById('resFbLink').value;
+                    if (!name || !location) {
+                        alert('Please fill in all required fields.');
+                        return;
+                    }
+                    // Update
+                    item.name = name;
+                    item.location = location;
+                    item.contact = contact;
+                    item.fbLink = fbLink;
+                    renderRestaurants();
+                    closeModal();
+                    alert('Restaurant updated successfully!');
+                });
+            }
+            // Cancel button
+            const cancelBtn = document.getElementById('cancelModal');
+            if (cancelBtn) {
+                const newCancel = cancelBtn.cloneNode(true);
+                cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+                newCancel.addEventListener('click', function() {
+                    closeModal();
+                });
+            }
+        }
+        
+        // View item details
+        function viewItem(id, type) {
+            let item;
+            let title = '';
+            let details = '';
+            
+            switch(type) {
+                case 'touristSpot':
+                    item = appData.touristSpots.find(i => i.id == id);
+                    if (item) {
+                        title = "Tourist Spot Details";
+                        details = `
+                            <div class="detail-item">
+                                <div class="detail-label">Name</div>
+                                <div class="detail-value">${item.name}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Barangay</div>
+                                <div class="detail-value">${item.barangay}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Added By</div>
+                                <div class="detail-value">${item.addedBy}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Date Added</div>
+                                <div class="detail-value">${item.date}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Status</div>
+                                <div class="detail-value"><span class="status ${item.status.toLowerCase()}">${item.status}</span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Description</div>
+                                <div class="detail-value">${item.description}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Location</div>
+                                <div class="detail-value">${item.location}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Entrance Fee</div>
+                                <div class="detail-value">₱${item.entranceFee}</div>
+                            </div>
+                        `;
+                    }
+                    break;
+                case 'allUser':
+                    item = appData.allUsers.find(i => i.id == id);
+                    if (item) {
+                        title = "User Details";
+                        details = `
+                            <div class="detail-item">
+                                <div class="detail-label">Name</div>
+                                <div class="detail-value">${item.name}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Email</div>
+                                <div class="detail-value">${item.email}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Role</div>
+                                <div class="detail-value">${item.role}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Barangay</div>
+                                <div class="detail-value">${item.barangay}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Status</div>
+                                <div class="detail-value"><span class="status ${item.status.toLowerCase()}">${item.status}</span></div>
+                            </div>
+                        `;
+                    }
+                    break;
+                case 'accommodation':
+                    item = appData.accommodations.find(i => i.id == id);
+                    if (item) {
+                        title = "Accommodation Details";
+                        details = `
+                            <div class="detail-item">
+                                <div class="detail-label">Name</div>
+                                <div class="detail-value">${item.name}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Type</div>
+                                <div class="detail-value">${item.type}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Location</div>
+                                <div class="detail-value">${item.location}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Contact Number</div>
+                                <div class="detail-value">${item.contact || ''}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Facebook Profile</div>
+                                <div class="detail-value">${item.fbLink ? `<a href='${item.fbLink}' target='_blank'>View Profile</a>` : ''}</div>
+                            </div>
+                        `;
+                    }
+                    break;
+                case 'restaurant':
+                    item = appData.restaurants.find(i => i.id == id);
+                    if (item) {
+                        title = "Restaurant Details";
+                        details = `
+                            <div class="detail-item">
+                                <div class="detail-label">Name</div>
+                                <div class="detail-value">${item.name}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Location</div>
+                                <div class="detail-value">${item.location}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Contact Number</div>
+                                <div class="detail-value">${item.contact || ''}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Facebook Profile</div>
+                                <div class="detail-value">${item.fbLink ? `<a href='${item.fbLink}' target='_blank'>View Profile</a>` : ''}</div>
+                            </div>
+                        `;
+                    }
+                    break;
+                default:
+                    title = "Details";
+                    details = 'No details found.';
+            }
+            
+            openDetailsModal(title, details);
+        }
+        
+        // Open details modal
+        function openDetailsModal(title, content) {
+            const modal = document.getElementById('formModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            
+            modalTitle.textContent = title;
+            modalBody.innerHTML = content;
+            modal.style.display = 'flex';
+        }
+
+        // Decline item
+        function declineItem(id, type) {
+            if (confirm(`Are you sure you want to delete this ${type}?`)) {
+                switch(type) {
+                    case 'touristSpot':
+                        appData.touristSpots = appData.touristSpots.filter(item => item.id != id);
+                        renderTouristSpots();
+                        break;
+                    case 'allUser':
+                        appData.allUsers = appData.allUsers.filter(item => item.id != id);
+                        renderAllUsers();
+                        break;
+                    case 'accommodation':
+                        appData.accommodations = appData.accommodations.filter(item => item.id != id);
+                        renderAccommodations();
+                        break;
+                    case 'restaurant':
+                        appData.restaurants = appData.restaurants.filter(item => item.id != id);
+                        renderRestaurants();
+                        break;
+                }
+                alert(`${type} deleted successfully!`);
+            }
+        }
+        
+        // Open form modal
+        function openFormModal(type) {
+            const modal = document.getElementById('formModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+
+            if (type === 'user') {
+                // Show the custom addUserForm
+                modalTitle.textContent = 'Add New User';
+                // Hide all children except addUserForm
+                Array.from(modalBody.children).forEach(child => {
+                    if (child.id === 'addUserForm') {
+                        child.style.display = 'flex';
+                    } else {
+                        child.style.display = 'none';
+                    }
+                });
+                modal.style.display = 'flex';
+                return;
+            } else {
+                // Hide addUserForm if present
+                const addUserForm = document.getElementById('addUserForm');
+                if (addUserForm) addUserForm.style.display = 'none';
+                // Show all other children (if any)
+                Array.from(modalBody.children).forEach(child => {
+                    if (child.id !== 'addUserForm') {
+                        child.style.display = '';
+                    }
+                });
+            }
+            
+            modalTitle.textContent = `Add New ${type.charAt(0).toUpperCase() + type.slice(1).replace('-', ' ')}`;
+            
+            // Create form based on type
+            let formHTML = '';
+            switch(type) {
+                case 'tourist-spot':
+                    formHTML = `
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Spot Name</label>
+                                <input type="text" class="form-control" id="spotName" placeholder="Enter spot name">
+                            </div>
+                            <div class="form-group">
+                                <label>Barangay</label>
+                                <select class="form-control" id="barangay">
+                                    <option>Select Barangay</option>
+                                    <option>Pudong</option>
+                                    <option>Balakbak</option>
+                                    <option>Taba-ao</option>
+                                    <option>Lusod</option>
+                                    <option>Cayapes</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea class="form-control" id="spotDescription" placeholder="Enter description"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Location</label>
+                                <input type="text" class="form-control" id="location" placeholder="Enter location">
+                            </div>
+                            <div class="form-group">
+                                <label>Entrance Fee (₱)</label>
+                                <input type="number" class="form-control" id="entranceFee" placeholder="Enter fee">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Upload Images</label>
+                                <input type="file" class="form-control" id="spotImages" multiple>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button class="btn btn-secondary" id="cancelModal">Cancel</button>
+                            <button class="btn btn-primary" id="submitTouristSpot">Add Tourist Spot</button>
+                        </div>
+                    `;
+                    break;
+                case 'accommodation':
+                    formHTML = `
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" class="form-control" id="accName" placeholder="Enter accommodation name">
+                            </div>
+                            <div class="form-group">
+                                <label>Type</label>
+                                <select class="form-control" id="accType">
+                                    <option>Hotel</option>
+                                    <option>Resort</option>
+                                    <option>Homestay</option>
+                                    <option>Cabin</option>
+                                    <option>Hostel</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" class="form-control" id="accLocation" placeholder="Enter location">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Contact Number</label>
+                                <input type="text" class="form-control" id="accContact" placeholder="e.g., 0917xxxxxxx">
+                            </div>
+                            <div class="form-group">
+                                <label>Profile FB Link</label>
+                                <input type="text" class="form-control" id="accFbLink" placeholder="e.g., https://facebook.com/yourprofile">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-secondary" id="cancelModal">Cancel</button>
+                            <button class="btn btn-primary" id="submitAccommodation">Add Accommodation</button>
+                        </div>
+                    `;
+                    break;
+                case 'restaurant':
+                    formHTML = `
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" class="form-control" id="resName" placeholder="Enter restaurant name">
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" class="form-control" id="resLocation" placeholder="Enter location">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Contact Number</label>
+                                <input type="text" class="form-control" id="resContact" placeholder="e.g., 0917xxxxxxx">
+                            </div>
+                            <div class="form-group">
+                                <label>Profile FB Link</label>
+                                <input type="text" class="form-control" id="resFbLink" placeholder="e.g., https://facebook.com/yourprofile">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-secondary" id="cancelModal">Cancel</button>
+                            <button class="btn btn-primary" id="submitRestaurant">Add Restaurant</button>
+                        </div>
+                    `;
+                    break;
+                case 'user':
+                    formHTML = `
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" class="form-control" id="userName" placeholder="Enter full name">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" class="form-control" id="userEmail" placeholder="Enter email">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Role</label>
+                                <select class="form-control" id="userRole">
+                                    <option>Barangay Admin</option>
+                                    <option>Tourist Owner</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="barangayGroupDynamic">
+                                <label for="userBarangay">Barangay</label>
+                                <select class="form-control" id="userBarangay">
+                                    <option>Pudong</option>
+                                    <option>Balakbak</option>
+                                    <option>Taba-ao</option>
+                                    <option>Lusod</option>
+                                    <option>Cayapes</option>
+                                    <option>Bakun</option>
+                                    <option>Beleng-Belis</option>
+                                    <option>Boklaoan</option>
+                                    <option>Datakan</option>
+                                    <option>Gaswiling</option>
+                                    <option>Labueg</option>
+                                    <option>Pongayan</option>
+                                    <option>Sagubo</option>
+                                    <option>Salacsac</option>
+                                    <option>Shilan</option>
+                                    <option>Paykek</option>
+                                    <option>Palina</option>
+                                    <option>Lower Amburayan</option>
+                                    <option>Upper Amburayan</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-secondary" id="cancelModal">Cancel</button>
+                            <button class="btn btn-primary" id="submitUser">Add User</button>
+                        </div>
+                
+                    `;
+                    break;
+            }
+            
+            modalBody.innerHTML = formHTML;
+            modal.style.display = 'flex';
+            
+            // Add event listeners for form submission
+            document.getElementById('cancelModal').addEventListener('click', closeModal);
+            
+            switch(type) {
+                case 'tourist-spot':
+                    document.getElementById('submitTouristSpot').addEventListener('click', addTouristSpot);
+                    break;
+                case 'accommodation':
+                    document.getElementById('submitAccommodation').addEventListener('click', addAccommodation);
+                    break;
+                case 'restaurant':
+                    document.getElementById('submitRestaurant').addEventListener('click', addRestaurant);
+                    break;
+                case 'user':
+                    document.getElementById('submitUser').addEventListener('click', addUser);
+                    break;
+            }
+        }
+        
+        // Close modal
+        function closeModal() {
+            document.getElementById('formModal').style.display = 'none';
+        }
+        
+        // Add new tourist spot
+        function addTouristSpot() {
+            const name = document.getElementById('spotName').value;
+            const barangay = document.getElementById('barangay').value;
+            const description = document.getElementById('spotDescription').value;
+            const location = document.getElementById('location').value;
+            const fee = document.getElementById('entranceFee').value;
+            
+            if (!name || !barangay || !description || !location || !fee) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            const newSpot = {
+                id: appData.touristSpots.length + 1,
+                name,
+                barangay,
+                addedBy: "Admin User",
+                date: new Date().toISOString().split('T')[0],
+                status: "Pending",
+                description,
+                location,
+                entranceFee: fee
+            };
+            
+            appData.touristSpots.push(newSpot);
+            renderTouristSpots();
+            
+            // Add activity
+            const newActivity = {
+                id: appData.activities.length + 1,
+                user: "Admin User",
+                action: "added a new tourist spot",
+                target: name,
+                time: "Just now"
+            };
+            appData.activities.unshift(newActivity);
+            renderActivities();
+            
+            closeModal();
+            alert('Tourist spot added successfully!');
+        }
+        
+        // Add new accommodation
+        function addAccommodation() {
+            const name = document.getElementById('accName').value;
+            const type = document.getElementById('accType').value;
+            const location = document.getElementById('accLocation').value;
+            const contact = document.getElementById('accContact').value;
+            const fbLink = document.getElementById('accFbLink').value;
+            if (!name || !type || !location) {
+                alert('Please fill in required fields');
+                return;
+            }
+            const newAcc = {
+                id: appData.accommodations.length + 1,
+                name,
+                type,
+                location,
+                contact,
+                fbLink,
+                status: 'Active'
+            };
+            appData.accommodations.push(newAcc);
+            renderAccommodations();
+            
+            // Add activity
+            const newActivity = {
+                id: appData.activities.length + 1,
+                user: "Admin User",
+                action: "added a new accommodation",
+                target: name,
+                time: "Just now"
+            };
+            appData.activities.unshift(newActivity);
+            renderActivities();
+            
+            closeModal();
+            alert('Accommodation added successfully!');
+        }
+        
+        // Add new restaurant
+        function addRestaurant() {
+            const name = document.getElementById('resName').value;
+            const location = document.getElementById('resLocation').value;
+            const contact = document.getElementById('resContact').value;
+            const fbLink = document.getElementById('resFbLink').value;
+            if (!name || !location) {
+                alert('Please fill in required fields');
+                return;
+            }
+            const newRes = {
+                id: appData.restaurants.length + 1,
+                name,
+                location,
+                contact,
+                fbLink,
+                status: 'Active'
+            };
+            appData.restaurants.push(newRes);
+            renderRestaurants();
+            
+            // Add activity
+            const newActivity = {
+                id: appData.activities.length + 1,
+                user: "Admin User",
+                action: "added a new restaurant",
+                target: name,
+                time: "Just now"
+            };
+            appData.activities.unshift(newActivity);
+            renderActivities();
+            
+            closeModal();
+            alert('Restaurant added successfully!');
+        }
+        
+        // Add new user
+        function addUser() {
+            const name = document.getElementById('userName').value;
+            const email = document.getElementById('userEmail').value;
+            const role = document.getElementById('userRole').value;
+            const barangay = document.getElementById('userBarangay').value;
+            
+            const newUser = {
+                id: appData.allUsers.length + 1,
+                name,
+                email,
+                role,
+                barangay,
+                status: 'Active'
+            };
+            
+            appData.allUsers.push(newUser);
+            renderAllUsers();
+            closeModal();
+            alert('User added successfully!');
+            
+            // Add activity
+            const newActivity = {
+                id: appData.activities.length + 1,
+                user: "Admin User",
+                action: "added a new user",
+                target: name,
+                time: "Just now"
+            };
+            appData.activities.unshift(newActivity);
+            renderActivities();
+            
+            // Hide the form after submission
+            document.getElementById('addUserForm').style.display = 'none';
+        }
+        
+        // Initialize charts
+        function initCharts() {
+            // Chart 1: Visitors per Tourist Spot (Horizontal Bar)
+            const spotTotalsCtx = document.getElementById('spotTotalsChart').getContext('2d');
+            if (window.spotTotalsChart && typeof window.spotTotalsChart.destroy === 'function') window.spotTotalsChart.destroy();
+            window.spotTotalsChart = new Chart(spotTotalsCtx, {
+                type: 'bar',
+                data: {
+                    labels: spotNames,
+                    datasets: [{
+                        label: 'Total Visitors',
+                        data: spotTotals,
+                        backgroundColor: 'rgba(44, 110, 73, 0.7)',
+                        borderColor: 'rgb(44, 110, 73)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                    },
+                    scales: {
+                        x: { beginAtZero: true, title: { display: true, text: 'Visitors' } },
+                        y: { title: { display: true, text: 'Tourist Spot (Barangay)' } }
+                    }
+                }
+            });
+
+            // Chart 2: Monthly Total Visitors (Line)
+            const monthlyTotalsCtx = document.getElementById('monthlyTotalsChart').getContext('2d');
+            if (window.monthlyTotalsChart && typeof window.monthlyTotalsChart.destroy === 'function') window.monthlyTotalsChart.destroy();
+            window.monthlyTotalsChart = new Chart(monthlyTotalsCtx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Total Visitors',
+                        data: monthlyTotals,
+                        backgroundColor: 'rgba(76, 149, 108, 0.3)',
+                        borderColor: 'rgb(76, 149, 108)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                    },
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'Visitors' } },
+                        x: { title: { display: true, text: 'Month' } }
+                    }
+                }
+            });
+        }
+        
+        // Download PDF of all charts in Reports & Analytics
+        function downloadPdf() {
+            const doc = new jsPDF({ orientation: 'landscape', unit: 'px', format: 'a4' });
+            const charts = [
+                { id: 'barangayChart', title: 'Visitors per Barangay' },
+                { id: 'revenueChart', title: 'Revenue Overview' },
+                { id: 'spotsChart', title: 'Top Tourist Spots Visited' },
+                { id: 'demographicsChart', title: 'Visitor Demographics' },
+                { id: 'visitorDemographicsChart', title: 'Visitor Demographics' }
+            ];
+            let y = 30;
+            charts.forEach((chart, idx) => {
+                const canvas = document.getElementById(chart.id);
+                if (canvas) {
+                    const imgData = canvas.toDataURL('image/png', 1.0);
+                    doc.setFontSize(18);
+                    doc.text(chart.title, 30, y);
+                    doc.addImage(imgData, 'PNG', 30, y + 10, 350, 120);
+                    y += 150;
+                    if (y > 500 && idx < charts.length - 1) {
+                        doc.addPage();
+                        y = 30;
+                    }
+                }
+            });
+            doc.save('Kapangan_Reports_Analytics.pdf');
+        }
+
+        // Show PDF preview modal before downloading
+        function showPdfPreviewModal() {
+            const modal = document.getElementById('pdfPreviewModal');
+            const body = document.getElementById('pdfPreviewBody');
+            body.innerHTML = '';
+            // Add report title and info
+            const period = window.currentPeriod || 'monthly';
+            const titleDiv = document.createElement('div');
+            titleDiv.style.textAlign = 'center';
+            titleDiv.style.width = '100%';
+            titleDiv.innerHTML = `
+                <div style="font-size: 1.5em; font-weight: bold;">KAPANGAN</div>
+                <div style="font-size: 1.2em;">BENGUET</div>
+                <div style="margin: 8px 0 16px 0; font-size: 1.1em; font-weight: bold;">Tourist Spot ${periodTitles[period]} Report</div>
+                <div style="font-size: 1.1em;">Period: 2024</div>
+            `;
+            body.appendChild(titleDiv);
+            // Chart previews
+            const charts = [
+                { id: 'barangayChart', title: 'Visitors per Tourist Spot (with Barangay)' },
+                { id: 'revenueChart', title: 'Revenue Overview' },
+                { id: 'spotsChart', title: 'Top Tourist Spots (with Barangay)' },
+                { id: 'demographicsChart', title: periodTitles[period] + ' Visitor Trends' },
+                { id: 'visitorDemographicsChart', title: 'Visitor Origin Demographics' }
+            ];
+            charts.forEach(chart => {
+                const canvas = document.getElementById(chart.id);
+                if (canvas) {
+                    const imgData = canvas.toDataURL('image/png', 1.0);
+                    const section = document.createElement('div');
+                    section.style.display = 'flex';
+                    section.style.flexDirection = 'column';
+                    section.style.alignItems = 'center';
+                    section.style.marginBottom = '32px';
+                    section.innerHTML = `
+                        <div style="font-weight: bold; margin-bottom: 12px; font-size: 1.15em;">${chart.title}</div>
+                        <img src="${imgData}" alt="${chart.title}" style="width: 100%; max-width: 900px; height: auto; border: 1px solid #eee; background: #fff; padding: 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 8px; display: block;" />
+                    `;
+                    body.appendChild(section);
+                }
+            });
+            // Add prepared by / noted by
+            const footerDiv = document.createElement('div');
+            footerDiv.style.display = 'flex';
+            footerDiv.style.justifyContent = 'space-between';
+            footerDiv.style.marginTop = '50px';
+            footerDiv.style.gap = '80px';
+            footerDiv.innerHTML = `
+                <div style="text-align: left; min-width: 250px;">
+                    <div>Prepared by:</div>
+                    <div style="font-weight: bold; margin-top: 10px;">GODFREY MALONE JR.</div>
+                    <div>Administrative Officer IV / MTAO</div>
+                </div>
+                <div style="text-align: right; min-width: 250px;">
+                    <div>Noted by:</div>
+                    <div style="font-weight: bold; margin-top: 10px;">MANNY E. FERMIN</div>
+                    <div>Municipal Mayor</div>
+                </div>
+            `;
+            body.appendChild(footerDiv);
+            modal.style.display = 'flex';
+
+            // Attach download event listener here to ensure it always works
+            const confirmBtn = document.getElementById('confirmDownloadPdf');
+            if (confirmBtn) {
+                // Remove previous listeners by replacing the node
+                const newBtn = confirmBtn.cloneNode(true);
+                confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+                newBtn.addEventListener('click', function() {
+                    document.getElementById('pdfPreviewModal').style.display = 'none';
+                    downloadPdf();
+                });
+            }
+        }
+
+        // Attach event listener to new button
+        setTimeout(() => {
+            const downloadBtn = document.getElementById('downloadAllChartsPdf');
+            if (downloadBtn) downloadBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showPdfPreviewModal();
+            });
+        }, 300);
+
+        // Modal actions for PDF preview
+        document.addEventListener('DOMContentLoaded', function() {
+            // Close modal by X or Cancel
+            const closeBtn = document.getElementById('closePdfPreview');
+            const cancelBtn = document.getElementById('cancelPdfPreview');
+            if (closeBtn) closeBtn.addEventListener('click', function() {
+                document.getElementById('pdfPreviewModal').style.display = 'none';
+            });
+            if (cancelBtn) cancelBtn.addEventListener('click', function() {
+                document.getElementById('pdfPreviewModal').style.display = 'none';
+            });
+            // Download PDF on confirm
+            const confirmBtn = document.getElementById('confirmDownloadPdf');
+            if (confirmBtn) confirmBtn.addEventListener('click', function() {
+                document.getElementById('pdfPreviewModal').style.display = 'none';
+                downloadPdf();
+            });
+        });
+
+        // --- REAL DATA FROM SPREADSHEET IMAGE ---
+        // Tourist spot names and barangays
+        const spotNamesRaw = [
+            'BADI FALLS – 102',
+            'KONGC FALLS – 100',
+            'AMBURAYAN RIVER',
+            'LALACAO CAVE – 1',
+            'LONGOC CAVE – 10',
+            "VANI'S AVONG – 2",
+            'CAMP UTOPIA – 40'
+        ];
+        const spotBarangays = [
+            'Balakbak',
+            'Balakbak',
+            'Cuba',
+            'Sagubo',
+            'Balakbak',
+            'Datakan',
+            'Sagubo'
+        ];
+        // Add months array for chart labels
+        const months = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+        // Combine spot name and barangay for display
+        const spotNames = spotNamesRaw.map((name, i) => `${name} (${spotBarangays[i]})`);
+        // Each row is a month, each col is a spot
+        const monthlyData = [
+            [194, 257, 1292, 275, 0, 475, 88],      // Jan
+            [138, 211, 713, 213, 0, 187, 51],       // Feb
+            [179, 235, 898, 295, 0, 444, 45],       // Mar
+            [212, 258, 900, 295, 0, 444, 45],       // Apr
+            [147, 200, 679, 192, 0, 244, 36],       // May
+            [137, 253, 212, 192, 0, 150, 0],        // Jun
+            [265, 401, 1092, 0, 0, 192, 18],        // Jul
+            [269, 202, 0, 0, 0, 192, 18],           // Aug
+            [275, 374, 0, 0, 0, 192, 18],           // Sep
+            [182, 345, 297, 0, 0, 192, 0],          // Oct
+            [163, 345, 543, 0, 0, 192, 0],          // Nov
+            [195, 260, 1369, 0, 0, 631, 0]          // Dec
+        ];
+        // Totals per spot
+        const spotTotals = [2342, 3067, 7878, 2988, 0, 3494, 616];
+        // Monthly grand totals
+        const monthlyTotals = [2581, 1518, 2096, 2154, 1498, 944, 1968, 947, 859, 1016, 1243, 2455];
+        // Revenue (example, you can adjust)
+        const revenueLabels = ['Entrance Fees', 'Guide Fee', 'Registration Fee'];
+        const revenueData = {
+            monthly: [5000, 2000, 3000],
+            quarterly: [15000, 6000, 9000],
+            yearly: [50000, 10000, 20000]
+        };
+        // Demographics
+        const demographicsLabels = ['Local', 'National', 'International'];
+        const demographicsData = {
+            monthly: [1800, 250, 74],
+            quarterly: [5400, 750, 222],
+            yearly: [18000, 2500, 746]
+        };
+        // --- END REAL DATA ---
+
+        // --- PERIOD DATA ---
+        const periodTitles = {
+            monthly: 'Monthly',
+            quarterly: 'Quarterly',
+            yearly: 'Yearly'
+        };
+        // For charts that need period-based data
+        const spotTotalsByPeriod = {
+            monthly: spotTotals.map(v => Math.round(v/12)),
+            quarterly: spotTotals.map(v => Math.round(v/4)),
+            yearly: spotTotals
+        };
+        const monthlyTotalsByPeriod = {
+            monthly: monthlyTotals,
+            quarterly: [monthlyTotals.slice(0,3).reduce((a,b)=>a+b,0), monthlyTotals.slice(3,6).reduce((a,b)=>a+b,0), monthlyTotals.slice(6,9).reduce((a,b)=>a+b,0), monthlyTotals.slice(9,12).reduce((a,b)=>a+b,0)],
+            yearly: [monthlyTotals.reduce((a,b)=>a+b,0)]
+        };
+        const monthsByPeriod = {
+            monthly: months,
+            quarterly: ['Q1', 'Q2', 'Q3', 'Q4'],
+            yearly: ['2024']
+        };
+        // --- END PERIOD DATA ---
+
+        // Track current period globally
+        window.currentPeriod = 'monthly';
+
+        // --- FILTER BUTTONS ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterBtns = document.querySelectorAll('#analytics .filter-options .filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const period = this.getAttribute('data-period');
+                    window.currentPeriod = period;
+                    initCharts(period);
+                });
+            });
+        });
+
+        // --- PDF PREVIEW MODAL ENHANCEMENT ---
+        function showPdfPreviewModal() {
+            const modal = document.getElementById('pdfPreviewModal');
+            const body = document.getElementById('pdfPreviewBody');
+            body.innerHTML = '';
+            // Add report title and info
+            const period = window.currentPeriod || 'monthly';
+            const titleDiv = document.createElement('div');
+            titleDiv.style.textAlign = 'center';
+            titleDiv.style.width = '100%';
+            titleDiv.innerHTML = `
+                <div style="font-size: 1.5em; font-weight: bold;">KAPANGAN</div>
+                <div style="font-size: 1.2em;">BENGUET</div>
+                <div style="margin: 8px 0 16px 0; font-size: 1.1em; font-weight: bold;">Tourist Spot ${periodTitles[period]} Report</div>
+                <div style="font-size: 1.1em;">Period: 2024</div>
+            `;
+            body.appendChild(titleDiv);
+            // Chart previews
+            const charts = [
+                { id: 'barangayChart', title: 'Visitors per Tourist Spot (with Barangay)' },
+                { id: 'revenueChart', title: 'Revenue Overview' },
+                { id: 'spotsChart', title: 'Top Tourist Spots (with Barangay)' },
+                { id: 'demographicsChart', title: periodTitles[period] + ' Visitor Trends' },
+                { id: 'visitorDemographicsChart', title: 'Visitor Origin Demographics' }
+            ];
+            charts.forEach(chart => {
+                const canvas = document.getElementById(chart.id);
+                if (canvas) {
+                    const imgData = canvas.toDataURL('image/png', 1.0);
+                    const section = document.createElement('div');
+                    section.style.display = 'flex';
+                    section.style.flexDirection = 'column';
+                    section.style.alignItems = 'center';
+                    section.style.marginBottom = '32px';
+                    section.innerHTML = `
+                        <div style="font-weight: bold; margin-bottom: 12px; font-size: 1.15em;">${chart.title}</div>
+                        <img src="${imgData}" alt="${chart.title}" style="width: 100%; max-width: 900px; height: auto; border: 1px solid #eee; background: #fff; padding: 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 8px; display: block;" />
+                    `;
+                    body.appendChild(section);
+                }
+            });
+            // Add prepared by / noted by
+            const footerDiv = document.createElement('div');
+            footerDiv.style.display = 'flex';
+            footerDiv.style.justifyContent = 'space-between';
+            footerDiv.style.marginTop = '50px';
+            footerDiv.style.gap = '80px';
+            footerDiv.innerHTML = `
+                <div style="text-align: left; min-width: 250px;">
+                    <div>Prepared by:</div>
+                    <div style="font-weight: bold; margin-top: 10px;">GODFREY MALONE JR.</div>
+                    <div>Administrative Officer IV / MTAO</div>
+                </div>
+                <div style="text-align: right; min-width: 250px;">
+                    <div>Noted by:</div>
+                    <div style="font-weight: bold; margin-top: 10px;">MANNY E. FERMIN</div>
+                    <div>Municipal Mayor</div>
+                </div>
+            `;
+            body.appendChild(footerDiv);
+            modal.style.display = 'flex';
+
+            // Attach download event listener here to ensure it always works
+            const confirmBtn = document.getElementById('confirmDownloadPdf');
+            if (confirmBtn) {
+                // Remove previous listeners by replacing the node
+                const newBtn = confirmBtn.cloneNode(true);
+                confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+                newBtn.addEventListener('click', function() {
+                    document.getElementById('pdfPreviewModal').style.display = 'none';
+                    downloadPdf();
+                });
+            }
+        }
+
+        // --- PDF DOWNLOAD ---
+        function downloadPdf() {
+            console.log('Download PDF triggered');
+            if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF !== 'function') {
+                alert('PDF library (jsPDF) not loaded. Please check your internet connection or try again.');
+                return;
+            }
+            // Use portrait orientation and long bond paper (8.5 x 13 inches)
+            // jsPDF format: [width, height] in points (1 inch = 72pt), so 8.5*72=612, 13*72=936
+            const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: [612, 936] });
+            const period = window.currentPeriod || 'monthly';
+            // Add report title
+            doc.setFontSize(16);
+            doc.text('KAPANGAN', 30, 40);
+            doc.setFontSize(13);
+            doc.text('BENGUET', 30, 58);
+            doc.setFontSize(12);
+            doc.text(`Tourist Spot ${periodTitles[period]} Report`, 30, 75);
+            doc.setFontSize(11);
+            doc.text('Period: 2024', 30, 90);
+            let y = 110;
+            const charts = [
+                { id: 'barangayChart', title: 'Visitors per Tourist Spot (with Barangay)' },
+                { id: 'revenueChart', title: 'Revenue Overview' },
+                { id: 'spotsChart', title: 'Top Tourist Spots (with Barangay)' },
+                { id: 'demographicsChart', title: periodTitles[period] + ' Visitor Trends' },
+                { id: 'visitorDemographicsChart', title: 'Visitor Origin Demographics' }
+            ];
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const margin = 40;
+            // For portrait, make charts fit width nicely
+            const smallImgWidth = pageWidth - margin * 2;
+            const smallImgHeight = 120;
+            charts.forEach((chart, idx) => {
+                const canvas = document.getElementById(chart.id);
+                if (canvas) {
+                    const imgData = canvas.toDataURL('image/png', 1.0);
+                    doc.setFontSize(11);
+                    doc.text(chart.title, margin, y);
+                    doc.addImage(imgData, 'PNG', margin, y + 10, smallImgWidth, smallImgHeight);
+                    y += smallImgHeight + 35;
+                    if (y > doc.internal.pageSize.getHeight() - 120 && idx < charts.length - 1) {
+                        doc.addPage();
+                        y = 40;
+                    }
+                } else {
+                    doc.setFontSize(12);
+                    doc.text(`(Chart not available: ${chart.title})`, margin, y);
+                    y += 40;
+                }
+            });
+            // Add prepared by / noted by, smaller and closer to last chart
+            const footerY = y + 20;
+            doc.setFontSize(10);
+            doc.text('Prepared by:', margin, footerY);
+            doc.text('GODFREY MALONE JR.', margin, footerY + 13);
+            doc.text('Administrative Officer IV / MTAO', margin, footerY + 24);
+            doc.text('Noted by:', pageWidth - 170, footerY);
+            doc.text('MANNY E. FERMIN', pageWidth - 170, footerY + 13);
+            doc.text('Municipal Mayor', pageWidth - 170, footerY + 24);
+            doc.save(`Kapangan_Reports_Analytics_${periodTitles[period]}.pdf`);
+        }
+
+        function suspendItem(id, type) {
+            let list;
+            if (type === 'accommodation') list = appData.accommodations;
+            else if (type === 'restaurant') list = appData.restaurants;
+            else if (type === 'allUser') list = appData.allUsers;
+            else return;
+            const item = list.find(i => i.id == id);
+            if (item && item.status !== 'Suspended') {
+                item.status = 'Suspended';
+                if (type === 'accommodation') renderAccommodations();
+                else if (type === 'restaurant') renderRestaurants();
+                else if (type === 'allUser') renderAllUsers();
+                alert(`${type === 'allUser' ? 'User' : type.charAt(0).toUpperCase() + type.slice(1)} suspended!`);
+            }
+        }
+        function reinstateItem(id, type) {
+            let list;
+            if (type === 'accommodation') list = appData.accommodations;
+            else if (type === 'restaurant') list = appData.restaurants;
+            else if (type === 'allUser') list = appData.allUsers;
+            else return;
+            const item = list.find(i => i.id == id);
+            if (item && item.status !== 'Active') {
+                item.status = 'Active';
+                if (type === 'accommodation') renderAccommodations();
+                else if (type === 'restaurant') renderRestaurants();
+                else if (type === 'allUser') renderAllUsers();
+                alert(`${type === 'allUser' ? 'User' : type.charAt(0).toUpperCase() + type.slice(1)} reinstated!`);
+            }
+        }
+
+        // Add this function to handle role change in the static form
+        function handleRoleChangeStatic() {
+            const role = document.getElementById('userRole').value;
+            const barangayGroup = document.getElementById('barangayGroup');
+            const barangaySelect = document.getElementById('userBarangay');
+            let spotInput = document.getElementById('privateSpotInput');
+            if (role === 'Tourist Owner') {
+                if (!spotInput) {
+                    spotInput = document.createElement('input');
+                    spotInput.type = 'text';
+                    spotInput.id = 'privateSpotInput';
+                    spotInput.name = 'privateSpotInput';
+                    spotInput.placeholder = 'Enter Private Tourist Spot Name';
+                    spotInput.className = 'form-control';
+                    spotInput.required = true;
+                }
+                barangayGroup.querySelector('label').textContent = 'Private Tourist Spot Name';
+                barangaySelect.style.display = 'none';
+                barangayGroup.appendChild(spotInput);
+            } else {
+                barangayGroup.querySelector('label').textContent = 'Barangay';
+                barangaySelect.style.display = '';
+                if (spotInput) spotInput.remove();
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const userRole = document.getElementById('userRole');
+            if (userRole) userRole.addEventListener('change', handleRoleChangeStatic);
+        });
+
+        // After rendering the dynamic form, add this JS logic:
+        if (type === 'user') {
+            const userRole = document.getElementById('userRole');
+            const barangayGroup = document.getElementById('barangayGroupDynamic');
+            userRole.addEventListener('change', function() {
+                let spotInput = document.getElementById('privateSpotInputDynamic');
+                const barangaySelect = document.getElementById('userBarangay');
+                if (userRole.value === 'Tourist Owner') {
+                    if (!spotInput) {
+                        spotInput = document.createElement('input');
+                        spotInput.type = 'text';
+                        spotInput.id = 'privateSpotInputDynamic';
+                        spotInput.placeholder = 'Enter Private Tourist Spot Name';
+                        spotInput.className = 'form-control';
+                        spotInput.required = true;
+                    }
+                    barangayGroup.querySelector('label').textContent = 'Private Tourist Spot Name';
+                    barangaySelect.style.display = 'none';
+                    barangayGroup.appendChild(spotInput);
+                } else {
+                    barangayGroup.querySelector('label').textContent = 'Barangay';
+                    barangaySelect.style.display = '';
+                    if (spotInput) spotInput.remove();
+                }
+            });
+        }
+
+        // Render tourist activities for Tourist Tracker
+        function renderTouristActivities() {
+            const container = document.getElementById('touristActivitiesTable');
+            if (!container) return;
+            container.innerHTML = '';
+            // Group activities by tourist name
+            const grouped = {};
+            appData.touristActivities.forEach(activity => {
+                if (!grouped[activity.touristName]) {
+                    grouped[activity.touristName] = {
+                        contact: activity.contact,
+                        activities: []
+                    };
+                }
+                grouped[activity.touristName].activities.push(activity);
+            });
+            // Render each tourist row
+            Object.entries(grouped).forEach(([name, data]) => {
+                // Sort activities by checkIn date if needed
+                const activities = data.activities;
+                const placesVisited = activities.map(act => `${act.location} <span style='color: #888; font-size: 0.95em;'>(${act.type})</span>`).join('<br>');
+                const statusList = activities.map(act => {
+                    let status = act.status;
+                    if (act.type === 'Tourist Spot' && (!act.checkOut || act.checkOut === '')) {
+                        status = 'Still on Site';
+                    }
+                    return `<span class="status ${status.toLowerCase().replace(/ /g, '-')}">${status}</span>`;
+                }).join('<br>');
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${name}</td>
+                    <td>${data.contact}</td>
+                    <td>${placesVisited || '-'}</td>
+                    <td>${statusList || '-'}</td>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        // Tourist Tracking Modal logic
+        function showTouristTrackingModal(email) {
+            const modal = document.getElementById('touristTrackingModal');
+            const body = document.getElementById('touristTrackingBody');
+            const title = document.getElementById('touristTrackingTitle');
+            // Find user by email
+            let user = (appData.registeredUsers || []).find(u => u.email === email);
+            if (!user) {
+                // Try localStorage users
+                let users = [];
+                try {
+                    users = JSON.parse(localStorage.getItem('users')) || [];
+                } catch (e) { users = []; }
+                user = users.find(u => u.email === email);
+            }
+            // Find activities for this user (by email)
+            let activities = (appData.touristActivities || []).filter(a => a.contact === email);
+            // If no activities, add sample data
+            if (activities.length === 0) {
+                activities = [
+                    {
+                        touristName: user ? user.name : 'Sample User',
+                        contact: user ? (user.phone || user.email) : email,
+                        location: 'Sample Tourist Spot',
+                        type: 'Tourist Spot',
+                        barangay: 'Sample Barangay',
+                        checkIn: '2024-01-01 09:00',
+                        checkOut: '2024-01-01 17:00',
+                        status: 'Completed'
+                    },
+                    {
+                        touristName: user ? user.name : 'Sample User',
+                        contact: user ? (user.phone || user.email) : email,
+                        location: 'Sample Accommodation',
+                        type: 'Accommodation',
+                        barangay: 'Sample Barangay',
+                        checkIn: '2024-01-01 18:00',
+                        checkOut: '2024-01-02 10:00',
+                        status: 'Staying'
+                    }
+                ];
+            }
+            title.textContent = `Tourist Logging: ${user ? user.name : email}`;
+            let html = '<table style="width:100%; border-collapse:collapse;">';
+            html += '<thead><tr><th>Places Visited</th><th>Date of Visit</th><th>Status</th></tr></thead><tbody>';
+            activities.forEach(act => {
+                html += `<tr>
+                    <td>${act.location} <span style='color: #888; font-size: 0.95em;'>(${act.type})</span></td>
+                    <td>${act.checkIn ? act.checkIn.split(' ')[0] : ''}</td>
+                    <td><span class="status ${act.status.toLowerCase()}">${act.status}</span></td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            body.innerHTML = html;
+            modal.style.display = 'flex';
+            // Ensure close button always works
+            const closeBtn = document.getElementById('closeTouristTracking');
+            if (closeBtn) {
+                closeBtn.onclick = function() {
+                    modal.style.display = 'none';
+                };
+            }
+        }
+        // Also close when clicking outside modal-content
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('touristTrackingModal');
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) modal.style.display = 'none';
+                });
+            }
+        });
+
+        // Render Accommodations
+        function renderAccommodations() {
+            const container = document.getElementById('accommodationsTable');
+            if (!container) return;
+            container.innerHTML = '';
+            appData.accommodations.forEach(acc => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${acc.name}</td>
+                    <td>${acc.type}</td>
+                    <td>${acc.location}</td>
+                    <td>${acc.contact || ''}</td>
+                    <td>${acc.fbLink ? `<a href='${acc.fbLink}' target='_blank'>View Profile</a>` : ''}</td>
+                    <td><span class="status ${acc.status && acc.status.toLowerCase()}">${acc.status || 'Active'}</span></td>
+                    <td>
+                        ${acc.status === 'Active' ? `<button class="action-btn suspend-btn" onclick="suspendItem(${acc.id}, 'accommodation')">Suspend</button>` : `<button class="action-btn reinstate-btn" onclick="reinstateItem(${acc.id}, 'accommodation')">Reinstate</button>`}
+                    </td>
+                `;
+                container.appendChild(row);
+            });
+        }
+        
+        // Render Restaurants
+        function renderRestaurants() {
+            const container = document.getElementById('restaurantsTable');
+            if (!container) return;
+            container.innerHTML = '';
+            appData.restaurants.forEach(res => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${res.name}</td>
+                    <td>${res.location}</td>
+                    <td>${res.contact || ''}</td>
+                    <td>${res.fbLink ? `<a href='${res.fbLink}' target='_blank'>View Profile</a>` : ''}</td>
+                    <td><span class="status ${res.status && res.status.toLowerCase()}">${res.status || 'Active'}</span></td>
+                    <td>
+                        ${res.status === 'Active' ? `<button class="action-btn suspend-btn" onclick="suspendItem(${res.id}, 'restaurant')">Suspend</button>` : `<button class="action-btn reinstate-btn" onclick="reinstateItem(${res.id}, 'restaurant')">Reinstate</button>`}
+                    </td>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        // --- BARANGAY REPORTS DATA & RENDERING --
+
+        function renderBarangayReports() {
+            const container = document.getElementById('barangayReportsTable');
+            if (!container) return;
+            container.innerHTML = '';
+            // Fetch submitted reports from localStorage
+            let submittedReports = [];
+            try {
+                submittedReports = JSON.parse(localStorage.getItem('barangayReports') || '[]');
+            } catch (e) { submittedReports = []; }
+            // Use sample data as fallback
+            let allReports = [...submittedReports, ...barangayReportsSample];
+            allReports.forEach((report, idx) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${report.barangay || '-'}</td>
+                    <td>${report.title || report.period || '-'}</td>
+                    <td>${report.submittedBy || 'Barangay Admin'}</td>
+                    <td>${report.date ? (report.date.split('T')[0]) : '-'}</td>
+                    <td><span class="status ${report.status ? report.status.toLowerCase() : 'pending'}">${report.status || 'Pending'}</span></td>
+                    <td>
+                        <button class="action-btn view-btn" data-id="${idx}" title="View"><i class="fas fa-eye"></i></button>
+                    </td>
+                `;
+                container.appendChild(row);
+            });
+            // View button
+            container.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    showBarangayReportModal(id, allReports);
+                });
+            });
+        }
+        function showBarangayReportModal(id, allReports) {
+            const reports = allReports || barangayReportsSample || [];
+            const report = reports[id];
+            
+            if (!report) {
+                console.error('Report not found for ID:', id);
+                return;
+            }
+            
+            // Helper function to safely sum array values
+            const safeSum = (arr) => {
+                if (!Array.isArray(arr)) return 0;
+                return arr.reduce((a, b) => (a || 0) + (b || 0), 0);
+            };
+            
+            // Prepare statistics
+            const hasRawData = report.rawData && typeof report.rawData === 'object';
+            const monthlyData = hasRawData && report.rawData.monthly;
+            const spots = hasRawData && Array.isArray(report.rawData.spots) ? report.rawData.spots : [];
+            const topSpot = spots.length > 0 ? spots[0] : null;
+            
+            const totalVisitors = monthlyData && Array.isArray(monthlyData.visitors) 
+                ? safeSum(monthlyData.visitors) 
+                : 0;
+                
+            const totalRevenue = monthlyData && Array.isArray(monthlyData.revenue)
+                ? safeSum(monthlyData.revenue)
+                : 0;
+            
+            const modalBody = document.getElementById('barangayReportModalBody');
+            modalBody.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="color: #2c6e49; margin-bottom: 5px;">${report.barangay || 'Barangay'} Tourism Report</h2>
+                    <div style="font-size: 1.1em; margin-bottom: 15px;">KAPANGAN, BENGUET</div>
+                    <div style="font-size: 1.2em; font-weight: bold; color: #2c6e49; margin-bottom: 10px;">
+                        ${report.period || 'Period'} Report
+                    </div>
+                    <div style="margin-bottom: 20px; color: #555;">
+                        Submitted on: ${report.date ? new Date(report.date).toLocaleDateString() : 'N/A'} | 
+                        Status: <span class="status ${report.status ? report.status.toLowerCase() : 'pending'}">${report.status || 'Pending'}</span>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 30px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                    <h3 style="margin-top: 0; color: #2c6e49;">Report Summary</h3>
+                    <p>${report.content || 'No summary available.'}</p>
+                </div>
+                
+                <div id="reportCharts" style="margin-top: 30px;">
+                    <!-- Charts will be rendered here -->
+                </div>
+                
+                <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+                    <h3 style="color: #2c6e49;">Key Statistics</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 15px;">
+                        <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            <div style="font-weight: bold; color: #555; margin-bottom: 10px;">Total Visitors</div>
+                            <div style="font-size: 1.8em; color: #2c6e49; font-weight: bold;">
+                                ${totalVisitors.toLocaleString()}
+                            </div>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            <div style="font-weight: bold; color: #555; margin-bottom: 10px;">Total Revenue</div>
+                            <div style="font-size: 1.8em; color: #2c6e49; font-weight: bold;">
+                                ₱${totalRevenue.toLocaleString()}
+                            </div>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            <div style="font-weight: bold; color: #555; margin-bottom: 10px;">Top Spot</div>
+                            <div style="font-size: 1.3em; color: #2c6e49; font-weight: bold;">
+                                ${topSpot?.name || 'N/A'}
+                            </div>
+                            <div style="color: #666; font-size: 0.9em;">
+                                ${topSpot?.visitors ? topSpot.visitors.toLocaleString() + ' visitors' : 'No data'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px; text-align: right; font-style: italic; color: #666;">
+                    <div>Submitted by: ${report.submittedBy || 'Barangay Admin'}</div>
+                    <div>${report.date ? new Date(report.date).toLocaleString() : ''}</div>
+                </div>
+            `;
+            
+            // Render charts if data is available
+            if (report.charts && report.charts.length > 0) {
+                const chartsContainer = document.getElementById('reportCharts');
+                report.charts.forEach((chart, index) => {
+                    if (chart.image) {
+                        const chartDiv = document.createElement('div');
+                        chartDiv.style.marginBottom = '30px';
+                        chartDiv.innerHTML = `
+                            <h3 style="color: #2c6e49; margin-bottom: 15px;">${chart.title}</h3>
+                            <img src="${chart.image}" alt="${chart.title}" style="width: 100%; max-width: 800px; height: auto; border: 1px solid #eee; border-radius: 8px; background: white; padding: 15px;" />
+                        `;
+                        chartsContainer.appendChild(chartDiv);
+                    }
+                });
+            }
+            
+            document.getElementById('barangayReportModal').style.display = 'flex';
+        }
+        // Modal close for barangay report
+        document.addEventListener('DOMContentLoaded', function() {
+            // Close button for barangay report modal
+            const closeBtn = document.getElementById('closeBarangayReportModal');
+            if (closeBtn) {
+                closeBtn.onclick = function() {
+                    document.getElementById('barangayReportModal').style.display = 'none';
+                };
+            }
+            
+            // Close when clicking outside modal content
+            const modal = document.getElementById('barangayReportModal');
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        // Integrate with navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    if (target === 'barangay-reports') {
+                        renderBarangayReports();
+                    }
+                });
+            });
+        });
+
+    </script>
+    <!-- Red Flag Modal -->
+    <div class="modal" id="redFlagModal">
+      <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header">
+          <h3>Flag User - Violation</h3>
+          <button class="close-modal" id="closeRedFlagModal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <label for="violationInput">Describe the violation:</label>
+          <textarea id="violationInput" class="form-control" rows="4" placeholder="Enter violation details..."></textarea>
+        </div>
+        <div class="form-actions" style="justify-content: flex-end;">
+          <button class="btn btn-secondary" id="cancelRedFlag">Cancel</button>
+          <button class="btn btn-primary" id="submitViolation">Submit</button>
+        </div>
+      </div>
+    </div>
+    <script>
+    // --- RED FLAG MODAL LOGIC ---
+    let currentFlaggedUserEmail = null;
+    function openRedFlagModal(email) {
+        currentFlaggedUserEmail = email;
+        document.getElementById('violationInput').value = '';
+        document.getElementById('redFlagModal').style.display = 'flex';
+    }
+    function closeRedFlagModal() {
+        document.getElementById('redFlagModal').style.display = 'none';
+        currentFlaggedUserEmail = null;
+    }
+    function submitViolation() {
+        const violation = document.getElementById('violationInput').value.trim();
+        if (!violation) {
+            alert('Please enter a violation.');
+            return;
+        }
+        let violations = JSON.parse(localStorage.getItem('userViolations') || '[]');
+        violations.push({
+            email: currentFlaggedUserEmail,
+            violation,
+            date: new Date().toISOString()
+        });
+        localStorage.setItem('userViolations', JSON.stringify(violations));
+        closeRedFlagModal();
+        alert('Violation submitted and will appear in the user dashboard announcement.');
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        const closeBtn = document.getElementById('closeRedFlagModal');
+        if (closeBtn) closeBtn.onclick = closeRedFlagModal;
+        const cancelBtn = document.getElementById('cancelRedFlag');
+        if (cancelBtn) cancelBtn.onclick = closeRedFlagModal;
+        const submitBtn = document.getElementById('submitViolation');
+        if (submitBtn) submitBtn.onclick = submitViolation;
+        const modal = document.getElementById('redFlagModal');
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) closeRedFlagModal();
+            });
+        }
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kapangan Tourism - Barangay Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #2c6e49;
+            --secondary: #4c956c;
+            --accent: #fefee3;
+            --light: #f5f5f5;
+            --dark: #1d3557;
+            --success: #38b000;
+            --warning: #ff9e00;
+            --danger: #e63946;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            background-color: #f0f2f5;
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            color: white;
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+            padding: 20px 0;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .logo img {
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            margin-right: 15px;
+            padding: 5px;
+        }
+        
+        .logo h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .nav-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.1);
+            border-left: 4px solid var(--accent);
+        }
+        
+        .nav-item i {
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+        
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 30px;
+            padding: 8px 15px;
+            width: 300px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .search-bar input {
+            border: none;
+            outline: none;
+            background: transparent;
+            width: 100%;
+            padding: 5px;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info {
+            text-align: right;
+            margin-right: 15px;
+        }
+        
+        .user-info h4 {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .user-info small {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+        
+        .user-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .page-title {
+            margin-bottom: 20px;
+        }
+        
+        .page-title h1 {
+            font-size: 1.8rem;
+            color: var(--dark);
+        }
+        
+        .page-title p {
+            color: var(--gray);
+            margin-top: 5px;
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .icon-blue { background: #4361ee; }
+        .icon-green { background: var(--success); }
+        .icon-orange { background: var(--warning); }
+        .icon-red { background: var(--danger); }
+        
+        .card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Action Buttons */
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin-right: 5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .qr-btn {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .add-btn {
+            background: var(--success);
+            color: white;
+        }
+        
+        .view-btn {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .edit-btn {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .delete-btn {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .action-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalOpen 0.4s ease;
+        }
+        
+        @keyframes modalOpen {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            color: var(--dark);
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .success-icon {
+            text-align: center;
+            font-size: 4rem;
+            color: var(--success);
+            margin: 20px 0;
+        }
+        
+        .qr-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: var(--light);
+            border-radius: 10px;
+        }
+        
+        .qr-placeholder {
+            width: 200px;
+            height: 200px;
+            background: #e0e0e0;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed var(--gray);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .scanner-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--primary);
+            animation: scan 2s infinite linear;
+        }
+        
+        @keyframes scan {
+            0% { top: 0; }
+            50% { top: 100%; }
+            100% { top: 0; }
+        }
+        
+        .qr-success {
+            font-size: 3rem;
+            color: var(--success);
+            display: none;
+        }
+        
+        /* Charts */
+        .charts {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 20px;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-header h3 {
+            color: var(--dark);
+        }
+        
+        .filter-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .filter-btn {
+            padding: 5px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .download-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .download-btn:hover {
+            background: var(--secondary);
+        }
+        
+        /* Table and Card Styles from main.html */
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background-color: #f8f9fa;
+            color: var(--dark);
+            font-weight: 600;
+        }
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        .announcement-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .announcement-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        .announcement-date {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        .announcement-content {
+            color: #555;
+            line-height: 1.6;
+        }
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-secondary {
+            background: var(--gray);
+            color: white;
+        }
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin-right: 5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .edit-btn {
+            background: var(--warning);
+            color: white;
+        }
+        .delete-btn {
+            background: var(--danger);
+            color: white;
+        }
+        .action-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+            }
+            
+            .logo h2, .nav-item span {
+                display: none;
+            }
+            
+            .logo {
+                justify-content: center;
+                padding: 0 0 20px;
+            }
+            
+            .nav-item {
+                justify-content: center;
+                padding: 15px;
+            }
+            
+            .nav-item i {
+                margin-right: 0;
+                font-size: 1.3rem;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+            }
+            
+            .charts {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+        
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 200;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 576px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding-top: 70px;
+            }
+            
+            .mobile-toggle {
+                display: block;
+            }
+            
+            .topbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .search-bar {
+                width: 100%;
+            }
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gray);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        /* Form Sections */
+        .form-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            flex: 1;
+        }
+        
+        /* Payment Summary */
+        .payment-summary {
+            background: #e8f5e9;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #c8e6c9;
+        }
+        
+        .summary-total {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+        
+        .cash-payment {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+        
+        .status.active {
+            background: #d1e7dd;
+            color: #0a3622;
+        }
+        
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        /* Reports Grid */
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chart-header {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chart-header h3 {
+            margin: 0;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+        
+        .filter-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 15px;
+            border: 1px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .export-pdf-btn {
+            padding: 8px 15px;
+            background: #e63946;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+            margin-left: auto;
+        }
+        
+        .export-pdf-btn:hover {
+            background: #c1121f;
+        }
+        
+        .visitor-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin: 2px;
+        }
+        
+        /* Floating Buttons */
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+            background: #4CAF50;
+            color: #fff;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+            font-size: 1.6rem;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            text-decoration: none;
+            margin-bottom: 12px;
+        }
+        .floating-btn:hover {
+            background: #388e3c;
+            transform: translateY(-3px) scale(1.08);
+        }
+        .floating-btn.back-btn {
+            bottom: 100px;
+            background: #222;
+        }
+        .floating-btn.back-btn:hover {
+            background: #444;
+        }
+        @media (max-width: 600px) {
+            .floating-btn, .floating-btn.back-btn {
+                right: 16px;
+                width: 48px;
+                height: 48px;
+                font-size: 1.2rem;
+            }
+            .floating-btn.back-btn {
+                bottom: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="#" alt="Logo">
+            <h2>Barangay Admin</h2>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item active" data-target="dashboard">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" data-target="qr-scanner">
+                <i class="fas fa-qrcode"></i>
+                <span>Scan QR Code</span>
+            </div>
+            <div class="nav-item" data-target="tourist-spots">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Tourist Spots</span>
+            </div>
+            <div class="nav-item" data-target="announcements-section">
+                <i class="fas fa-bullhorn"></i>
+                <span>Announcements</span>
+            </div>
+            <div class="nav-item" data-target="blogs-section">
+                <i class="fas fa-blog"></i>
+                <span>Blogs</span>
+            </div>
+            <div class="nav-item" data-target="reports">
+                <i class="fas fa-file-alt"></i>
+                <span>Generate Report</span>
+            </div>
+            <div class="nav-item" onclick="window.location.href='main.html'">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Main Dashboard</span>
+            </div>
+            <div class="nav-item" onclick="window.location.href='privatespot.html'">
+                <i class="fas fa-map-marked-alt"></i>
+                <span>Private Spots</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <!-- Removed search-bar -->
+            <div class="user-profile">
+                <div class="user-info">
+                    <h4>Barangay Balakbak</h4>
+                    <small>Tourism Admin</small>
+                </div>
+                <div class="user-img">BA</div>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div class="content-section active" id="dashboard">
+            <div class="page-title">
+                <h1>Barangay Admin Dashboard</h1>
+                <p>Manage tourist activities, spot information, and visitor data</p>
+            </div>
+
+            <!-- Dashboard Cards -->
+            <div class="dashboard-cards">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3>60</h3>
+                            <p>Total Visitors</p>
+                        </div>
+                        <div class="card-icon icon-blue">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <small>+18% from last month</small>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3>₱30,000</h3>
+                            <p>Total Revenue</p>
+                        </div>
+                        <div class="card-icon icon-green">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                    </div>
+                    <small>+15% from last quarter</small>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3>2</h3>
+                            <p>Tourist Spots</p>
+                        </div>
+                        <div class="card-icon icon-orange">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                    </div>
+                    <small>2 pending approval</small>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3>42</h3>
+                            <p>Today's Visitors</p>
+                        </div>
+                        <div class="card-icon icon-red">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                    </div>
+                    <small>12 new scans today</small>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="page-title">
+                <h2>Quick Actions</h2>
+            </div>
+            
+            <div class="dashboard-cards">
+                <div class="card" style="text-align: center; cursor: pointer;" onclick="showModal('qrModal')">
+                    <div class="card-icon icon-blue" style="margin: 0 auto 15px;">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <h3>Scan QR Code</h3>
+                    <p>Register new visitors</p>
+                </div>
+                <div class="card" style="text-align: center; cursor: pointer;" onclick="showSection('tourist-spots')">
+                    <div class="card-icon icon-green" style="margin: 0 auto 15px;">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <h3>Add Tourist Spot</h3>
+                    <p>Submit new attraction</p>
+                </div>
+                <div class="card" style="text-align: center; cursor: pointer;" onclick="showSection('reports')">
+                    <div class="card-icon icon-orange" style="margin: 0 auto 15px;">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>View Reports</h3>
+                    <p>Analyze visitor data</p>
+                </div>
+                <!-- Quick Links Card -->
+                <div class="card" style="text-align: center; cursor: pointer;" onclick="showSection('announcements-section')">
+                    <div class="card-icon icon-blue" style="margin: 0 auto 15px;">
+                        <i class="fas fa-bullhorn"></i>
+                    </div>
+                    <h3>Announcements</h3>
+                    <p>View barangay announcements</p>
+                </div>
+                <div class="card" style="text-align: center; cursor: pointer;" onclick="showSection('blogs-section')">
+                    <div class="card-icon icon-orange" style="margin: 0 auto 15px;">
+                        <i class="fas fa-blog"></i>
+                    </div>
+                    <h3>Blogs</h3>
+                    <p>Read barangay blogs</p>
+                </div>
+            </div>
+            
+            <!-- Recent Visitors -->
+            <div class="page-title">
+                <h2>Recent Visitors</h2>
+            </div>
+            
+            <div class="form-container">
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Visitor</th>
+                            <th>Time</th>
+                            <th>Tourist Spot</th>
+                            <th>Group Size</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentVisitors">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- QR Scanner Section -->
+        <div class="content-section" id="qr-scanner">
+            <div class="page-title">
+                <h1>QR Code Scanner</h1>
+                <p>Scan visitor QR codes to register entries</p>
+            </div>
+            
+            <div class="form-container">
+                <div class="qr-container">
+                    <div class="qr-placeholder">
+                        <div class="scanner-animation"></div>
+                        <i class="fas fa-camera fa-3x"></i>
+                        <i class="fas fa-check-circle qr-success"></i>
+                    </div>
+                    <button class="action-btn qr-btn" onclick="startScanning()">
+                        <i class="fas fa-qrcode"></i> Start QR Scanning
+                    </button>
+                    <p style="margin-top: 15px; color: var(--gray);" id="scanStatus">Ready to scan. Press the button to start.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tourist Spots Section -->
+        <div class="content-section" id="tourist-spots">
+            <div class="page-title">
+                <h1>Tourist Spots Management</h1>
+                <p>Manage and add tourist spots in your barangay</p>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="spots-list">Current Spots</div>
+                <div class="tab" data-tab="add-spot">Add New Spot</div>
+                <div class="tab" data-tab="pending">Pending Approval</div>
+            </div>
+            
+            <!-- Current Spots -->
+            <div class="tab-content active" id="spots-list">
+                <div class="form-container">
+                    <h3>Tourist Spots in Balakbak</h3>
+                    <table style="width: 100%; margin-top: 15px;">
+                        <thead>
+                            <tr>
+                                <th>Spot Name</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Visitors (30 days)</th>
+                                <th>Revenue</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Balakbak Falls</td>
+                                <td>Waterfall</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>320</td>
+                                <td>₱8,000</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" onclick="openEditSpotModal(0)">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Mount Tagpaya Trail</td>
+                                <td>Hiking</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>180</td>
+                                <td>₱7,000</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" onclick="openEditSpotModal(1)">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>River Rock Pools</td>
+                                <td>Natural Pools</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>210</td>
+                                <td>₱4,500</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" onclick="openEditSpotModal(2)">Edit</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Add New Spot -->
+            <div class="tab-content" id="add-spot">
+                <div class="form-container">
+                    <h3>Add New Tourist Spot</h3>
+                    <p>Submit a new tourist spot for municipal approval</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Spot Name</label>
+                            <input type="text" class="form-control" placeholder="Enter spot name">
+                        </div>
+                        <div class="form-group">
+                            <label>Details</label>
+                            <textarea class="form-control" placeholder="Describe the tourist spot"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Image</label>
+                            <input type="file" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Embed Map Link</label>
+                            <input type="text" class="form-control" placeholder="Paste Google Map embed link">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Registration Fee (₱)</label>
+                            <input type="number" class="form-control" placeholder="Enter registration fee">
+                        </div>
+                        <div class="form-group">
+                            <label>Environmental Fee (₱)</label>
+                            <input type="number" class="form-control" placeholder="Enter environmental fee">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nearby Accommodation</label>
+                            <input type="text" class="form-control" placeholder="List nearby accommodation">
+                        </div>
+                        <div class="form-group">
+                            <label>Nearby Restaurants</label>
+                            <input type="text" class="form-control" placeholder="List nearby restaurants">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Location Barangay</label>
+                            <input type="text" class="form-control" placeholder="Enter barangay location">
+                        </div>
+                    </div>
+                    <div class="form-actions" style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+                        <button class="btn btn-secondary">Cancel</button>
+                        <button class="btn btn-primary">Submit for Approval</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pending Approval -->
+            <div class="tab-content" id="pending">
+                <div class="form-container">
+                    <h3>Spots Pending Approval</h3>
+                    <p>Waiting for municipal admin confirmation</p>
+                    <table style="width: 100%; margin-top: 15px;">
+                        <thead>
+                            <tr>
+                                <th>Spot Name</th>
+                                <th>Type</th>
+                                <th>Date Submitted</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Sunrise Peak</td>
+                                <td>Viewpoint</td>
+                                <td>Dec 10, 2023</td>
+                                <td><span class="status pending">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td>Eagle's Nest Cave</td>
+                                <td>Cave</td>
+                                <td>Dec 5, 2023</td>
+                                <td><span class="status pending">Pending</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div class="content-section" id="reports">
+            <div class="page-title">
+                <h1>Reports & Analytics</h1>
+                <p>Visitor statistics and revenue reports</p>
+                <div class="filter-options" style="margin-top: 20px;">
+                    <button class="filter-btn active" data-period="monthly">Monthly</button>
+                    <button class="filter-btn" data-period="quarterly">Quarterly</button>
+                    <button class="filter-btn" data-period="yearly">Yearly</button>
+                    <button class="download-btn" id="downloadAllChartsPdf" style="margin-left: 10px;">
+                        <i class="fas fa-download"></i> Download All Charts (PDF)
+                    </button>
+                </div>
+            </div>
+            
+            <div class="reports-grid">
+                <!-- Visitor Trends -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title" data-title="Visitor Trends">Visitor Trends (Monthly)</h3>
+                    </div>
+                    <canvas id="visitorChart"></canvas>
+                </div>
+                
+                <!-- Visitor Demographics -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title" data-title="Visitor Demographics">Visitor Demographics</h3>
+                    </div>
+                    <canvas id="demographicsChart"></canvas>
+                </div>
+                
+                <!-- Revenue Overview -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title" data-title="Revenue Overview">Revenue Overview (Monthly)</h3>
+                    </div>
+                    <canvas id="revenueChart"></canvas>
+                </div>
+                
+                <!-- Most Visited Spots -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title" data-title="Most Visited Spots">Most Visited Spots</h3>
+                    </div>
+                    <canvas id="spotChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Announcements Section -->
+        <div class="content-section" id="announcements-section">
+            <div class="page-title">
+                <h1>Barangay Announcements</h1>
+                <p>Latest news and updates for the barangay</p>
+            </div>
+            <div class="table-container">
+                <div class="table-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>Current Announcements</h3>
+                    <button class="btn btn-primary" id="addAnnouncementBtn" onclick="showAnnouncementForm()">
+                        <i class="fas fa-plus"></i> Add New Announcement
+                    </button>
+                </div>
+                <div id="announcementsList"></div>
+            </div>
+        </div>
+
+        <!-- Blogs Section -->
+        <div class="content-section" id="blogs-section">
+            <div class="page-title">
+                <h1>Barangay Blogs</h1>
+                <p>Stories and experiences from the barangay</p>
+            </div>
+            <div class="table-container">
+                <div class="table-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>Blog Articles</h3>
+                    <button class="btn btn-primary" id="addBlogBtn" onclick="showBlogForm()">
+                        <i class="fas fa-plus"></i> Add New Blog
+                    </button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="blogsList"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Announcement Modal -->
+    <div class="modal" id="announcementModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 id="announcementModalTitle">Add New Announcement</h3>
+                <button class="close-btn" onclick="closeModal('announcementModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="announcementForm" class="form-container">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="announcementTitleInput" class="form-control" placeholder="Announcement title..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>Author</label>
+                        <input type="text" id="announcementAuthorInput" class="form-control" placeholder="Author..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="announcementDescInput" class="form-control" placeholder="Description..." rows="5" required></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('announcementModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Announcement</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blog Modal -->
+    <div class="modal" id="blogModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3 id="blogModalTitle">Add New Blog</h3>
+                <button class="close-btn" onclick="closeModal('blogModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="blogForm" class="form-container">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" id="blogTitleInput" class="form-control" placeholder="Blog title..." required>
+                        </div>
+                        <div class="form-group">
+                            <label>Author</label>
+                            <input type="text" id="blogAuthorInput" class="form-control" placeholder="Author..." required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="blogDescInput" class="form-control" placeholder="Blog content..." rows="8" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Featured Image</label>
+                        <input type="file" id="blogImageInput" class="form-control" accept="image/*">
+                        <small class="text-muted">Leave empty to keep current image</small>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('blogModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Blog</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Spot Modal -->
+    <div class="modal" id="editSpotModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3>Edit Tourist Spot</h3>
+                <button class="close-btn" onclick="closeModal('editSpotModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-container">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Spot Name</label>
+                            <input type="text" id="editSpotName" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Type</label>
+                            <input type="text" id="editSpotType" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Details</label>
+                            <textarea id="editSpotDetails" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Image</label>
+                            <input type="file" id="editSpotImage" class="form-control">
+                            <small class="text-muted">Leave empty to keep current image</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Embed Map Link</label>
+                            <input type="text" id="editSpotMapLink" class="form-control" placeholder="Paste Google Map embed link">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Registration Fee (₱)</label>
+                            <input type="number" id="editSpotRegFee" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Environmental Fee (₱)</label>
+                            <input type="number" id="editSpotEnvFee" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nearby Accommodation</label>
+                            <input type="text" id="editSpotAccommodation" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Nearby Restaurants</label>
+                            <input type="text" id="editSpotRestaurants" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Location Barangay</label>
+                            <input type="text" id="editSpotBarangay" class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('editSpotModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveSpotChanges()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Scanner Modal -->
+    <div class="modal" id="qrModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Scan Visitor QR Code</h3>
+                <button class="close-btn" onclick="closeModal('qrModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="qr-container">
+                    <div class="qr-placeholder">
+                        <div class="scanner-animation"></div>
+                        <i class="fas fa-camera fa-3x"></i>
+                        <i class="fas fa-check-circle qr-success"></i>
+                    </div>
+                    <p style="margin: 15px 0; color: var(--gray);" id="modalScanStatus">Scanning in progress...</p>
+                </div>
+                
+                <div class="form-group">
+                    <label>Visitor Information</label>
+                    <div class="payment-summary">
+                        <div class="summary-row">
+                            <span>Visitor Name:</span>
+                            <span id="visitorName">-</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Tourist Spot:</span>
+                            <span id="touristSpotName">-</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Group Size:</span>
+                            <div style="display: flex; flex-direction: column; gap: 5px;">
+                                <div style="display: flex; align-items: center; gap: 5px;">
+                                    <label style="min-width: 80px;">Adults</label>
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="updateGroupBreakdown('adults', -1)" style="padding: 2px 8px;">-</button>
+                                    <input type="number" id="adultsInput" min="0" value="1" style="width: 50px; text-align: center;" onchange="updateTotalAmount()">
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="updateGroupBreakdown('adults', 1)" style="padding: 2px 8px;">+</button>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 5px;">
+                                    <label style="min-width: 80px;">Seniors/PWDs</label>
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="updateGroupBreakdown('seniors', -1)" style="padding: 2px 8px;">-</button>
+                                    <input type="number" id="seniorsInput" min="0" value="0" style="width: 50px; text-align: center;" onchange="updateTotalAmount()">
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="updateGroupBreakdown('seniors', 1)" style="padding: 2px 8px;">+</button>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 5px;">
+                                    <label style="min-width: 80px;">Kids (6–10)</label>
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="updateGroupBreakdown('kids', -1)" style="padding: 2px 8px;">-</button>
+                                    <input type="number" id="kidsInput" min="0" value="0" style="width: 50px; text-align: center;" onchange="updateTotalAmount()">
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="updateGroupBreakdown('kids', 1)" style="padding: 2px 8px;">+</button>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 5px;">
+                                    <label style="min-width: 80px;">Children <6</label>
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="updateGroupBreakdown('children', -1)" style="padding: 2px 8px;">-</button>
+                                    <input type="number" id="childrenInput" min="0" value="0" style="width: 50px; text-align: center;" onchange="updateTotalAmount()">
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="updateGroupBreakdown('children', 1)" style="padding: 2px 8px;">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="summary-row">
+                            <span>Environmental Fee:</span>
+                            <span id="envFee">₱100</span>
+                        </div>
+                        <div class="summary-row summary-total">
+                            <span>Total Amount:</span>
+                            <span id="totalAmount">₱0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cash-payment">
+                    <h4><i class="fas fa-money-bill-wave"></i> Cash Payment</h4>
+                    <p>Collect payment in cash from the visitor</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('qrModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="processPayment()">Process Payment</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Payment Successful!</h3>
+                <button class="close-btn" onclick="closeModal('successModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 style="text-align: center; margin-bottom: 20px;">Visitor Registration Complete</h3>
+                
+                <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Visitor:</span>
+                        <span><strong id="successVisitor">-</strong></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Tourist Spot:</span>
+                        <span><strong id="successSpot">-</strong></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Group Size:</span>
+                        <span><strong id="successGroup">-</strong></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Total Amount:</span>
+                        <span><strong id="successAmount">₱0</strong></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal('successModal')">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Switch Button -->
+    <a href="main.html" class="floating-btn" title="Switch to Municipal Admin">
+        <i class="fas fa-exchange-alt"></i>
+    </a>
+    <a href="index.html" class="floating-btn back-btn" title="Back to Site">
+        <i class="fas fa-home"></i>
+    </a>
+
+    <!-- PDF Preview Modal -->
+    <div class="modal" id="pdfPreviewModal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3>Preview PDF Report</h3>
+                <button class="close-btn" id="closePdfPreview">&times;</button>
+            </div>
+            <div class="modal-body" id="pdfPreviewBody" style="display: flex; flex-direction: column; gap: 30px; align-items: center;"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelPdfPreview">Cancel</button>
+                <button class="btn btn-primary" id="confirmDownloadPdf">Download PDF</button>
+                <button class="btn btn-success" id="submitReportBtn">Submit Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastNotif" style="display:none; position:fixed; bottom:40px; right:40px; background:#38b000; color:#fff; padding:16px 28px; border-radius:8px; font-size:1.1em; z-index:99999; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+        Report submitted successfully!
+    </div>
+
+    <!-- Report Submission Modal -->
+    <div class="modal" id="reportSubmissionModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>Submit Report</h3>
+                <button class="close-btn" onclick="closeModal('reportSubmissionModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="reportSubmissionForm" class="form-container">
+                    <div class="form-group">
+                        <label>Report Title</label>
+                        <input type="text" id="reportTitleInput" class="form-control" placeholder="Report title..." required readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Report Content</label>
+                        <textarea id="reportContentInput" class="form-control" placeholder="Report content..." rows="6" required></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('reportSubmissionModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Submit Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Track all scans and visitor data
+        let allScans = [
+            { id: "V20231215-001", name: "John Doe", groupSize: 5, spot: "Balakbak Falls", fee: 150, timestamp: new Date('2023-12-15T09:30:00'), type: 'local' },
+            { id: "V20231215-002", name: "Maria Santos", groupSize: 3, spot: "Mount Tagpaya Trail", fee: 200, timestamp: new Date('2023-12-15T10:15:00'), type: 'national' },
+            { id: "V20231215-003", name: "Tour Group #5", groupSize: 15, spot: "River Rock Pools", fee: 100, timestamp: new Date('2023-12-15T11:30:00'), type: 'international' },
+            { id: "V20231215-004", name: "Robert Johnson", groupSize: 2, spot: "Balakbak Falls", fee: 150, timestamp: new Date('2023-12-16T09:15:00'), type: 'local' },
+            { id: "V20231215-005", name: "Sarah Williams", groupSize: 4, spot: "Mount Tagpaya Trail", fee: 200, timestamp: new Date('2023-12-16T14:45:00'), type: 'local' }
+        ];
+        
+        const visitors = [...allScans]; // For backward compatibility
+        
+        // Track scanned visitors
+        let scannedVisitors = [];
+        
+        // Announcements and Blogs Data
+        let announcements = [
+            { title: "Welcome to Barangay Balakbak!", author: "Admin", desc: "Tourist registration is required at the barangay hall." },
+            { title: "Please keep our tourist spots clean.", author: "Admin", desc: "Help us maintain the beauty of our barangay." }
+        ];
+        let blogs = [
+            { title: "Balakbak Falls Adventure", author: "Juan dela Cruz", desc: "A wonderful trek to the majestic falls!" },
+            { title: "Cultural Fest 2023", author: "Maria Clara", desc: "Celebrating our heritage and traditions." }
+        ];
+        let editingAnnouncementIndex = null;
+        let editingBlogIndex = null;
+
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar navigation
+            const navItems = document.querySelectorAll('.nav-item');
+            const contentSections = document.querySelectorAll('.content-section');
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    
+                    // Remove active class from all nav items and sections
+                    navItems.forEach(navItem => navItem.classList.remove('active'));
+                    contentSections.forEach(section => section.classList.remove('active'));
+                    
+                    // Add active class to clicked nav item and target section
+                    this.classList.add('active');
+                    if (target) {
+                        document.getElementById(target).classList.add('active');
+                    }
+                });
+            });
+            
+            // Top tabs navigation
+            const tabs = document.querySelectorAll('.tab');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Remove active class from all tabs in the same group
+                    const tabGroup = this.closest('.tabs');
+                    tabGroup.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    
+                    // Remove active class from all contents in the same group
+                    const contentGroup = this.closest('.content-section');
+                    contentGroup.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and target content
+                    this.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const period = this.dataset.period;
+                    window.currentPeriod = period;
+                    updateCharts(period);
+                });
+            });
+            
+            // Initialize charts
+            initCharts();
+            
+            // Populate recent visitors
+            updateRecentVisitors();
+            renderAnnouncements();
+            renderBlogs();
+        });
+        
+        // Start scanning process
+        function startScanning() {
+            document.getElementById('scanStatus').textContent = "Scanning... Looking for QR code";
+            
+            // Simulate scanning process
+            setTimeout(() => {
+                // Select a random visitor
+                const randomVisitor = visitors[Math.floor(Math.random() * visitors.length)];
+                
+                // Add to scanned visitors
+                scannedVisitors.push({
+                    ...randomVisitor,
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    date: new Date().toLocaleDateString()
+                });
+                
+                // Show success in scanner page
+                document.getElementById('scanStatus').innerHTML = `
+                    <span style="color: var(--success)">QR Code Scanned Successfully!</span><br>
+                    Visitor: ${randomVisitor.name} | Group: ${randomVisitor.groupSize} | Spot: ${randomVisitor.spot}
+                `;
+                
+                // Update recent visitors
+                updateRecentVisitors();
+                
+                // Show modal with details
+                showModalWithVisitor(randomVisitor);
+            }, 2000);
+        }
+        
+        // Current visitor object reference
+        let currentVisitor = null;
+        
+        // Show modal with visitor details
+        function showModalWithVisitor(visitor) {
+            currentVisitor = visitor;
+
+            // Defensive: Only update if element exists
+            const visitorNameEl = document.getElementById('visitorName');
+            if (!visitorNameEl) {
+                console.error('visitorName element not found!');
+                return;
+            }
+            visitorNameEl.textContent = visitor.name;
+
+            const adultsInput = document.getElementById('adultsInput');
+            const seniorsInput = document.getElementById('seniorsInput');
+            const kidsInput = document.getElementById('kidsInput');
+            const childrenInput = document.getElementById('childrenInput');
+            const spotNameEl = document.getElementById('touristSpotName');
+            const envFeeEl = document.getElementById('envFee');
+
+            if (adultsInput) adultsInput.value = visitor.groupSize;
+            if (seniorsInput) seniorsInput.value = 0;
+            if (kidsInput) kidsInput.value = 0;
+            if (childrenInput) childrenInput.value = 0;
+            if (spotNameEl) spotNameEl.textContent = visitor.spot;
+            if (envFeeEl) envFeeEl.textContent = '₱100';
+
+            updateTotalAmount();
+            const scanStatusEl = document.getElementById('modalScanStatus');
+            if (scanStatusEl) {
+                scanStatusEl.innerHTML = `<span style=\"color: var(--success)\">QR Code Scanned Successfully!</span>`;
+            }
+
+            // Show success icon in scanner
+            const cameraIcon = document.querySelector('.qr-placeholder .fa-camera');
+            const scannerAnim = document.querySelector('.qr-placeholder .scanner-animation');
+            const qrSuccess = document.querySelector('.qr-placeholder .qr-success');
+            if (cameraIcon) cameraIcon.style.display = 'none';
+            if (scannerAnim) scannerAnim.style.display = 'none';
+            if (qrSuccess) qrSuccess.style.display = 'block';
+
+            // Force show the modal (reset state)
+            const modal = document.getElementById('qrModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                setTimeout(() => modal.classList.add('show'), 10);
+            }
+        }
+        
+        // Update group size with + and - buttons
+        function updateGroupSize(change) {
+            const input = document.getElementById('groupSizeInput');
+            let newValue = parseInt(input.value) + change;
+            if (newValue < 1) newValue = 1; // Ensure minimum group size is 1
+            input.value = newValue;
+            updateTotalAmount();
+        }
+        
+        // Update total amount when group size changes
+        function updateTotalAmount() {
+            if (!currentVisitor) return;
+            
+            const groupSize = parseInt(document.getElementById('groupSizeInput').value);
+            const total = currentVisitor.fee * groupSize;
+            document.getElementById('totalAmount').textContent = `₱${total}`;
+            
+            // Update the visitor object with the new group size
+            currentVisitor.groupSize = groupSize;
+            
+            // Update the scanned visitors array with the new group size
+            if (scannedVisitors.length > 0) {
+                scannedVisitors[scannedVisitors.length - 1].groupSize = groupSize;
+            }
+        }
+        
+        // Process payment
+        function processPayment() {
+            const visitorName = document.getElementById('visitorName').textContent;
+            const spotName = document.getElementById('touristSpotName').textContent;
+            const adults = document.getElementById('adultsInput').value;
+            const seniors = document.getElementById('seniorsInput').value;
+            const kids = document.getElementById('kidsInput').value;
+            const children = document.getElementById('childrenInput').value;
+            const total = document.getElementById('totalAmount').textContent;
+            document.getElementById('successVisitor').textContent = visitorName;
+            document.getElementById('successSpot').textContent = spotName;
+            let groupText = `${adults} Adult(s)`;
+            if (seniors > 0) groupText += `, ${seniors} Senior/PWD(s)`;
+            if (kids > 0) groupText += `, ${kids} Kid(s)`;
+            if (children > 0) groupText += `, ${children} Child(ren) <6`;
+            document.getElementById('successGroup').textContent = groupText;
+            document.getElementById('successAmount').textContent = total;
+            closeModal('qrModal');
+            setTimeout(() => {
+                showModal('successModal');
+            }, 300);
+            setTimeout(() => {
+                document.querySelector('.qr-placeholder .fa-camera').style.display = 'block';
+                document.querySelector('.qr-placeholder .scanner-animation').style.display = 'block';
+                document.querySelector('.qr-placeholder .qr-success').style.display = 'none';
+                document.getElementById('scanStatus').textContent = "Ready to scan. Press the button to start.";
+            }, 1000);
+        }
+        
+        // Update recent visitors table
+        function updateRecentVisitors() {
+            const table = document.getElementById('recentVisitors');
+            table.innerHTML = '';
+            
+            // Get last 5 scanned visitors (most recent first)
+            const recent = [...scannedVisitors].reverse().slice(0, 5);
+            
+            recent.forEach(visitor => {
+                const total = visitor.fee * visitor.groupSize;
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${visitor.name}</td>
+                    <td>${visitor.time}</td>
+                    <td>${visitor.spot}</td>
+                    <td>${visitor.groupSize}</td>
+                    <td>₱${total}</td>
+                    <td><span class="status active">Registered</span></td>
+                `;
+                
+                table.appendChild(row);
+            });
+        }
+        
+        // Show section
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Also activate the corresponding nav item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if(item.getAttribute('data-target') === sectionId) {
+                    item.classList.add('active');
+                }
+            });
+        }
+        
+        // Modal functions
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'flex';
+                setTimeout(() => modal.classList.add('show'), 10); // allow transition
+            }
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300); // match your CSS transition duration
+            }
+        }
+        
+        // Initialize charts
+        let visitorChart, demoChart, revenueChart, spotChart;
+        let currentPeriod = 'monthly'; // Track current period for filtering
+        
+        // Sample data for the last 12 months (2023-04 to 2024-04)
+        const monthlySample = [
+            // Q2 2023
+            { month: 'Apr 2023', visitors: 45, revenue: 3200 },
+            { month: 'May 2023', visitors: 52, revenue: 3700 },
+            { month: 'Jun 2023', visitors: 60, revenue: 4200 },
+            // Q3 2023
+            { month: 'Jul 2023', visitors: 65, revenue: 4500 },
+            { month: 'Aug 2023', visitors: 70, revenue: 4900 },
+            { month: 'Sep 2023', visitors: 75, revenue: 5200 },
+            // Q4 2023
+            { month: 'Oct 2023', visitors: 85, revenue: 5900 },
+            { month: 'Nov 2023', visitors: 95, revenue: 6600 },
+            { month: 'Dec 2023', visitors: 110, revenue: 7700 },
+            // Q1 2024
+            { month: 'Jan 2024', visitors: 90, revenue: 6300 },
+            { month: 'Feb 2024', visitors: 95, revenue: 6650 },
+            { month: 'Mar 2024', visitors: 105, revenue: 7350 },
+            // Q2 2024 (partial)
+            { month: 'Apr 2024', visitors: 80, revenue: 5600 }
+        ];
+
+        // Sample data for the last 4 quarters
+        const quarterlySample = [
+            { quarter: 'Q2 2023', visitors: 157, revenue: 11100 },
+            { quarter: 'Q3 2023', visitors: 210, revenue: 14600 },
+            { quarter: 'Q4 2023', visitors: 290, revenue: 20200 },
+            { quarter: 'Q1 2024', visitors: 270, revenue: 20300 }
+        ];
+
+        // Sample data for the last 3 years
+        const yearlySample = [
+            { year: '2022', visitors: 850, revenue: 65000 },
+            { year: '2023', visitors: 1100, revenue: 89000 },
+            { year: '2024', visitors: 380, revenue: 31200 } // Partial year
+        ];
+
+        function getMonthlyData(period = 'monthly') {
+            if (period === 'quarterly') {
+                return {
+                    months: quarterlySample.map(q => q.quarter),
+                    counts: quarterlySample.map(q => q.visitors),
+                    revenue: quarterlySample.map(q => q.revenue)
+                };
+            } else if (period === 'yearly') {
+                return {
+                    months: yearlySample.map(y => y.year),
+                    counts: yearlySample.map(y => y.visitors),
+                    revenue: yearlySample.map(y => y.revenue)
+                };
+            }
+            
+            // Default to monthly
+            return {
+                months: monthlySample.map(m => m.month),
+                counts: monthlySample.map(m => m.visitors),
+                revenue: monthlySample.map(m => m.revenue)
+            };
+        }
+        
+        function getSpotData() {
+            // Sample popular spots data
+            const popularSpots = [
+                { name: 'Balakbak Falls', visitors: 1200 },
+                { name: 'Mount Tagpaya', visitors: 980 },
+                { name: 'Kapangan Rice Terraces', visitors: 850 },
+                { name: 'Tubo-tubo Hot Spring', visitors: 720 },
+                { name: 'Amburayan River', visitors: 650 }
+            ];
+            
+            return {
+                labels: popularSpots.map(spot => spot.name),
+                data: popularSpots.map(spot => spot.visitors)
+            };
+        }
+        
+        function getDemographics() {
+            // Sample demographics data
+            const demographics = {
+                local: 45,
+                national: 35,
+                international: 20
+            };
+            
+            return {
+                labels: Object.keys(demographics).map(t => t.charAt(0).toUpperCase() + t.slice(1)),
+                data: Object.values(demographics)
+            };
+        }
+        
+        function initCharts() {
+            const monthlyData = getMonthlyData();
+            const spotData = getSpotData();
+            const demoData = getDemographics();
+            
+            // Visitor Trends Chart - Horizontal Bar
+            const visitorCtx = document.getElementById('visitorChart').getContext('2d');
+            visitorChart = new Chart(visitorCtx, {
+                type: 'bar',
+                data: {
+                    labels: monthlyData.months,
+                    datasets: [{
+                        label: 'Visitors',
+                        data: monthlyData.counts,
+                        backgroundColor: 'rgba(44, 110, 73, 0.7)',
+                        borderColor: 'rgb(44, 110, 73)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Visitors'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'end',
+                            color: '#000',
+                            formatter: function(value) {
+                                return value;
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+            
+            // Demographics Chart - Horizontal Bar
+            const demoCtx = document.getElementById('demographicsChart').getContext('2d');
+            demoChart = new Chart(demoCtx, {
+                type: 'bar',
+                data: {
+                    labels: demoData.labels,
+                    datasets: [{
+                        label: 'Visitors',
+                        data: demoData.data,
+                        backgroundColor: [
+                            'rgba(44, 110, 73, 0.7)',
+                            'rgba(76, 149, 108, 0.7)',
+                            'rgba(56, 176, 0, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgb(44, 110, 73)',
+                            'rgb(76, 149, 108)',
+                            'rgb(56, 176, 0)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Visitors'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'end',
+                            color: '#000',
+                            formatter: function(value) {
+                                return value;
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+            
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            revenueChart = new Chart(revenueCtx, {
+                type: 'bar',
+                data: {
+                    labels: monthlyData.months,
+                    datasets: [{
+                        label: 'Revenue (₱)',
+                        data: monthlyData.revenue,
+                        backgroundColor: 'rgba(76, 149, 108, 0.7)',
+                        borderColor: 'rgb(76, 149, 108)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Revenue (₱)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Spot Chart
+            const spotCtx = document.getElementById('spotChart').getContext('2d');
+            spotChart = new Chart(spotCtx, {
+                type: 'bar',
+                data: {
+                    labels: spotData.labels,
+                    datasets: [{
+                        label: 'Visitors',
+                        data: spotData.data,
+                        backgroundColor: 'rgba(44, 110, 73, 0.7)',
+                        borderColor: 'rgb(44, 110, 73)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Visitors'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Update charts based on period
+        // Filter data based on period
+        function filterDataByPeriod(data, period) {
+            // This is a simplified example - adjust the filtering logic based on your data structure
+            const now = new Date();
+            let filteredData = [...data];
+            
+            if (period === 'monthly') {
+                // Show last 12 months
+                const oneYearAgo = new Date();
+                oneYearAgo.setMonth(oneYearAgo.getMonth() - 12);
+                filteredData = data.filter(item => new Date(item.timestamp) >= oneYearAgo);
+            } else if (period === 'quarterly') {
+                // Show last 4 quarters
+                const oneYearAgo = new Date();
+                oneYearAgo.setMonth(oneYearAgo.getMonth() - 12);
+                filteredData = data.filter(item => new Date(item.timestamp) >= oneYearAgo);
+                // Group by quarter
+                // This is a simplified example - you might need to adjust the grouping logic
+                filteredData = filteredData.reduce((acc, item) => {
+                    const date = new Date(item.timestamp);
+                    const quarter = Math.floor(date.getMonth() / 3) + 1;
+                    const year = date.getFullYear();
+                    const key = `Q${quarter} ${year}`;
+                    
+                    if (!acc[key]) {
+                        acc[key] = { ...item, groupSize: 0 };
+                    }
+                    acc[key].groupSize += item.groupSize || 1;
+                    acc[key].fee = (acc[key].fee || 0) + (item.fee || 0);
+                    
+                    return acc;
+                }, {});
+                
+                filteredData = Object.values(filteredData);
+            } else if (period === 'yearly') {
+                // Group by year
+                filteredData = data.reduce((acc, item) => {
+                    const year = new Date(item.timestamp).getFullYear();
+                    const key = year.toString();
+                    
+                    if (!acc[key]) {
+                        acc[key] = { ...item, groupSize: 0 };
+                    }
+                    acc[key].groupSize += item.groupSize || 1;
+                    acc[key].fee = (acc[key].fee || 0) + (item.fee || 0);
+                    
+                    return acc;
+                }, {});
+                
+                filteredData = Object.values(filteredData);
+            }
+            
+            return filteredData;
+        }
+        
+        function updateCharts(period) {
+            currentPeriod = period;
+            
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.period === period);
+            });
+            
+            // Get data for the selected period
+            const monthlyData = getMonthlyData(period);
+            const spotData = getSpotData();
+            const demoData = getDemographics();
+            
+            // Update visitor chart
+            visitorChart.data.labels = monthlyData.months;
+            visitorChart.data.datasets[0].data = monthlyData.counts;
+            visitorChart.update();
+            
+            // Update demographics chart
+            demoChart.data.labels = demoData.labels;
+            demoChart.data.datasets[0].data = demoData.data;
+            demoChart.update();
+            
+            // Update revenue chart
+            revenueChart.data.labels = monthlyData.months;
+            revenueChart.data.datasets[0].data = monthlyData.revenue;
+            revenueChart.update();
+            
+            // Update spot chart
+            spotChart.data.labels = spotData.labels;
+            spotChart.data.datasets[0].data = spotData.data;
+            spotChart.update();
+            
+            // Update chart titles to show current period
+            const periodText = period.charAt(0).toUpperCase() + period.slice(1);
+            document.querySelectorAll('.chart-title').forEach(title => {
+                title.textContent = title.dataset.title + ` (${periodText})`;
+            });
+        }
+
+        // Render Announcements
+        function renderAnnouncements() {
+            const container = document.getElementById('announcementsList');
+            container.innerHTML = '';
+            announcements.forEach((a, i) => {
+                const card = document.createElement('div');
+                card.className = 'announcement-card';
+                card.innerHTML = `
+                    <div class="announcement-header">
+                        <div class="announcement-title">${a.title}</div>
+                        <div class="announcement-date">by ${a.author}</div>
+                    </div>
+                    <div class="announcement-content">${a.desc}</div>
+                    <div class="form-actions" style="margin-top: 10px;">
+                        <button class="action-btn edit-btn" onclick="editAnnouncement(${i})"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete-btn" onclick="deleteAnnouncement(${i})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+        // Render Blogs
+        function renderBlogs() {
+            const tbody = document.getElementById('blogsList');
+            tbody.innerHTML = '';
+            blogs.forEach((b, i) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${b.title}</td>
+                    <td>${b.author}</td>
+                    <td>${b.desc}</td>
+                    <td>
+                        <button class='action-btn edit-btn' onclick='editBlog(${i})'><i class='fas fa-edit'></i></button>
+                        <button class='action-btn delete-btn' onclick='deleteBlog(${i})'><i class='fas fa-trash'></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        // Show/Hide Announcement Form in Modal
+        function showAnnouncementForm(editIdx) {
+            const modal = document.getElementById('announcementModal');
+            const titleInput = document.getElementById('announcementTitleInput');
+            const authorInput = document.getElementById('announcementAuthorInput');
+            const descInput = document.getElementById('announcementDescInput');
+            const modalTitle = document.getElementById('announcementModalTitle');
+            const form = document.getElementById('announcementForm');
+            
+            if (editIdx !== undefined) {
+                // Edit mode
+                const announcement = announcements[editIdx];
+                titleInput.value = announcement.title;
+                authorInput.value = announcement.author;
+                descInput.value = announcement.description;
+                modalTitle.textContent = 'Edit Announcement';
+                form.dataset.editIndex = editIdx;
+            } else {
+                // Add mode
+                form.reset();
+                modalTitle.textContent = 'Add New Announcement';
+                form.removeAttribute('data-edit-index');
+            }
+            
+            showModal('announcementModal');
+        }
+
+        // Show/Hide Blog Form in Modal
+        function showBlogForm(editIdx) {
+            const modal = document.getElementById('blogModal');
+            const titleInput = document.getElementById('blogTitleInput');
+            const authorInput = document.getElementById('blogAuthorInput');
+            const descInput = document.getElementById('blogDescInput');
+            const modalTitle = document.getElementById('blogModalTitle');
+            const form = document.getElementById('blogForm');
+            
+            if (editIdx !== undefined) {
+                // Edit mode
+                const blog = blogs[editIdx];
+                titleInput.value = blog.title;
+                authorInput.value = blog.author;
+                descInput.value = blog.description;
+                modalTitle.textContent = 'Edit Blog';
+                form.dataset.editIndex = editIdx;
+            } else {
+                // Add mode
+                form.reset();
+                modalTitle.textContent = 'Add New Blog';
+                form.removeAttribute('data-edit-index');
+            }
+            
+            showModal('blogModal');
+        }
+
+        // Edit/Delete Announcement
+        function editAnnouncement(idx) {
+            showAnnouncementForm(idx);
+        }
+        function deleteAnnouncement(idx) {
+            if (confirm('Delete this announcement?')) {
+                announcements.splice(idx, 1);
+                renderAnnouncements();
+                closeModal('announcementModal');
+            }
+        }
+        // Edit/Delete Blog
+        function editBlog(idx) {
+            showBlogForm(idx);
+        }
+        function deleteBlog(idx) {
+            if (confirm('Delete this blog?')) {
+                blogs.splice(idx, 1);
+                renderBlogs();
+                closeModal('blogModal');
+            }
+        }
+        // Sample spot data (in a real app, this would come from a database)
+        const spotsData = [
+            {
+                id: 0,
+                name: 'Balakbak Falls',
+                type: 'Waterfall',
+                details: 'A beautiful waterfall with crystal clear waters.',
+                regFee: 50,
+                envFee: 30,
+                accommodation: 'Balakbak Homestay, Forest View Lodge',
+                restaurants: 'Mountain Bites, Falls View Cafe',
+                barangay: 'Balakbak',
+                mapLink: '#'
+            },
+            {
+                id: 1,
+                name: 'Mount Tagpaya Trail',
+                type: 'Hiking',
+                details: 'Scenic hiking trail with breathtaking views.',
+                regFee: 100,
+                envFee: 50,
+                accommodation: 'Trailside Cabins',
+                restaurants: 'Summit Diner',
+                barangay: 'Tagpaya',
+                mapLink: '#'
+            },
+            {
+                id: 2,
+                name: 'River Rock Pools',
+                type: 'Natural Pools',
+                details: 'Natural pools formed by river rocks, perfect for swimming.',
+                regFee: 30,
+                envFee: 20,
+                accommodation: 'Riverside Cottages',
+                restaurants: 'Rock Pool Cafe',
+                barangay: 'Taba-ao',
+                mapLink: '#'
+            }
+        ];
+
+        // Open edit spot modal
+        function openEditSpotModal(spotId) {
+            const spot = spotsData.find(s => s.id === spotId);
+            if (!spot) return;
+
+            document.getElementById('editSpotName').value = spot.name;
+            document.getElementById('editSpotType').value = spot.type;
+            document.getElementById('editSpotDetails').value = spot.details;
+            document.getElementById('editSpotRegFee').value = spot.regFee;
+            document.getElementById('editSpotEnvFee').value = spot.envFee;
+            document.getElementById('editSpotAccommodation').value = spot.accommodation;
+            document.getElementById('editSpotRestaurants').value = spot.restaurants;
+            document.getElementById('editSpotBarangay').value = spot.barangay;
+            document.getElementById('editSpotMapLink').value = spot.mapLink;
+            
+            // Store the current spot ID in a data attribute
+            document.getElementById('editSpotModal').dataset.spotId = spotId;
+            
+            showModal('editSpotModal');
+        }
+
+        // Save spot changes
+        function saveSpotChanges() {
+            const spotId = parseInt(document.getElementById('editSpotModal').dataset.spotId);
+            const spot = spotsData.find(s => s.id === spotId);
+            if (!spot) return;
+
+            // Update spot data (in a real app, this would be an API call)
+            spot.name = document.getElementById('editSpotName').value;
+            spot.type = document.getElementById('editSpotType').value;
+            spot.details = document.getElementById('editSpotDetails').value;
+            spot.regFee = parseFloat(document.getElementById('editSpotRegFee').value);
+            spot.envFee = parseFloat(document.getElementById('editSpotEnvFee').value);
+            spot.accommodation = document.getElementById('editSpotAccommodation').value;
+            spot.restaurants = document.getElementById('editSpotRestaurants').value;
+            spot.barangay = document.getElementById('editSpotBarangay').value;
+            spot.mapLink = document.getElementById('editSpotMapLink').value;
+
+            // Handle image upload if a new image was selected
+            const imageInput = document.getElementById('editSpotImage');
+            if (imageInput.files && imageInput.files[0]) {
+                // In a real app, you would upload the image to your server here
+                console.log('New image selected:', imageInput.files[0].name);
+                // Reset the file input
+                imageInput.value = '';
+            }
+
+            // Show success message
+            alert('Spot updated successfully!');
+            closeModal('editSpotModal');
+            
+            // In a real app, you would update the UI or refresh the data here
+        }
+
+        // Add/Edit Announcement and Blog Handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            // ...existing code...
+            renderAnnouncements();
+            renderBlogs();
+            
+            // Handle announcement form submission
+            document.getElementById('announcementForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const title = document.getElementById('announcementTitleInput').value.trim();
+                const author = document.getElementById('announcementAuthorInput').value.trim();
+                const description = document.getElementById('announcementDescInput').value.trim();
+                const editIndex = this.dataset.editIndex;
+                
+                if (editIndex !== undefined) {
+                    // Update existing announcement
+                    announcements[editIndex] = { title, author, description };
+                } else {
+                    // Add new announcement
+                    announcements.unshift({ title, author, description });
+                }
+                
+                renderAnnouncements();
+                closeModal('announcementModal');
+            });
+            
+            // Handle blog form submission
+            document.getElementById('blogForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const title = document.getElementById('blogTitleInput').value.trim();
+                const author = document.getElementById('blogAuthorInput').value.trim();
+                const description = document.getElementById('blogDescInput').value.trim();
+                const editIndex = this.dataset.editIndex;
+                
+                // Handle image upload if a new image was selected
+                const imageInput = document.getElementById('blogImageInput');
+                let imageUrl = '';
+                
+                if (imageInput.files && imageInput.files[0]) {
+                    // In a real app, you would upload the image to your server here
+                    imageUrl = URL.createObjectURL(imageInput.files[0]);
+                    console.log('New blog image selected:', imageInput.files[0].name);
+                    // Reset the file input
+                    imageInput.value = '';
+                } else if (editIndex !== undefined) {
+                    // Keep existing image if in edit mode and no new image was selected
+                    imageUrl = blogs[editIndex].imageUrl || '';
+                }
+                
+                if (editIndex !== undefined) {
+                    // Update existing blog
+                    blogs[editIndex] = { title, author, description, imageUrl };
+                } else {
+                    // Add new blog
+                    blogs.unshift({ title, author, description, imageUrl });
+                }
+                
+                renderBlogs();
+                closeModal('blogModal');
+            });
+        });
+
+        function updateGroupBreakdown(type, change) {
+            const inputIds = {
+                adults: 'adultsInput',
+                seniors: 'seniorsInput',
+                kids: 'kidsInput',
+                children: 'childrenInput'
+            };
+            const input = document.getElementById(inputIds[type]);
+            let newValue = parseInt(input.value) + change;
+            if (newValue < 0) newValue = 0;
+            if (type === 'adults' && newValue < 1) newValue = 1; // At least 1 adult by default
+            input.value = newValue;
+            updateTotalAmount();
+        }
+        function updateTotalAmount() {
+            const prices = {
+                adults: 100,
+                seniors: 80,
+                kids: 50,
+                children: 0, // entrance fee for children under 6
+                env: 100 // environmental fee per person
+            };
+            const adults = parseInt(document.getElementById('adultsInput').value) || 0;
+            const seniors = parseInt(document.getElementById('seniorsInput').value) || 0;
+            const kids = parseInt(document.getElementById('kidsInput').value) || 0;
+            const children = parseInt(document.getElementById('childrenInput').value) || 0;
+            const groupSize = adults + seniors + kids + children;
+            // Entrance fee (discounts apply)
+            const entranceTotal = (adults * prices.adults) + (seniors * prices.seniors) + (kids * prices.kids) + (children * prices.children);
+            // Environmental fee (no discount, per person)
+            const envTotal = groupSize * prices.env;
+            const total = entranceTotal + envTotal;
+            document.getElementById('totalAmount').textContent = `₱${total}`;
+            document.getElementById('envFee').textContent = `₱${prices.env} x ${groupSize} = ₱${envTotal}`;
+            if (window.currentVisitor) {
+                window.currentVisitor.groupBreakdown = { adults, seniors, kids, children };
+                window.currentVisitor.groupSize = groupSize;
+                window.currentVisitor.totalAmount = total;
+            }
+        }
+
+        // --- PDF EXPORT LOGIC (Preview Modal & Direct Download) ---
+        function getPeriodLabel() {
+            const periodMap = { monthly: 'Monthly', quarterly: 'Quarterly', yearly: 'Yearly' };
+            return periodMap[window.currentPeriod] || 'Monthly';
+        }
+
+        function downloadAllChartsPdf() {
+            // Long bond paper: 8.5 x 13 inches = 612 x 936 points
+            const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: [612, 936] });
+            const period = window.currentPeriod || 'monthly';
+            const periodLabel = getPeriodLabel();
+            const barangayName = 'Barangay Balakbak';
+            // Title and subtitle
+            doc.setFontSize(22);
+            doc.text(`${barangayName} Tourism Report`, 30, 40);
+            doc.setFontSize(16);
+            doc.text(`${periodLabel} Report`, 30, 65);
+            let y = 90;
+            const charts = [
+                { id: 'visitorChart', title: 'Visitor Trends' },
+                { id: 'demographicsChart', title: 'Visitor Demographics' },
+                { id: 'revenueChart', title: 'Revenue Overview' },
+                { id: 'spotChart', title: 'Most Visited Spots' }
+            ];
+            charts.forEach((chart, idx) => {
+                const canvas = document.getElementById(chart.id);
+                if (canvas) {
+                    const imgData = canvas.toDataURL('image/png', 1.0);
+                    doc.setFontSize(16);
+                    doc.text(chart.title, 30, y);
+                    doc.addImage(imgData, 'PNG', 30, y + 10, 350, 120);
+                    y += 150;
+                    if (y > 800 && idx < charts.length - 1) {
+                        doc.addPage();
+                        y = 40;
+                        doc.setFontSize(22);
+                        doc.text(`${barangayName} Tourism Report`, 30, y);
+                        doc.setFontSize(16);
+                        doc.text(`${periodLabel} Report`, 30, y + 25);
+                        y += 50;
+                    }
+                }
+            });
+            // Footer
+            doc.setFontSize(12);
+            doc.text('Prepared by: Barangay Admin', 30, doc.internal.pageSize.getHeight() - 30);
+            doc.save(`Barangay_${barangayName.replace(/ /g, '_')}_${periodLabel}_Report.pdf`);
+        }
+
+        function showPdfPreviewModal() {
+            const modal = document.getElementById('pdfPreviewModal');
+            const body = document.getElementById('pdfPreviewBody');
+            body.innerHTML = '';
+            // Use the current selected period for the report
+            const period = window.currentPeriod || 'monthly';
+            const periodLabel = getPeriodLabel();
+            const barangayName = 'Barangay Balakbak';
+            const titleDiv = document.createElement('div');
+            titleDiv.style.textAlign = 'center';
+            titleDiv.style.width = '100%';
+            titleDiv.innerHTML = `
+                <div style="font-size: 1.5em; font-weight: bold;">${barangayName} Tourism Report</div>
+                <div style="font-size: 1.2em;">KAPANGAN, BENGUET</div>
+                <div style="margin: 8px 0 16px 0; font-size: 1.1em; font-weight: bold; color: #2c6e49;">${periodLabel} Report</div>
+                <div style="font-size: 1.1em;">Period: 2024</div>
+            `;
+            body.appendChild(titleDiv);
+            // Chart previews
+            const charts = [
+                { id: 'visitorChart', title: 'Visitor Trends' },
+                { id: 'demographicsChart', title: 'Visitor Demographics' },
+                { id: 'revenueChart', title: 'Revenue Overview' },
+                { id: 'spotChart', title: 'Most Visited Spots' }
+            ];
+            charts.forEach(chart => {
+                const canvas = document.getElementById(chart.id);
+                if (canvas) {
+                    // Before capturing, update the chart to the current period if needed
+                    // (Assumes updateCharts has already been called by the filter button)
+                    const imgData = canvas.toDataURL('image/png', 1.0);
+                    const section = document.createElement('div');
+                    section.style.display = 'flex';
+                    section.style.flexDirection = 'column';
+                    section.style.alignItems = 'center';
+                    section.style.marginBottom = '32px';
+                    section.innerHTML = `
+                        <div style="font-weight: bold; margin-bottom: 12px; font-size: 1.15em;">${chart.title}</div>
+                        <img src="${imgData}" alt="${chart.title}" style="width: 100%; max-width: 900px; height: auto; border: 1px solid #eee; background: #fff; padding: 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 8px; display: block;" />
+                    `;
+                    body.appendChild(section);
+                }
+            });
+            // Footer
+            const footerDiv = document.createElement('div');
+            footerDiv.style.display = 'flex';
+            footerDiv.style.justifyContent = 'flex-end';
+            footerDiv.style.marginTop = '30px';
+            footerDiv.innerHTML = `
+                <div style="text-align: right; min-width: 250px;">
+                    <div>Prepared by:</div>
+                    <div style="font-weight: bold; margin-top: 10px;">Barangay Admin</div>
+                </div>
+            `;
+            body.appendChild(footerDiv);
+            modal.style.display = 'flex';
+        }
+
+        // Attach event listeners for both buttons and modal actions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Only show preview modal from the download button
+            const downloadBtn = document.getElementById('downloadAllChartsPdf');
+            if (downloadBtn) downloadBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showPdfPreviewModal();
+            });
+            // Modal close/cancel
+            const closeBtn = document.getElementById('closePdfPreview');
+            if (closeBtn) closeBtn.addEventListener('click', function() {
+                document.getElementById('pdfPreviewModal').style.display = 'none';
+            });
+            const cancelBtn = document.getElementById('cancelPdfPreview');
+            if (cancelBtn) cancelBtn.addEventListener('click', function() {
+                document.getElementById('pdfPreviewModal').style.display = 'none';
+            });
+            // Confirm download from modal
+            const confirmBtn = document.getElementById('confirmDownloadPdf');
+            if (confirmBtn) confirmBtn.addEventListener('click', function() {
+                document.getElementById('pdfPreviewModal').style.display = 'none';
+                downloadAllChartsPdf();
+            });
+            // Submit report button
+            const submitBtn = document.getElementById('submitReportBtn');
+            if (submitBtn) submitBtn.addEventListener('click', function() {
+                // Instead of direct save, show the report submission modal
+                showReportSubmissionModal();
+            });
+        });
+        // Toast notification function
+        function showToast(msg) {
+            const toast = document.getElementById('toastNotif');
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 2500);
+        }
+
+        // --- Add: Report Submission Modal ---
+        function showReportSubmissionModal() {
+            // Create modal if not exists
+            let modal = document.getElementById('reportSubmissionModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.id = 'reportSubmissionModal';
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width: 600px;">
+                        <div class="modal-header">
+                            <h3>Submit Report</h3>
+                            <button class="close-btn" onclick="closeModal('reportSubmissionModal')">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="reportSubmissionForm" class="form-container">
+                                <div class="form-group">
+                                    <label>Report Title</label>
+                                    <input type="text" id="reportTitleInput" class="form-control" placeholder="Report title..." required readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label>Report Content</label>
+                                    <textarea id="reportContentInput" class="form-control" placeholder="Report content..." rows="6" required></textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-secondary" onclick="closeModal('reportSubmissionModal')">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Submit Report</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+            // Set title automatically and make it readonly
+            const barangayName = 'Barangay Balakbak';
+            const periodLabel = getPeriodLabel();
+            document.getElementById('reportTitleInput').value = `${barangayName} ${periodLabel} Report`;
+            // Auto-fill content based on period
+            const now = new Date();
+            let content = '';
+            if (periodLabel === 'Monthly') {
+                const month = now.toLocaleString('default', { month: 'long' });
+                const year = now.getFullYear();
+                content = `This report summarizes the tourism activities and statistics for ${barangayName} for the month of ${month} ${year}.`;
+            } else if (periodLabel === 'Quarterly') {
+                const quarter = Math.floor(now.getMonth() / 3) + 1;
+                const year = now.getFullYear();
+                content = `This report summarizes the tourism activities and statistics for ${barangayName} for the quarter Q${quarter} ${year}.`;
+            } else if (periodLabel === 'Yearly') {
+                const year = now.getFullYear();
+                content = `This report summarizes the tourism activities and statistics for ${barangayName} for the year ${year}.`;
+            } else {
+                content = `This report summarizes the tourism activities and statistics for ${barangayName}.`;
+            }
+            document.getElementById('reportContentInput').value = content;
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('show'), 10);
+            // Attach submit handler
+            const form = document.getElementById('reportSubmissionForm');
+            form.onsubmit = function(e) {
+                e.preventDefault();
+                submitBarangayReport();
+            };
+        }
+
+        function submitBarangayReport() {
+            const barangayName = 'Barangay Balakbak';
+            const periodLabel = getPeriodLabel();
+            const title = document.getElementById('reportTitleInput').value.trim() || `${barangayName} ${periodLabel} Report`;
+            const content = document.getElementById('reportContentInput').value.trim();
+            // Capture chart images
+            const chartDefs = [
+                { id: 'visitorChart', title: 'Visitor Trends' },
+                { id: 'demographicsChart', title: 'Visitor Demographics' },
+                { id: 'revenueChart', title: 'Revenue Overview' },
+                { id: 'spotChart', title: 'Most Visited Spots' }
+            ];
+            const charts = chartDefs.map(def => {
+                const canvas = document.getElementById(def.id);
+                let image = '';
+                if (canvas) {
+                    image = canvas.toDataURL('image/png', 1.0);
+                }
+                return { title: def.title, image };
+            });
+            // --- Save raw chart data for aggregation ---
+            const rawData = {
+                monthly: getMonthlyData(window.currentPeriod),
+                spots: getSpotData(),
+                demographics: getDemographics()
+            };
+            const reportData = {
+                barangay: barangayName,
+                title: title,
+                submittedBy: 'Barangay Admin',
+                date: new Date().toISOString(),
+                status: 'Submitted',
+                period: periodLabel,
+                content: content,
+                charts: charts,
+                rawData: rawData // <-- add raw data here
+            };
+            let reports = [];
+            try {
+                reports = JSON.parse(localStorage.getItem('barangayReports') || '[]');
+            } catch (e) { reports = []; }
+            reports.unshift(reportData);
+            localStorage.setItem('barangayReports', JSON.stringify(reports));
+            showToast('Report submitted successfully!');
+            closeModal('reportSubmissionModal');
+            document.getElementById('pdfPreviewModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

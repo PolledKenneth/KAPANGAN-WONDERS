@@ -1,0 +1,1173 @@
+// Load tourist spots from localStorage or use default data
+let touristSpots = JSON.parse(localStorage.getItem('touristSpots') || 'null');
+
+// If no spots in localStorage, use default data
+if (!touristSpots) {
+    touristSpots = [
+    {
+        id: 1,
+        name: "Mt. Kalakasog",
+        location: "Barangay Balakbak, Kapangan, Benguet",
+        category: "mountains",
+        image: "assets/Mt. Kalukasog (Cuba).jpg",
+        description: "This rugged mountain peak offers panoramic views, forest trails, and dramatic rock formations for hikers and sunrise chasers. Mt. Kalakasog provides an excellent hiking experience with stunning vistas of the surrounding valleys and mountains of Benguet.",
+       
+        featured: true
+    },
+    {
+        id: 2,
+        name: "Longog Cave",
+        location: "Barangay Cuba, Kapangan, Benguet",
+        category: "caves",
+        image: "assets/Longog Cave (Balakbak).jpg",
+        description: "A deep cave network with maze-like tunnels and impressive natural formations, perfect for experienced spelunkers and curious explorers. The cave system features stunning limestone formations and underground chambers.",
+       
+        featured: true
+    },
+    {
+        id: 3,
+        name: "Badi Falls",
+        location: "Barangay Beleng-Belis, Kapangan, Benguet",
+        category: "waterfalls",
+        image: "assets/Badi Falls (Sagubo).jpg",
+        description: "A tall and powerful waterfall flowing into crystal-clear pools, surrounded by bamboo groves and accessible through a short scenic hike. Perfect for swimming and relaxation with family and friends.",
+       
+        featured: true
+    },
+    {
+        id: 4,
+        name: "Dumany Cave",
+        location: "Barangay Taba-ao, Kapangan, Benguet",
+        category: "caves",
+        image: "assets/Dumanay Cave (Pongayan).jpg",
+        description: "A cave system rich in folklore, Dumany features stunning rock formations and was once used as a wartime hideout—perfect for cave explorers and history enthusiasts. The cave offers a glimpse into local history and natural beauty.",
+       
+        featured: false
+    },
+    {
+        id: 5,
+        name: "Toplac Rice Terraces",
+        location: "Barangay Toplac, Kapangan, Benguet",
+        category: "viewpoint",
+        image: "assets/Toplac Rice Fields (Pudong).jpg",
+        description: "Handcrafted over generations, these layered rice paddies reflect indigenous farming techniques and offer a peaceful, scenic view of Kapangan's agricultural heritage. Best visited during planting and harvest seasons.",
+      
+    },
+    {
+        id: 6,
+        name: "Pey-og Falls",
+        location: "Barangay Balakbak, Kapangan, Benguet",
+        category: "waterfalls",
+        image: "assets/Pey-og Falls (Boklaoan).jpg",
+        description: "A tall and scenic waterfall reached through a forest trail, with natural pools ideal for a refreshing dip and a quiet escape into nature. The falls are surrounded by lush vegetation and offer a peaceful retreat.",
+       
+        featured: true
+    },
+    {
+        id: 7,
+        name: "Dangwa Cave",
+        location: "Barangay Payapay, Kapangan, Benguet",
+        category: "caves",
+        image: "assets/Dangwa Cave (Taba-ao).jpg",
+        description: "An undeveloped cave with raw limestone structures and narrow pathways, offering an off-the-grid spelunking experience for the adventurous. Features unique rock formations and underground chambers.",
+       
+        featured: false
+    },
+    {
+        id: 8,
+        name: "Puga Coffin Cave",
+        location: "Barangay Labueg, Kapangan, Benguet",
+        category: "caves",
+        image: "assets/Puga Coffin Cave (Sagubo).jpg",
+        description: "A sacred burial cave with traditional hanging coffins that reflect ancient Igorot customs and ancestral practices unique to the Cordillera. This cultural site offers insight into indigenous burial traditions.",
+       
+        featured: true
+    },
+    {
+        id: 9,
+        name: "Mt. Dakiwagan",
+        location: "Boundary of Barangay Taba-ao and Cuba, Kapangan, Benguet",
+        category: "mountains",
+        image: "assets/Mt. Dakiwagan (Balakbak).jpg",
+        description: "A scenic mountain ideal for hiking, Mt. Dakiwagan features dense pine forests and summit views overlooking the Cordillera highlands. Perfect for sunrise and sunset viewing with panoramic mountain vistas.",
+       
+        featured: false
+    },
+    {
+        id: 10,
+        name: "Manahongkong Falls",
+        location: "Barangay Balakbak, Kapangan, Benguet",
+        category: "waterfalls",
+        image: "assets/DSC00132.jpeg",
+        description: "A multi-tiered waterfall hidden within forest trails, forming layered cascades and a tranquil atmosphere for nature walks and meditation. The falls offer a serene environment perfect for relaxation.",
+       
+        featured: false
+    },
+    {
+        id: 11,
+        name: "Amburayan River",
+        location: "Barangay Pudtong and nearby areas",
+        category: "rivers",
+        image: "assets/Amburayan River (Taba-ao).jpg",
+        description: "A clean, calm river with rocky banks perfect for swimming, tubing, and riverside picnics, popular among locals during the summer season. The river offers refreshing waters and scenic surroundings.",
+       
+        featured: true
+    }
+    ];
+    // Save default spots to localStorage
+    localStorage.setItem('touristSpots', JSON.stringify(touristSpots));
+}
+
+// Add featured property to tourist spots if not exists
+touristSpots.forEach((spot, index) => {
+    if (spot.featured === undefined) {
+        spot.featured = index < 4; // First 4 spots are featured by default
+    }
+});
+
+// Save spots to localStorage
+function saveTouristSpots() {
+    localStorage.setItem('touristSpots', JSON.stringify(touristSpots));
+}
+
+// Blog Posts Data
+const blogPosts = [
+    {
+        id: 1,
+        title: "Complete Guide to Hiking Mt. Kalakasog",
+        excerpt: "Everything you need to know about hiking the highest peak in Kapangan, including trail maps, preparation tips, and best viewing spots.",
+        date: "2024-01-15",
+        image: "assets/Mt. Kalukasog (Cuba).jpg",
+        category: "Hiking Guides"
+    },
+    {
+        id: 2,
+        title: "Hidden Waterfalls of Kapangan: A Photographer's Paradise",
+        excerpt: "Discover the most photogenic waterfalls in Kapangan, with insider tips on the best angles and lighting conditions.",
+        date: "2024-01-10",
+        image: "assets/Badi Falls (Sagubo).jpg",
+        category: "Photography"
+    },
+    {
+        id: 3,
+        title: "Cultural Heritage: The Sacred Caves of Kapangan",
+        excerpt: "Learn about the historical significance and cultural importance of Kapangan's cave systems and burial sites.",
+        date: "2024-01-05",
+        image: "assets/Dumanay Cave (Pongayan).jpg",
+        category: "Culture & History"
+    },
+    {
+        id: 4,
+        title: "Best Time to Visit Kapangan's Rice Terraces",
+        excerpt: "Seasonal guide to experiencing the magnificent rice terraces of Kapangan at their most beautiful.",
+        date: "2023-12-28",
+        image: "assets/Obellan-Catampan Rice Terraces (Balakbak).jpg",
+        category: "Travel Tips"
+    }
+];
+
+// Global Variables
+let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+let currentFilter = 'all';
+let currentSpot = null;
+let userTravels = JSON.parse(localStorage.getItem('userTravels')) || [];
+let currentTravelId = null;
+
+// Initialize the website
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+});
+
+function initializeApp() {
+    displayFeaturedSpots();
+    displayTouristSpots();
+    displayBlogs();
+    updateAuthUI();
+    setupEventListeners();
+    
+    // Setup form submission for adding new spots (if on barangay.html)
+    if (document.getElementById('addSpotForm')) {
+        document.getElementById('addSpotForm').addEventListener('submit', handleAddSpotSubmit);
+    }
+    
+    // Set minimum date for scheduling to today
+    const today = new Date().toISOString().split('T')[0];
+    if (document.getElementById('scheduleDate')) {
+        document.getElementById('scheduleDate').min = today;
+    }
+}
+
+function setupEventListeners() {
+    // Header scroll effect
+    window.addEventListener('scroll', function() {
+        const header = document.getElementById('header');
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    });
+
+    // Form submissions
+    document.getElementById('signinForm').addEventListener('submit', handleSignIn);
+    document.getElementById('signupForm').addEventListener('submit', handleSignUp);
+    document.getElementById('scheduleForm').addEventListener('submit', handleScheduleSubmit);
+    
+    if (document.getElementById('profileForm')) {
+        document.getElementById('profileForm').addEventListener('submit', handleProfileUpdate);
+    }
+}
+
+// Navigation Functions
+function showHome() {
+    document.getElementById('mainContent').style.display = 'block';
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('blogSection').style.display = 'none';
+    document.getElementById('accommodationsSection').style.display = 'none';
+    document.getElementById('contactSection').style.display = 'none';
+    document.getElementById('allTouristSpots').style.display = 'none';
+    document.getElementById('featuredSpots').style.display = 'block';
+    document.querySelector('.hero').style.display = 'block';
+
+    window.scrollTo(0, 0);
+}
+
+function showAllTouristSpots() {
+    document.querySelector('.hero').style.display = 'none';
+
+    document.getElementById('mainContent').style.display = 'block';
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('blogSection').style.display = 'none';
+    document.getElementById('accommodationsSection').style.display = 'none';
+    document.getElementById('contactSection').style.display = 'none';
+    document.getElementById('featuredSpots').style.display = 'none';
+    document.getElementById('allTouristSpots').style.display = 'block';
+    
+    // Scroll to top of tourist spots section
+    document.getElementById('allTouristSpots').scrollIntoView({ behavior: 'smooth' });
+}
+
+function showBlogs() {
+    document.querySelector('.hero').style.display = 'none';
+
+    document.getElementById('mainContent').style.display = 'block';
+    document.getElementById('dashboard').style.display = 'none';
+    
+    // Hide all sections except blogs
+    document.getElementById('featuredSpots').style.display = 'none';
+    document.getElementById('allTouristSpots').style.display = 'none';
+    document.getElementById('blogSection').style.display = 'block';
+    document.getElementById('accommodationsSection').style.display = 'none';
+    document.getElementById('contactSection').style.display = 'none';
+    
+    // Update active nav item
+    updateActiveNavItem('blogs');
+    window.scrollTo(0, 0);
+}
+
+function showAccommodations() {
+    document.querySelector('.hero').style.display = 'none';
+
+    document.getElementById('mainContent').style.display = 'block';
+    document.getElementById('dashboard').style.display = 'none';
+    
+    // Hide all sections except accommodations
+    document.getElementById('featuredSpots').style.display = 'none';
+    document.getElementById('allTouristSpots').style.display = 'none';
+    document.getElementById('blogSection').style.display = 'none';
+    document.getElementById('accommodationsSection').style.display = 'block';
+    document.getElementById('contactSection').style.display = 'none';
+    
+    // Update active nav item
+    updateActiveNavItem('accommodations');
+    window.scrollTo(0, 0);
+}
+
+function showContact() {
+    document.querySelector('.hero').style.display = 'none';
+
+
+    document.getElementById('mainContent').style.display = 'block';
+    document.getElementById('dashboard').style.display = 'none';
+    
+    // Hide all sections except contact
+    document.getElementById('featuredSpots').style.display = 'none';
+    document.getElementById('allTouristSpots').style.display = 'none';
+    document.getElementById('blogSection').style.display = 'none';
+    document.getElementById('accommodationsSection').style.display = 'none';
+    document.getElementById('contactSection').style.display = 'block';
+    
+    // Update active nav item
+    updateActiveNavItem('contact');
+    window.scrollTo(0, 0);
+}
+
+function showDashboard() {
+    if (!currentUser) {
+        openAuthModal('signin');
+        return;
+    }
+    
+    document.getElementById('mainContent').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.querySelector('.hero').style.display = 'none';
+
+    
+    // Update dashboard with user info
+    updateDashboard();
+    window.scrollTo(0, 0);
+}
+
+function updateActiveNavItem(section) {
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+        const link = item.querySelector('.nav-link');
+        if (link) {
+            link.classList.remove('active');
+        }
+    });
+    
+    // Find and activate the clicked nav item
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        if (link.textContent.toLowerCase().includes(section) || 
+            (section === 'home' && link.textContent === 'Home')) {
+            link.classList.add('active');
+        }
+    });
+}
+
+// Tourist Spots Functions
+function displayFeaturedSpots() {
+    const featuredGrid = document.getElementById('featuredSpotsGrid');
+    const featuredSpots = touristSpots.filter(spot => spot.featured);
+    
+    featuredGrid.innerHTML = featuredSpots.map(spot => `
+        <div class="spot-card" onclick="openSpotModal(${spot.id})">
+            <div class="spot-image">
+                <img src="${spot.image}" alt="${spot.name}">
+                <div class="spot-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    ${spot.location.split(',')[0]}
+                </div>
+            </div>
+            <div class="spot-content">
+                <h3>${spot.name}</h3>
+                <p>${spot.description.substring(0, 100)}...</p>
+                <div class="spot-actions">
+                    <span class="btn btn-sm btn-outline">${spot.difficulty}</span>
+                    <span class="btn btn-sm btn-primary">View More</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function displayTouristSpots(filter = 'all') {
+    // Load spots from localStorage to ensure we have the latest data
+    const savedSpots = JSON.parse(localStorage.getItem('touristSpots'));
+    if (savedSpots) {
+        touristSpots = savedSpots;
+    }
+    
+    const spotsGrid = document.getElementById('spotsGrid');
+    const featuredSpotsGrid = document.getElementById('featuredSpotsGrid');
+    
+    if (!spotsGrid && !featuredSpotsGrid) return;
+    
+    // Filter spots based on category
+    const filteredSpots = filter === 'all' 
+        ? [...touristSpots] // Create a copy of the array
+        : touristSpots.filter(spot => spot.category === filter);
+    
+    // Display all spots in the main grid
+    if (spotsGrid) {
+        spotsGrid.innerHTML = filteredSpots.length > 0 
+            ? filteredSpots.map(spot => createSpotCard(spot)).join('')
+            : '<div class="no-spots">No tourist spots found in this category.</div>';
+    }
+    
+    // Display featured spots in the featured section
+    if (featuredSpotsGrid) {
+        const featuredSpots = touristSpots.filter(spot => spot.featured);
+        featuredSpotsGrid.innerHTML = featuredSpots.length > 0
+            ? featuredSpots.map(spot => createSpotCard(spot)).join('')
+            : '<div class="no-spots">No featured spots available.</div>';
+    }
+    
+    // Make sure spot cards are clickable
+    attachSpotCardClickHandlers();
+}
+
+// Create HTML for a spot card
+function createSpotCard(spot) {
+    return `
+        <div class="spot-card" data-id="${spot.id}">
+            <div class="spot-image" style="background-image: url('${spot.image || 'https://via.placeholder.com/400x300?text=No+Image'}')">
+                <span class="spot-category">${spot.category || 'Uncategorized'}</span>
+            </div>
+            <div class="spot-info">
+                <h3>${spot.name || 'Unnamed Spot'}</h3>
+                <div class="spot-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>${spot.location || 'Location not specified'}</span>
+                </div>
+                <p class="spot-description">
+                    ${spot.description ? (spot.description.length > 100 ? spot.description.substring(0, 100) + '...' : spot.description) : 'No description available.'}
+                </p>
+            </div>
+        </div>
+    `;
+}
+
+// Attach click handlers to spot cards
+function attachSpotCardClickHandlers() {
+    document.querySelectorAll('.spot-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const spotId = parseInt(this.getAttribute('data-id'));
+            const spot = touristSpots.find(s => s.id === spotId);
+            if (spot) {
+                openSpotModal(spot);
+            }
+        });
+}
+
+// Open spot modal with details
+function openSpotModal(spot) {
+    // Handle both direct spot object or spot ID
+    const spotObj = typeof spot === 'number' 
+        ? touristSpots.find(s => s.id === spot)
+        : spot;
+        
+    if (!spotObj) return;
+    
+    const modal = document.getElementById('spotModal');
+    if (!modal) return;
+
+    // Update modal content
+    document.getElementById('modalImage').src = spotObj.image || 'https://via.placeholder.com/800x400?text=No+Image';
+    document.getElementById('modalImage').alt = spotObj.name || 'Tourist Spot';
+    document.querySelector('.modal-title').textContent = spotObj.name || 'Tourist Spot';
+    document.getElementById('modalCategory').textContent = spotObj.category || 'Uncategorized';
+    
+    const locationElement = document.getElementById('modalLocation');
+    if (locationElement) {
+        locationElement.innerHTML = spotObj.location 
+            ? `<i class="fas fa-map-marker-alt"></i><span>${spotObj.location}</span>`
+            : '<i class="fas fa-map-marker-alt"></i><span>Location not specified</span>';
+    }
+    
+    const descriptionElement = document.querySelector('.spot-details .spot-description');
+    if (descriptionElement) {
+        descriptionElement.textContent = spotObj.description || 'No description available.';
+    }
+    
+    // Show the modal
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+// Close modal
+function closeModal() {
+document.getElementById('spotModal').style.display = 'none';
+document.body.style.overflow = 'auto';
+}
+
+// Close modal when clicking outside the content
+window.onclick = function(event) {
+const modal = document.getElementById('spotModal');
+if (event.target === modal) {
+closeModal();
+function filterSpots(category) {
+    currentFilter = category;
+
+blogGrid.innerHTML = blogPosts.map(post => `
+<article class="blog-card" onclick="openBlogModal(${post.id})">
+<div class="blog-image">
+<img src="${post.image}" alt="${post.title}">
+</div>
+<div class="blog-content">
+<div class="blog-meta">
+<span class="blog-date">${formatDate(post.date)}</span>
+<span class="blog-category">${post.category}</span>
+</div>
+<h3 class="blog-title">${post.title}</h3>
+<p class="blog-excerpt">${post.excerpt}</p>
+<a href="#" class="read-more">Read More →</a>
+</div>
+</article>
+`).join('');
+            <div class="blog-image">
+                <img src="${post.image}" alt="${post.title}">
+            </div>
+            <div class="blog-content">
+                <div class="blog-meta">
+                    <span class="blog-date">${formatDate(post.date)}</span>
+                    <span class="blog-category">${post.category}</span>
+                </div>
+                <h3 class="blog-title">${post.title}</h3>
+                <p class="blog-excerpt">${post.excerpt}</p>
+                <a href="#" class="read-more">Read More →</a>
+            </div>
+        </article>
+    `).join('');
+}
+
+function openBlogModal(blogId) {
+    const blog = blogPosts.find(post => post.id === blogId);
+    if (!blog) return;
+    
+    const modal = document.getElementById('blogModal');
+    const modalTitle = document.getElementById('blogModalTitle');
+    const modalDate = document.getElementById('blogModalDate');
+    const modalCategory = document.getElementById('blogModalCategory');
+    const modalImage = document.getElementById('blogModalImage');
+    const modalContent = document.getElementById('blogModalContent');
+    
+    // Update modal content
+    modalTitle.textContent = blog.title;
+    modalDate.textContent = formatDate(blog.date);
+    modalCategory.textContent = blog.category;
+    modalImage.src = blog.image;
+    
+    // For demo purposes - in a real app, this would come from a database
+    modalContent.innerHTML = `
+        <p>This is a detailed blog post about "${blog.title}". In a complete implementation, 
+        this would contain the full article content.</p>
+        
+        <h4>Detailed Information</h4>
+        <p>${blog.excerpt} This extended content would provide more in-depth information about 
+        the topic discussed in the blog post.</p>
+        
+        <p>Additional paragraphs, images, and formatting would appear here to create a 
+        comprehensive article for readers.</p>
+    `;
+    
+    modal.style.display = 'block';
+}
+
+function closeBlogModal() {
+    document.getElementById('blogModal').style.display = 'none';
+}
+
+// Authentication Functions
+function openAuthModal(mode = 'signin') {
+    document.getElementById('authModal').style.display = 'block';
+    switchAuthTab(mode);
+}
+
+function closeAuthModal() {
+    document.getElementById('authModal').style.display = 'none';
+}
+
+function switchAuthTab(mode) {
+    const tabs = document.querySelectorAll('.auth-tab');
+    const forms = document.querySelectorAll('.auth-form');
+    
+    tabs.forEach(tab => tab.classList.remove('active'));
+    forms.forEach(form => form.classList.remove('active'));
+    
+    if (mode === 'signin') {
+        tabs[0].classList.add('active');
+        document.getElementById('signinForm').classList.add('active');
+    } else {
+        tabs[1].classList.add('active');
+        document.getElementById('signupForm').classList.add('active');
+    }
+}
+
+function handleSignIn(e) {
+    e.preventDefault();
+    const email = e.target.querySelector('input[type="email"]').value;
+    const password = e.target.querySelector('input[type="password"]').value;
+    
+    // Simple validation - in real app, this would be server-side
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const user = users.find(u => u.email === email && u.password === password);
+    
+    if (user) {
+        currentUser = user;
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        updateAuthUI();
+        closeAuthModal();
+        alert('Welcome back, ' + user.name + '!');
+    } else {
+        alert('Invalid email or password. Please try again.');
+    }
+}
+
+function handleSignUp(e) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    
+    const name = document.getElementById('signupName').value;
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('signupConfirmPassword').value;
+    const phone = document.getElementById('signupPhone').value;
+    const address = document.getElementById('signupAddress').value;
+    
+    // Validation
+    if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+    }
+    
+    if (password.length < 6) {
+        alert('Password must be at least 6 characters long!');
+        return;
+    }
+    
+    // Check if user already exists
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    if (users.find(u => u.email === email)) {
+        alert('User with this email already exists!');
+        return;
+    }
+    
+    // Create new user
+    const newUser = {
+        id: Date.now(),
+        name,
+        age,
+        email,
+        password,
+        phone,
+        address,
+        joinDate: new Date().toISOString()
+    };
+    
+    users.push(newUser);
+    localStorage.setItem('users', JSON.stringify(users));
+    
+    currentUser = newUser;
+    localStorage.setItem('currentUser', JSON.stringify(newUser));
+    
+    updateAuthUI();
+    closeAuthModal();
+    alert('Account created successfully! Welcome to Kapangan Wonders, ' + name + '!');
+}
+
+function logout() {
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    updateAuthUI();
+    showHome();
+    alert('You have been logged out successfully!');
+}
+
+function updateAuthUI() {
+    const authButtons = document.querySelector('.auth-buttons');
+    const userMenu = document.getElementById('userMenu');
+    
+    if (currentUser) {
+        authButtons.querySelector('.btn-outline').style.display = 'none';
+        authButtons.querySelector('.btn-primary').style.display = 'none';
+        userMenu.style.display = 'flex';
+        document.getElementById('userNameDisplay').textContent = currentUser.name;
+    } else {
+        authButtons.querySelector('.btn-outline').style.display = 'inline-flex';
+        authButtons.querySelector('.btn-primary').style.display = 'inline-flex';
+        userMenu.style.display = 'none';
+    }
+}
+
+// Schedule Visit Functions
+function scheduleVisit() {
+    if (!currentUser) {
+        alert('Please sign in to schedule a visit.');
+        openAuthModal('signin');
+        return;
+    }
+    
+    if (!currentSpot) {
+        alert('Please select a tourist spot first.');
+        return;
+    }
+    
+    document.getElementById('scheduleSpot').value = currentSpot.name;
+    document.getElementById('scheduleModal').style.display = 'block';
+    closeModal();
+}
+
+function closeScheduleModal() {
+    document.getElementById('scheduleModal').style.display = 'none';
+}
+
+function handleScheduleSubmit(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('scheduleUserName').value;
+    const email = document.getElementById('scheduleUserEmail').value;
+    const barangay = document.getElementById('scheduleBarangay').value;
+    const spotName = document.getElementById('scheduleSpot').value;
+    const date = document.getElementById('scheduleDate').value;
+    const time = document.getElementById('scheduleTime').value;
+    const pax = parseInt(document.getElementById('scheduleVisitors').value);
+    const medical = document.getElementById('scheduleMedical').value;
+
+    if (!barangay || !spotName || !date || !time || !pax) {
+        alert('Please complete all required fields.');
+        return;
+    }
+    const medicalCheckbox = document.getElementById('medicalDeclaration');
+if (!medicalCheckbox.checked) {
+    alert('Please confirm your medical condition declaration before submitting.');
+    return;
+}
+
+
+    const spot = touristSpots.find(s => s.name === spotName);
+
+    const travel = {
+        id: Date.now(),
+        userId: currentUser.id,
+        userName: name,
+        userEmail: email,
+        barangay: barangay,
+        spot: spot,
+        date: date,
+        time: time,
+        visitors: pax,
+        medicalCondition: medical,
+        status: 'scheduled',
+        createdAt: new Date().toISOString()
+    };
+
+    userTravels.push(travel);
+    localStorage.setItem('userTravels', JSON.stringify(userTravels));
+
+    // Generate QR
+    generateQRCode(travel);
+
+    // Reset form
+    document.getElementById('scheduleForm').reset();
+    closeScheduleModal();
+
+    alert('Your visit has been scheduled successfully!');
+}
+function prefillScheduleForm() {
+    if (currentUser) {
+        document.getElementById('scheduleUserName').value = currentUser.name || '';
+        document.getElementById('scheduleUserEmail').value = currentUser.email || '';
+        document.getElementById('scheduleUserAge').value = currentUser.age || '';
+    }
+}
+
+
+function generateQRCode(travel) {
+    // Generate QR data string
+    const qrData = JSON.stringify({
+        id: travel.id,
+        spot: travel.spot.name,
+        date: travel.date,
+        time: travel.time,
+        visitors: travel.visitors,
+        user: currentUser.name
+    });
+    
+    // Clear previous QR code
+    document.getElementById('qrCode').innerHTML = '';
+    
+    // Generate new QR code
+    new QRCode(document.getElementById('qrCode'), {
+        text: qrData,
+        width: 200,
+        height: 200,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+    });
+    
+    // Display visit info
+    document.getElementById('qrInfo').innerHTML = `
+        <p><strong>Spot:</strong> ${travel.spot.name}</p>
+        <p><strong>Date:</strong> ${formatDate(travel.date)}</p>
+        <p><strong>Time:</strong> ${travel.time}</p>
+        <p><strong>Visitors:</strong> ${travel.visitors}</p>
+    `;
+    
+    // Close schedule modal and show QR modal
+    closeScheduleModal();
+    document.getElementById('qrModal').style.display = 'block';
+}
+
+function closeQRModal() {
+    document.getElementById('qrModal').style.display = 'none';
+}
+
+// Dashboard Functions
+function updateDashboard() {
+    if (!currentUser) return;
+    
+    // Update user info
+    document.getElementById('dashboardUserName').textContent = currentUser.name;
+    document.getElementById('dashboardAvatar').textContent = currentUser.name.charAt(0).toUpperCase();
+    
+    // Update profile form
+    document.getElementById('profileName').value = currentUser.name || '';
+    document.getElementById('profileEmail').value = currentUser.email || '';
+    document.getElementById('profilePhone').value = currentUser.phone || '';
+    document.getElementById('profileAddress').value = currentUser.address || '';
+    
+    // Display user travels
+    displayUserTravels();
+}
+
+function showDashboardSection(section) {
+    // Update sidebar active state
+    document.querySelectorAll('.sidebar-link').forEach(link => {
+        link.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    // Show/hide sections
+    document.getElementById('profileSection').style.display = section === 'profile' ? 'block' : 'none';
+    document.getElementById('travelsSection').style.display = section === 'travels' ? 'block' : 'none';
+    document.getElementById('announcementsSection').style.display = section === 'announcements' ? 'block' : 'none';
+}
+
+function displayUserTravels() {
+    const travelsList = document.getElementById('travelsList');
+    const travels = userTravels.filter(travel => travel.userId === currentUser.id);
+
+    if (travels.length === 0) {
+        travelsList.innerHTML = '<tr><td colspan="6" style="text-align: center;">No scheduled travels yet. Start exploring and schedule your visits!</td></tr>';
+        return;
+    }
+
+    travelsList.innerHTML = travels.map(travel => `
+        <tr>
+            <td>${travel.spot.name}</td>
+            <td>${formatDate(travel.date)}</td>
+            <td>${travel.time}</td>
+            <td>${travel.visitors}</td>
+            <td><span class="status-badge ${travel.status}">${travel.status}</span></td>
+            <td class="actions">
+                <button class="btn-icon" onclick="showAddCompanionModal(${travel.id})" title="Add Companion">
+                    <i class="fas fa-user-plus"></i>
+                </button>
+                <button class="btn-icon" onclick="cancelVisit(${travel.id})" title="Cancel Visit">
+                    <i class="fas fa-times"></i>
+                </button>
+                <button class="btn-icon" onclick="viewQR(${travel.id})" title="View QR Code">
+                    <i class="fas fa-qrcode"></i>
+                </button>
+            </td>
+        </tr>
+        ${travel.companions ? travel.companions.map((companion, index) => `
+            <tr>
+                <td colspan="6" style="padding-left: 20px;">
+                    <strong>Companion:</strong> ${companion.name}, Age: ${companion.age}
+                    <button class="btn-icon btn-delete" onclick="deleteCompanion(${travel.id}, ${index})" title="Delete Companion">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('') : ''}
+    `).join('');
+}
+
+function viewQR(travelId) {
+    const travel = userTravels.find(t => t.id === travelId);
+    if (!travel) return;
+    
+    // Generate QR data string
+    const qrData = JSON.stringify({
+        id: travel.id,
+        spot: travel.spot.name,
+        date: travel.date,
+        time: travel.time,
+        visitors: travel.visitors,
+        user: currentUser.name
+    });
+    
+    // Clear previous QR code
+    document.getElementById('qrCode').innerHTML = '';
+    
+    // Generate new QR code
+    new QRCode(document.getElementById('qrCode'), {
+        text: qrData,
+        width: 200,
+        height: 200,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+    });
+    
+    // Display visit info
+    document.getElementById('qrInfo').innerHTML = `
+        <p><strong>Spot:</strong> ${travel.spot.name}</p>
+        <p><strong>Date:</strong> ${formatDate(travel.date)}</p>
+        <p><strong>Time:</strong> ${travel.time}</p>
+        <p><strong>Visitors:</strong> ${travel.visitors}</p>
+    `;
+    
+    // Show QR modal
+    document.getElementById('qrModal').style.display = 'block';
+}
+
+function showAddCompanionModal(travelId) {
+    currentTravelId = travelId;
+    document.getElementById('addCompanionModal').style.display = 'block';
+}
+
+function closeAddCompanionModal() {
+    document.getElementById('addCompanionModal').style.display = 'none';
+    currentTravelId = null;
+}
+
+function handleAddCompanion(event) {
+    event.preventDefault();
+    const travel = userTravels.find(t => t.id === currentTravelId);
+    if (!travel) return;
+
+    const name = document.getElementById('companionName').value.trim();
+    const age = parseInt(document.getElementById('companionAge').value.trim(), 10);
+
+    if (!name || isNaN(age)) {
+        alert('Please provide valid companion details.');
+        return;
+    }
+
+    if (!travel.companions) {
+        travel.companions = [];
+    }
+
+    travel.companions.push({ name, age });
+    localStorage.setItem('userTravels', JSON.stringify(userTravels));
+    displayUserTravels();
+    closeAddCompanionModal();
+    alert('Companion added successfully!');
+}
+
+function deleteCompanion(travelId, companionIndex) {
+    const travel = userTravels.find(t => t.id === travelId);
+    if (!travel || !travel.companions || !travel.companions[companionIndex]) return;
+
+    travel.companions.splice(companionIndex, 1);
+    localStorage.setItem('userTravels', JSON.stringify(userTravels));
+    displayUserTravels();
+    alert('Companion deleted successfully!');
+}
+
+function cancelVisit(travelId) {
+    if (!confirm('Are you sure you want to cancel this visit?')) return;
+    
+    userTravels = userTravels.filter(t => t.id !== travelId);
+    localStorage.setItem('userTravels', JSON.stringify(userTravels));
+    displayUserTravels();
+    alert('Visit canceled successfully!');
+}
+
+function handleProfileUpdate(e) {
+    e.preventDefault();
+    
+    const updatedUser = {
+        ...currentUser,
+        name: document.getElementById('profileName').value,
+        email: document.getElementById('profileEmail').value,
+        phone: document.getElementById('profilePhone').value,
+        address: document.getElementById('profileAddress').value
+    };
+    
+    // Update in users array
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const userIndex = users.findIndex(u => u.id === currentUser.id);
+    if (userIndex !== -1) {
+        users[userIndex] = updatedUser;
+        localStorage.setItem('users', JSON.stringify(users));
+    }
+    
+    // Update current user
+    currentUser = updatedUser;
+    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+    
+    updateAuthUI();
+    updateDashboard();
+    alert('Profile updated successfully!');
+}
+// Auto-fill user data when opening schedule form
+function openScheduleForm() {
+    if (!currentUser) {
+        alert('Please log in first.');
+        openAuthModal('signin');
+        return;
+    }
+    document.getElementById('scheduleUserName').value = currentUser.name;
+    document.getElementById('scheduleUserEmail').value = currentUser.email;
+    document.getElementById('scheduleModal').style.display = 'block';
+}
+function openScheduleModal() {
+    document.getElementById('scheduleModal').style.display = 'block';
+    prefillScheduleForm();
+}
+
+
+// Populate Tourist Spots based on selected Barangay
+function populateSpots() {
+    const barangay = document.getElementById('scheduleBarangay').value;
+    const spotDropdown = document.getElementById('scheduleSpot');
+    spotDropdown.innerHTML = '<option value="">-- Select Spot --</option>';
+
+    touristSpots.forEach(spot => {
+        if (spot.location.includes(barangay)) {
+            const option = document.createElement('option');
+            option.value = spot.name;
+            option.textContent = spot.name;
+            spotDropdown.appendChild(option);
+        }
+    });
+}
+
+// Dummy date availability check (you can connect this to a real API/database)
+function checkAvailability() {
+    const date = document.getElementById('scheduleDate').value;
+    const notice = document.getElementById('availabilityNotice');
+
+    // Example: Block July 10, 2025 as full
+    if (date === '2025-07-10') {
+        notice.textContent = "This date is already full/unavailable.";
+        document.getElementById('scheduleDate').value = '';
+    } else {
+        notice.textContent = '';
+    }
+}
+
+// Attach openScheduleForm to your external "Schedule a Visit" button:
+document.getElementById('scheduleVisitBtn').addEventListener('click', openScheduleForm);
+
+
+// Mobile Menu Functions
+function toggleMobileMenu() {
+    const navMenu = document.getElementById('navMenu');
+    navMenu.classList.toggle('active');
+}
+
+// Utility Functions
+function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+}
+
+// Handle Add New Spot Form Submission
+function handleAddSpotSubmit(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('spotName').value.trim();
+    const location = document.getElementById('spotLocation').value.trim();
+    const category = document.getElementById('spotCategory').value;
+    const image = document.getElementById('spotImage').value.trim();
+    const description = document.getElementById('spotDescription').value.trim();
+    
+    // Create new spot object
+    const newSpot = {
+        id: Date.now(), // Use timestamp as unique ID
+        name: name,
+        location: location,
+        category: category,
+        image: image,
+        description: description,
+        featured: false, // New spots are not featured by default
+        addedBy: 'barangay' // Track that this was added via barangay admin
+    };
+    
+    // Add to the beginning of the array
+    touristSpots.unshift(newSpot);
+    
+    // Save to localStorage
+    saveTouristSpots();
+    
+    // Show success message
+    alert('Tourist spot added successfully! It will be reviewed by the municipal tourism office.');
+    
+    // Clear the form
+    clearSpotForm();
+    
+    // If on barangay.html, refresh the spots list
+    if (document.getElementById('spotsList')) {
+        renderSpotsList();
+    }
+    
+    // If on index.html, refresh the display
+    if (typeof displayTouristSpots === 'function') {
+        displayTouristSpots();
+    }
+}
+
+// Clear the add spot form
+function clearSpotForm() {
+    const form = document.getElementById('addSpotForm');
+    if (form) {
+        form.reset();
+    }
+}
+
+// Close modals when clicking outside
+window.onclick = function(event) {
+    const spotModal = document.getElementById('spotModal');
+    const authModal = document.getElementById('authModal');
+    const scheduleModal = document.getElementById('scheduleModal');
+    const qrModal = document.getElementById('qrModal');
+    const blogModal = document.getElementById('blogModal');
+    const addCompanionModal = document.getElementById('addCompanionModal');
+    
+    if (event.target === spotModal) {
+        spotModal.style.display = 'none';
+    }
+    if (event.target === authModal) {
+        authModal.style.display = 'none';
+    }
+    if (event.target === scheduleModal) {
+        scheduleModal.style.display = 'none';
+    }
+    if (event.target === qrModal) {
+        qrModal.style.display = 'none';
+    }
+    if (event.target === blogModal) {
+        blogModal.style.display = 'none';
+    }
+    if (event.target === addCompanionModal) {
+        addCompanionModal.style.display = 'none';
+    }
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+        closeAuthModal();
+        closeScheduleModal();
+        closeQRModal();
+        closeBlogModal();
+        closeAddCompanionModal();
+    }
+});
+
+
+// Export functions for global access
+window.showHome = showHome;
+window.showAllTouristSpots = showAllTouristSpots;
+window.showBlogs = showBlogs;
+window.showDashboard = showDashboard;
+window.filterSpots = filterSpots;
+window.openSpotModal = openSpotModal;
+window.closeModal = closeModal;
+window.openAuthModal = openAuthModal;
+window.closeAuthModal = closeAuthModal;
+window.switchAuthTab = switchAuthTab;
+window.logout = logout;
+window.scheduleVisit = scheduleVisit;
+window.closeScheduleModal = closeScheduleModal;
+window.showDashboardSection = showDashboardSection;
+window.toggleMobileMenu = toggleMobileMenu;
+window.viewQR = viewQR;
+window.showAddCompanionModal = showAddCompanionModal;
+window.closeAddCompanionModal = closeAddCompanionModal;
+window.handleAddCompanion = handleAddCompanion;
+window.deleteCompanion = deleteCompanion;
+window.cancelVisit = cancelVisit;
+window.closeQRModal = closeQRModal;
+window.openBlogModal = openBlogModal;
+window.closeBlogModal = closeBlogModal;
