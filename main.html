@@ -936,6 +936,66 @@
         .reinstate-btn:hover {
             background: #218838 !important;
         }
+        
+        /* Toast Notification Styles */
+        .toast-notification {
+            display: flex;
+            align-items: center;
+            min-width: 300px;
+            max-width: 400px;
+            animation: slideInRight 0.3s ease forwards;
+        }
+        
+        .toast-notification.success {
+            background: linear-gradient(135deg, #38b000, #2d8f00);
+            color: white;
+            border-left: 4px solid #2d8f00;
+        }
+        
+        .toast-notification.warning {
+            background: linear-gradient(135deg, #ff9e00, #e68900);
+            color: white;
+            border-left: 4px solid #e68900;
+        }
+        
+        .toast-notification.error {
+            background: linear-gradient(135deg, #e63946, #c1121f);
+            color: white;
+            border-left: 4px solid #c1121f;
+        }
+        
+        .toast-notification.info {
+            background: linear-gradient(135deg, #4361ee, #3a56d4);
+            color: white;
+            border-left: 4px solid #3a56d4;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(100%);
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .toast-notification {
+                right: 16px;
+                left: 16px;
+                min-width: auto;
+                max-width: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1578,6 +1638,12 @@
         <i class="fas fa-home"></i>
     </a>
 
+    <!-- Toast Notification -->
+    <div id="toastNotif" class="toast-notification success" style="display:none; position:fixed; bottom:40px; right:40px; padding:16px 28px; border-radius:8px; font-size:1.1em; z-index:99999; box-shadow:0 4px 12px rgba(0,0,0,0.15); transform: translateX(100%); transition: transform 0.3s ease;">
+        <i class="fas fa-check-circle" style="margin-right: 8px;"></i>
+        <span id="toastMessage">Action completed successfully!</span>
+    </div>
+
     <!-- Modal for Chart PDF Preview -->
     <div class="modal" id="pdfPreviewModal">
         <div class="modal-content" style="max-width: 1000px;">
@@ -1719,6 +1785,53 @@
         // Current data state
         let appData = { ...sampleData };
         
+        // Toast notification function
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toastNotif');
+            const messageSpan = document.getElementById('toastMessage');
+            
+            // Update message and icon
+            messageSpan.textContent = msg;
+            
+            // Update icon based on type
+            const icon = toast.querySelector('i');
+            icon.className = 'fas';
+            
+            switch(type) {
+                case 'success':
+                    icon.classList.add('fa-check-circle');
+                    break;
+                case 'warning':
+                    icon.classList.add('fa-exclamation-triangle');
+                    break;
+                case 'error':
+                    icon.classList.add('fa-times-circle');
+                    break;
+                case 'info':
+                    icon.classList.add('fa-info-circle');
+                    break;
+                default:
+                    icon.classList.add('fa-check-circle');
+            }
+            
+            // Update toast class
+            toast.className = `toast-notification ${type}`;
+            
+            // Show toast with animation
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // Hide toast after delay
+            setTimeout(() => {
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 300);
+            }, 3000);
+        }
+
         // Navigation functionality
         document.addEventListener('DOMContentLoaded', function() {
             // Mobile menu toggle
@@ -1747,6 +1860,21 @@
                         document.getElementById(target).classList.add('active');
                     }
                     
+                    // Show section notification
+                    const sectionNames = {
+                        'dashboard': 'Dashboard',
+                        'accommodations': 'Accommodations',
+                        'tourist-spots': 'Tourist Spots',
+                        'restaurants': 'Restaurants',
+                        'users': 'User Management',
+                        'analytics': 'Reports & Analytics',
+                        'barangay-reports': 'Barangay Reports'
+                    };
+                    
+                    if (sectionNames[target]) {
+                        showToast(`Switched to ${sectionNames[target]} section`, 'info');
+                    }
+                    
                     // Close sidebar on mobile after selection
                     if (window.innerWidth <= 576) {
                         sidebar.classList.remove('active');
@@ -1759,6 +1887,11 @@
             
             // Render initial content
             renderAllContent();
+            
+            // Show welcome notification
+            setTimeout(() => {
+                showToast('Welcome to Kapangan Tourism Admin Dashboard!', 'info');
+            }, 1000);
             
             // Add event listeners for all 'Add' buttons
             const addUserBtn = document.getElementById('addUserBtn');
@@ -1910,7 +2043,7 @@
             if (spot && spot.status !== 'Approved') {
                 spot.status = 'Approved';
                 renderTouristSpots();
-                alert('Tourist spot approved!');
+                showToast(`Tourist spot "${spot.name}" approved successfully!`, 'success');
             }
         }
         
@@ -2454,25 +2587,34 @@
         // Decline item
         function declineItem(id, type) {
             if (confirm(`Are you sure you want to delete this ${type}?`)) {
+                let itemName = '';
                 switch(type) {
                     case 'touristSpot':
+                        const spot = appData.touristSpots.find(item => item.id == id);
+                        itemName = spot ? spot.name : 'Tourist Spot';
                         appData.touristSpots = appData.touristSpots.filter(item => item.id != id);
                         renderTouristSpots();
                         break;
                     case 'allUser':
+                        const user = appData.allUsers.find(item => item.id == id);
+                        itemName = user ? user.name : 'User';
                         appData.allUsers = appData.allUsers.filter(item => item.id != id);
                         renderAllUsers();
                         break;
                     case 'accommodation':
+                        const acc = appData.accommodations.find(item => item.id == id);
+                        itemName = acc ? acc.name : 'Accommodation';
                         appData.accommodations = appData.accommodations.filter(item => item.id != id);
                         renderAccommodations();
                         break;
                     case 'restaurant':
+                        const res = appData.restaurants.find(item => item.id == id);
+                        itemName = res ? res.name : 'Restaurant';
                         appData.restaurants = appData.restaurants.filter(item => item.id != id);
                         renderRestaurants();
                         break;
                 }
-                alert(`${type} deleted successfully!`);
+                showToast(`${itemName} deleted successfully!`, 'success');
             }
         }
         
@@ -2717,7 +2859,7 @@
             const fee = document.getElementById('entranceFee').value;
             
             if (!name || !barangay || !description || !location || !fee) {
-                alert('Please fill in all fields');
+                showToast('Please fill in all required fields', 'error');
                 return;
             }
             
@@ -2748,7 +2890,7 @@
             renderActivities();
             
             closeModal();
-            alert('Tourist spot added successfully!');
+            showToast(`Tourist spot "${name}" added successfully!`, 'success');
         }
         
         // Add new accommodation
@@ -2759,7 +2901,7 @@
             const contact = document.getElementById('accContact').value;
             const fbLink = document.getElementById('accFbLink').value;
             if (!name || !type || !location) {
-                alert('Please fill in required fields');
+                showToast('Please fill in required fields', 'error');
                 return;
             }
             const newAcc = {
@@ -2786,7 +2928,7 @@
             renderActivities();
             
             closeModal();
-            alert('Accommodation added successfully!');
+            showToast(`Accommodation "${name}" added successfully!`, 'success');
         }
         
         // Add new restaurant
@@ -2796,7 +2938,7 @@
             const contact = document.getElementById('resContact').value;
             const fbLink = document.getElementById('resFbLink').value;
             if (!name || !location) {
-                alert('Please fill in required fields');
+                showToast('Please fill in required fields', 'error');
                 return;
             }
             const newRes = {
@@ -2822,7 +2964,7 @@
             renderActivities();
             
             closeModal();
-            alert('Restaurant added successfully!');
+            showToast(`Restaurant "${name}" added successfully!`, 'success');
         }
         
         // Add new user
@@ -2844,7 +2986,7 @@
             appData.allUsers.push(newUser);
             renderAllUsers();
             closeModal();
-            alert('User added successfully!');
+            showToast(`User "${name}" added successfully!`, 'success');
             
             // Add activity
             const newActivity = {
@@ -2944,6 +3086,9 @@
                     
                     // Update all charts
                     updateCharts(currentTimePeriod);
+                    
+                    // Show notification
+                    showToast(`Charts updated to ${currentTimePeriod} view`, 'info');
                 });
             });
 
@@ -3352,6 +3497,7 @@
             if (downloadBtn) downloadBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 showPdfPreviewModal();
+                showToast('Opening PDF preview...', 'info');
             });
         }, 300);
 
@@ -3371,6 +3517,7 @@
             if (confirmBtn) confirmBtn.addEventListener('click', function() {
                 document.getElementById('pdfPreviewModal').style.display = 'none';
                 downloadPdf();
+                showToast('PDF report downloaded successfully!', 'success');
             });
         });
 
@@ -3743,7 +3890,7 @@
         function downloadPdf() {
             console.log('Download PDF triggered');
             if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF !== 'function') {
-                alert('PDF library (jsPDF) not loaded. Please check your internet connection or try again.');
+                showToast('PDF library not loaded. Please check your internet connection.', 'error');
                 return;
             }
             // Use portrait orientation and long bond paper (8.5 x 13 inches)
@@ -3814,7 +3961,7 @@
                 if (type === 'accommodation') renderAccommodations();
                 else if (type === 'restaurant') renderRestaurants();
                 else if (type === 'allUser') renderAllUsers();
-                alert(`${type === 'allUser' ? 'User' : type.charAt(0).toUpperCase() + type.slice(1)} suspended!`);
+                showToast(`${item.name} suspended successfully!`, 'warning');
             }
         }
         function reinstateItem(id, type) {
@@ -3829,7 +3976,7 @@
                 if (type === 'accommodation') renderAccommodations();
                 else if (type === 'restaurant') renderRestaurants();
                 else if (type === 'allUser') renderAllUsers();
-                alert(`${type === 'allUser' ? 'User' : type.charAt(0).toUpperCase() + type.slice(1)} reinstated!`);
+                showToast(`${item.name} reinstated successfully!`, 'success');
             }
         }
 
@@ -3852,10 +3999,12 @@
                 barangayGroup.querySelector('label').textContent = 'Private Tourist Spot Name';
                 barangaySelect.style.display = 'none';
                 barangayGroup.appendChild(spotInput);
+                showToast('Role changed to Tourist Owner', 'info');
             } else {
                 barangayGroup.querySelector('label').textContent = 'Barangay';
                 barangaySelect.style.display = '';
                 if (spotInput) spotInput.remove();
+                showToast('Role changed to Barangay Admin', 'info');
             }
         }
         document.addEventListener('DOMContentLoaded', function() {
@@ -3882,10 +4031,12 @@
                     barangayGroup.querySelector('label').textContent = 'Private Tourist Spot Name';
                     barangaySelect.style.display = 'none';
                     barangayGroup.appendChild(spotInput);
+                    showToast('Role changed to Tourist Owner', 'info');
                 } else {
                     barangayGroup.querySelector('label').textContent = 'Barangay';
                     barangaySelect.style.display = '';
                     if (spotInput) spotInput.remove();
+                    showToast('Role changed to Barangay Admin', 'info');
                 }
             });
         }
@@ -4247,22 +4398,22 @@
         document.getElementById('redFlagModal').style.display = 'none';
         currentFlaggedUserEmail = null;
     }
-    function submitViolation() {
-        const violation = document.getElementById('violationInput').value.trim();
-        if (!violation) {
-            alert('Please enter a violation.');
-            return;
+            function submitViolation() {
+            const violation = document.getElementById('violationInput').value.trim();
+            if (!violation) {
+                showToast('Please enter a violation description.', 'error');
+                return;
+            }
+            let violations = JSON.parse(localStorage.getItem('userViolations') || '[]');
+            violations.push({
+                email: currentFlaggedUserEmail,
+                violation,
+                date: new Date().toISOString()
+            });
+            localStorage.setItem('userViolations', JSON.stringify(violations));
+            closeRedFlagModal();
+            showToast('Violation submitted successfully!', 'success');
         }
-        let violations = JSON.parse(localStorage.getItem('userViolations') || '[]');
-        violations.push({
-            email: currentFlaggedUserEmail,
-            violation,
-            date: new Date().toISOString()
-        });
-        localStorage.setItem('userViolations', JSON.stringify(violations));
-        closeRedFlagModal();
-        alert('Violation submitted and will appear in the user dashboard announcement.');
-    }
     document.addEventListener('DOMContentLoaded', function() {
         const closeBtn = document.getElementById('closeRedFlagModal');
         if (closeBtn) closeBtn.onclick = closeRedFlagModal;

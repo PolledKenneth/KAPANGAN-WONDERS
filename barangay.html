@@ -908,6 +908,58 @@
         .floating-btn.back-btn:hover {
             background: #444;
         }
+        
+        /* Toast Notification Styles */
+        .toast-notification {
+            display: flex;
+            align-items: center;
+            min-width: 300px;
+            max-width: 400px;
+            animation: slideInRight 0.3s ease forwards;
+        }
+        
+        .toast-notification.success {
+            background: linear-gradient(135deg, #38b000, #2d8f00);
+            color: white;
+            border-left: 4px solid #2d8f00;
+        }
+        
+        .toast-notification.warning {
+            background: linear-gradient(135deg, #ff9e00, #e68900);
+            color: white;
+            border-left: 4px solid #e68900;
+        }
+        
+        .toast-notification.error {
+            background: linear-gradient(135deg, #e63946, #c1121f);
+            color: white;
+            border-left: 4px solid #c1121f;
+        }
+        
+        .toast-notification.info {
+            background: linear-gradient(135deg, #4361ee, #3a56d4);
+            color: white;
+            border-left: 4px solid #3a56d4;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(100%);
+            }
+        }
+        
         @media (max-width: 600px) {
             .floating-btn, .floating-btn.back-btn {
                 right: 16px;
@@ -917,6 +969,13 @@
             }
             .floating-btn.back-btn {
                 bottom: 80px;
+            }
+            
+            .toast-notification {
+                right: 16px;
+                left: 16px;
+                min-width: auto;
+                max-width: none;
             }
         }
     </style>
@@ -1674,8 +1733,9 @@
     </div>
 
     <!-- Toast Notification -->
-    <div id="toastNotif" style="display:none; position:fixed; bottom:40px; right:40px; background:#38b000; color:#fff; padding:16px 28px; border-radius:8px; font-size:1.1em; z-index:99999; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
-        Report submitted successfully!
+    <div id="toastNotif" class="toast-notification success" style="display:none; position:fixed; bottom:40px; right:40px; padding:16px 28px; border-radius:8px; font-size:1.1em; z-index:99999; box-shadow:0 4px 12px rgba(0,0,0,0.15); transform: translateX(100%); transition: transform 0.3s ease;">
+        <i class="fas fa-check-circle" style="margin-right: 8px;"></i>
+        <span id="toastMessage">Report submitted successfully!</span>
     </div>
 
     <!-- Report Submission Modal -->
@@ -1780,6 +1840,7 @@
                     const period = this.dataset.period;
                     window.currentPeriod = period;
                     updateCharts(period);
+                    showToast(`Charts updated to ${period} view`, 'info');
                 });
             });
             
@@ -1790,11 +1851,19 @@
             updateRecentVisitors();
             renderAnnouncements();
             renderBlogs();
+            
+            // Show welcome notification
+            setTimeout(() => {
+                showToast('Welcome to Barangay Balakbak Admin Dashboard!', 'info');
+            }, 1000);
         });
         
         // Start scanning process
         function startScanning() {
             document.getElementById('scanStatus').textContent = "Scanning... Looking for QR code";
+            
+            // Show scanning notification
+            showToast("QR Scanner activated. Scanning for visitor code...", 'info');
             
             // Simulate scanning process
             setTimeout(() => {
@@ -1813,6 +1882,9 @@
                     <span style="color: var(--success)">QR Code Scanned Successfully!</span><br>
                     Visitor: ${randomVisitor.name} | Group: ${randomVisitor.groupSize} | Spot: ${randomVisitor.spot}
                 `;
+                
+                // Show success notification
+                showToast(`QR Code scanned successfully! Found visitor: ${randomVisitor.name}`, 'success');
                 
                 // Update recent visitors
                 updateRecentVisitors();
@@ -1925,6 +1997,9 @@
             document.getElementById('successGroup').textContent = groupText;
             document.getElementById('successAmount').textContent = total;
             
+            // Show success notification
+            showToast(`Payment processed successfully! ${visitorName} registered for ${spotName}`, 'success');
+            
             closeModal('qrModal');
             setTimeout(() => {
                 showModal('successModal');
@@ -1976,6 +2051,20 @@
                     item.classList.add('active');
                 }
             });
+            
+            // Show section notification
+            const sectionNames = {
+                'dashboard': 'Dashboard',
+                'qr-scanner': 'QR Scanner',
+                'tourist-spots': 'Tourist Spots',
+                'announcements-section': 'Announcements',
+                'blogs-section': 'Blogs',
+                'reports': 'Reports'
+            };
+            
+            if (sectionNames[sectionId]) {
+                showToast(`Switched to ${sectionNames[sectionId]} section`, 'info');
+            }
         }
         
         // Modal functions
@@ -2448,9 +2537,11 @@
         }
         function deleteAnnouncement(idx) {
             if (confirm('Delete this announcement?')) {
+                const deletedAnnouncement = announcements[idx];
                 announcements.splice(idx, 1);
                 renderAnnouncements();
                 closeModal('announcementModal');
+                showToast(`Announcement "${deletedAnnouncement.title}" deleted successfully`, 'success');
             }
         }
         // Edit/Delete Blog
@@ -2459,9 +2550,11 @@
         }
         function deleteBlog(idx) {
             if (confirm('Delete this blog?')) {
+                const deletedBlog = blogs[idx];
                 blogs.splice(idx, 1);
                 renderBlogs();
                 closeModal('blogModal');
+                showToast(`Blog "${deletedBlog.title}" deleted successfully`, 'success');
             }
         }
         // Sample spot data (in a real app, this would come from a database)
@@ -2552,7 +2645,7 @@
             }
 
             // Show success message
-            alert('Spot updated successfully!');
+            showToast(`Tourist spot "${spot.name}" updated successfully`, 'success');
             closeModal('editSpotModal');
             
             // In a real app, you would update the UI or refresh the data here
@@ -2576,9 +2669,11 @@
                 if (editIndex !== undefined) {
                     // Update existing announcement
                     announcements[editIndex] = { title, author, description };
+                    showToast(`Announcement "${title}" updated successfully`, 'success');
                 } else {
                     // Add new announcement
                     announcements.unshift({ title, author, description });
+                    showToast(`Announcement "${title}" added successfully`, 'success');
                 }
                 
                 renderAnnouncements();
@@ -2612,9 +2707,11 @@
                 if (editIndex !== undefined) {
                     // Update existing blog
                     blogs[editIndex] = { title, author, description, imageUrl };
+                    showToast(`Blog "${title}" updated successfully`, 'success');
                 } else {
                     // Add new blog
                     blogs.unshift({ title, author, description, imageUrl });
+                    showToast(`Blog "${title}" added successfully`, 'success');
                 }
                 
                 renderBlogs();
@@ -2723,6 +2820,9 @@
             doc.setFontSize(12);
             doc.text('Prepared by: Barangay Admin', 30, doc.internal.pageSize.getHeight() - 30);
             doc.save(`Barangay_${barangayName.replace(/ /g, '_')}_${periodLabel}_Report.pdf`);
+            
+            // Show success notification
+            showToast('PDF report generated and downloaded successfully', 'success');
         }
 
         function showPdfPreviewModal() {
@@ -2805,6 +2905,7 @@
             if (confirmBtn) confirmBtn.addEventListener('click', function() {
                 document.getElementById('pdfPreviewModal').style.display = 'none';
                 downloadAllChartsPdf();
+                showToast('PDF report downloaded successfully', 'success');
             });
             // Submit report button
             const submitBtn = document.getElementById('submitReportBtn');
@@ -2814,11 +2915,50 @@
             });
         });
         // Toast notification function
-        function showToast(msg) {
+        function showToast(msg, type = 'success') {
             const toast = document.getElementById('toastNotif');
-            toast.textContent = msg;
+            const messageSpan = document.getElementById('toastMessage');
+            
+            // Update message and icon
+            messageSpan.textContent = msg;
+            
+            // Update icon based on type
+            const icon = toast.querySelector('i');
+            icon.className = 'fas';
+            
+            switch(type) {
+                case 'success':
+                    icon.classList.add('fa-check-circle');
+                    break;
+                case 'warning':
+                    icon.classList.add('fa-exclamation-triangle');
+                    break;
+                case 'error':
+                    icon.classList.add('fa-times-circle');
+                    break;
+                case 'info':
+                    icon.classList.add('fa-info-circle');
+                    break;
+                default:
+                    icon.classList.add('fa-check-circle');
+            }
+            
+            // Update toast class
+            toast.className = `toast-notification ${type}`;
+            
+            // Show toast with animation
             toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 2500);
+            setTimeout(() => {
+                toast.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // Hide toast after delay
+            setTimeout(() => {
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 300);
+            }, 3000);
         }
 
         // --- Add: Report Submission Modal ---
@@ -2930,7 +3070,7 @@
             } catch (e) { reports = []; }
             reports.unshift(reportData);
             localStorage.setItem('barangayReports', JSON.stringify(reports));
-            showToast('Report submitted successfully!');
+            showToast('Report submitted successfully!', 'success');
             closeModal('reportSubmissionModal');
             document.getElementById('pdfPreviewModal').style.display = 'none';
         }
