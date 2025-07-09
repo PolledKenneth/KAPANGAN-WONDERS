@@ -1327,15 +1327,38 @@
             <div class="charts">
                 <div class="chart-container">
                     <div class="chart-header">
-                        <h3>Visitors per Tourist Spot</h3>
+                        <h3>Visitors per Barangay</h3>
+                        <div class="chart-desc">Shows the total number of visitors for each tourist spot and their barangay.</div>
                     </div>
-                    <canvas id="spotTotalsChart"></canvas>
+                    <canvas id="barangayChart"></canvas>
                 </div>
                 <div class="chart-container">
                     <div class="chart-header">
-                        <h3>Monthly Total Visitors</h3>
+                        <h3>Revenue Overview</h3>
+                        <div class="chart-desc">Displays the revenue breakdown by source.</div>
                     </div>
-                    <canvas id="monthlyTotalsChart"></canvas>
+                    <canvas id="revenueChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Top Tourist Spots Visited</h3>
+                        <div class="chart-desc">Highlights the most visited tourist spots in the municipality.</div>
+                    </div>
+                    <canvas id="spotsChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Visitor Demographics</h3>
+                        <div class="chart-desc">Shows the monthly trend of total visitors.</div>
+                    </div>
+                    <canvas id="demographicsChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Visitor Origin Demographics</h3>
+                        <div class="chart-desc">Breakdown of visitors by origin: local, national, or international.</div>
+                    </div>
+                    <canvas id="visitorDemographicsChart"></canvas>
                 </div>
             </div>
         </div>
@@ -2840,50 +2863,365 @@
         
         // Initialize charts
         function initCharts() {
-            // Chart 1: Visitors per Tourist Spot (Horizontal Bar)
-            const spotTotalsCtx = document.getElementById('spotTotalsChart').getContext('2d');
-            if (window.spotTotalsChart && typeof window.spotTotalsChart.destroy === 'function') window.spotTotalsChart.destroy();
-            window.spotTotalsChart = new Chart(spotTotalsCtx, {
+            // Data for filters
+            const barangayData = {
+                monthly: [320, 280, 450, 380, 250, 190],
+                quarterly: [1200, 1100, 1500, 1300, 900, 700],
+                yearly: [4800, 4200, 6000, 5200, 3600, 2800]
+            };
+            const barangayLabels = ['Pudong', 'Balakbak', 'Taba-ao', 'Lusod', 'Cayapes', 'Sagubo'];
+            let currentBarangayFilter = 'monthly';
+
+            // Barangay Visitors Chart
+            const barangayCtx = document.getElementById('barangayChart').getContext('2d');
+            if (window.barangayChart && typeof window.barangayChart.destroy === 'function') window.barangayChart.destroy();
+            window.barangayChart = new Chart(barangayCtx, {
                 type: 'bar',
                 data: {
-                    labels: spotNames,
+                    labels: barangayLabels,
                     datasets: [{
-                        label: 'Total Visitors',
-                        data: spotTotals,
+                        label: 'Visitors',
+                        data: barangayData[currentBarangayFilter],
                         backgroundColor: 'rgba(44, 110, 73, 0.7)',
                         borderColor: 'rgb(44, 110, 73)',
                         borderWidth: 1
                     }]
                 },
                 options: {
-                    indexAxis: 'y',
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false },
+                        legend: {
+                            display: false
+                        }
                     },
                     scales: {
-                        x: { beginAtZero: true, title: { display: true, text: 'Visitors' } },
-                        y: { title: { display: true, text: 'Tourist Spot (Barangay)' } }
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Visitors'
+                            }
+                        }
                     }
                 }
             });
 
-            // Chart 2: Monthly Total Visitors (Line)
-            const monthlyTotalsCtx = document.getElementById('monthlyTotalsChart').getContext('2d');
-            if (window.monthlyTotalsChart && typeof window.monthlyTotalsChart.destroy === 'function') window.monthlyTotalsChart.destroy();
-            window.monthlyTotalsChart = new Chart(monthlyTotalsCtx, {
-                type: 'line',
+            // Sample data for different time periods
+            const spotsData = {
+                monthly: {
+                    labels: ['Mount Tagpaya', 'Kapangan Falls', 'Taba-ao Rice Terraces', 'Lusod Cave', 'Kapangan River'],
+                    data: [320, 280, 240, 180, 150]
+                },
+                quarterly: {
+                    labels: ['Mount Tagpaya', 'Kapangan Falls', 'Taba-ao Rice Terraces', 'Lusod Cave', 'Kapangan River'],
+                    data: [1200, 980, 850, 700, 600]
+                },
+                yearly: {
+                    labels: ['Mount Tagpaya', 'Kapangan Falls', 'Taba-ao Rice Terraces', 'Lusod Cave', 'Kapangan River'],
+                    data: [4500, 3800, 3200, 2800, 2500]
+                }
+            };
+
+            const demographicsData = {
+                monthly: [15, 10, 5],
+                quarterly: [45, 30, 15],
+                yearly: [180, 120, 50]
+            };
+
+            // Global time period filter
+            let currentTimePeriod = 'monthly';
+            const filterBtns = document.querySelectorAll('#analytics .filter-options .filter-btn');
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Update active state
+                    document.querySelectorAll('#analytics .filter-options .filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update current time period
+                    currentTimePeriod = this.getAttribute('data-period');
+                    
+                    // Update all charts
+                    updateCharts(currentTimePeriod);
+                });
+            });
+
+            
+            // Function to update all charts based on selected time period
+            function updateCharts(period) {
+                // Update barangay chart
+                barangayChart.data.datasets[0].data = barangayData[period];
+                barangayChart.update();
+                
+                // Update spots chart
+                spotsChart.data.datasets[0].data = spotsData[period].data;
+                spotsChart.update();
+                
+                // Update demographics chart
+                demographicsChart.data.datasets[0].data = demographicsData[period];
+                demographicsChart.update();
+                
+                // Update dashboard cards
+                updateDashboardCards(period);
+            }
+            
+            // Function to update dashboard cards based on time period
+            function updateDashboardCards(period) {
+                const cardData = {
+                    monthly: { visitors: '1,352', revenue: '₱8,346', repeat: '58%' },
+                    quarterly: { visitors: '4,128', revenue: '₱25,038', repeat: '61%' },
+                    yearly: { visitors: '16,842', revenue: '₱100,153', repeat: '64%' }
+                };
+                
+                const data = cardData[period];
+                document.querySelector('.dashboard-cards .card:nth-child(1) h3').textContent = data.visitors;
+                document.querySelector('.dashboard-cards .card:nth-child(2) h3').textContent = data.revenue;
+                document.querySelector('.dashboard-cards .card:nth-child(3) h3').textContent = data.repeat;
+            }
+
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            const revenueChart = new Chart(revenueCtx, {
+                type: 'bar', // Changed from 'doughnut' to 'bar'
                 data: {
-                    labels: months,
+                    labels: ['Entrance Fees', 'Guide Fee', 'Registration Fee'],
+                    datasets: [{
+                        label: 'Revenue (₱)',
+                        data: [10000, 50000, 10000],
+                        backgroundColor: [
+                            'rgba(44, 110, 73, 0.7)',
+                            'rgba(76, 149, 108, 0.7)',
+                            'rgba(56, 176, 0, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgb(44, 110, 73)',
+                            'rgb(76, 149, 108)',
+                            'rgb(56, 176, 0)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ₱${value.toLocaleString()} (${percentage}%)`;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'end',
+                            color: '#000',
+                            font: {
+                                weight: 'bold',
+                                size: 12
+                            },
+                            formatter: function(value, context) {
+                                const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `₱${value.toLocaleString()}\n${percentage}%`;
+                            },
+                            textAlign: 'center',
+                            padding: 6
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Revenue (₱)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Revenue Source'
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+            
+            // Top Tourist Spots Chart - Horizontal Bar
+            const spotsCtx = document.getElementById('spotsChart').getContext('2d');
+            if (window.spotsChart && typeof window.spotsChart.destroy === 'function') window.spotsChart.destroy();
+            window.spotsChart = new Chart(spotsCtx, {
+                type: 'bar',
+                data: {
+                    labels: spotsData.monthly.labels,
                     datasets: [{
                         label: 'Total Visitors',
-                        data: monthlyTotals,
-                        backgroundColor: 'rgba(76, 149, 108, 0.3)',
-                        borderColor: 'rgb(76, 149, 108)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.3
+                        data: spotsData.monthly.data,
+                        backgroundColor: [
+                            'rgba(44, 110, 73, 0.7)',
+                            'rgba(76, 149, 108, 0.7)',
+                            'rgba(56, 176, 0, 0.7)',
+                            'rgba(67, 97, 238, 0.7)',
+                            'rgba(255, 158, 0, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // Makes the bar chart horizontal
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.raw.toLocaleString()} visitors`;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'end',
+                            color: '#000',
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: function(value) {
+                                return value.toLocaleString();
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Visitors'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                autoSkip: false
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+            
+            // Visitor Demographics Chart
+            const demographicsCtx = document.getElementById('demographicsChart').getContext('2d');
+            if (window.demographicsChart && typeof window.demographicsChart.destroy === 'function') window.demographicsChart.destroy();
+            window.demographicsChart = new Chart(demographicsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Local', 'National', 'International'],
+                    datasets: [{
+                        label: 'Visitor Demographics',
+                        data: demographicsData.monthly,
+                        backgroundColor: [
+                            'rgba(44, 110, 73, 0.7)',
+                            'rgba(76, 149, 108, 0.7)',
+                            'rgba(56, 176, 0, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // horizontal bar
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        },
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Percentage (%)'
+                            },
+                            max: 100
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Visitor Type'
+                            }
+                        }
+                    },
+                    animation: {
+                        onComplete: function() {
+                            const chart = demographicsChart;
+                            const ctx = chart.ctx;
+                            ctx.save();
+                            chart.data.datasets.forEach(function(dataset, i) {
+                                const meta = chart.getDatasetMeta(i);
+                                meta.data.forEach(function(bar, index) {
+                                    const data = dataset.data[index] + '%';
+                                    const barWidth = bar.width;
+                                    const barHeight = bar.height;
+                                    const x = bar.x;
+                                    const y = bar.y;
+                                    ctx.font = 'bold 14px Segoe UI';
+                                    ctx.fillStyle = '#222';
+                                    ctx.textAlign = 'left';
+                                    ctx.textBaseline = 'middle';
+                                    // Draw value inside or at end of bar
+                                    let labelX = x + (barWidth > 0 ? Math.abs(barWidth) : 0) + 10;
+                                    if (dataset.data[index] > 10) {
+                                        // If bar is long enough, put label inside
+                                        labelX = x - 10;
+                                        ctx.textAlign = 'right';
+                                    }
+                                    ctx.fillText(data, labelX, y);
+                                });
+                            });
+                            ctx.restore();
+                        }
+                    }
+                }
+            });
+
+            // Visitor Demographics (Bar)
+            const visitorDemoCtx = document.getElementById('visitorDemographicsChart').getContext('2d');
+            if (window.visitorDemographicsChart && typeof window.visitorDemographicsChart.destroy === 'function') window.visitorDemographicsChart.destroy();
+            window.visitorDemographicsChart = new Chart(visitorDemoCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Local', 'National', 'International'],
+                    datasets: [{
+                        label: 'Number of Visitors',
+                        data: [18000, 2500, 746],
+                        backgroundColor: [
+                            'rgba(44, 110, 73, 0.7)',
+                            'rgba(76, 149, 108, 0.7)',
+                            'rgba(56, 176, 0, 0.7)'
+                        ],
+                        borderWidth: 1
                     }]
                 },
                 options: {
@@ -2891,12 +3229,17 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
+                        datalabels: {
+                            anchor: 'end', align: 'end', color: '#000', font: { weight: 'bold' },
+                            formatter: v => v.toLocaleString()
+                        }
                     },
                     scales: {
                         y: { beginAtZero: true, title: { display: true, text: 'Visitors' } },
-                        x: { title: { display: true, text: 'Month' } }
+                        x: { title: { display: true, text: 'Demographic' } }
                     }
-                }
+                },
+                plugins: [ChartDataLabels]
             });
         }
         
@@ -3119,6 +3462,193 @@
 
         // Track current period globally
         window.currentPeriod = 'monthly';
+
+        // Refactored chart initialization
+        function initCharts(period = window.currentPeriod) {
+            window.currentPeriod = period;
+            // Visitors per Tourist Spot (Horizontal Bar)
+            const barangayCtx = document.getElementById('barangayChart').getContext('2d');
+            if (window.barangayChart && typeof window.barangayChart.destroy === 'function') window.barangayChart.destroy();
+            window.barangayChart = new Chart(barangayCtx, {
+                type: 'bar',
+                data: {
+                    labels: spotNames,
+                    datasets: [{
+                        label: 'Total Visitors',
+                        data: spotTotalsByPeriod[period],
+                        backgroundColor: 'rgba(44, 110, 73, 0.7)',
+                        borderColor: 'rgb(44, 110, 73)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false, labels: { font: { size: 9 } } },
+                        datalabels: {
+                            anchor: 'end', align: 'end', color: '#000', font: { weight: 'bold', size: 9 },
+                            formatter: v => v.toLocaleString()
+                        }
+                    },
+                    scales: {
+                        x: { beginAtZero: true, title: { display: true, text: 'Visitors', font: { size: 9 } }, ticks: { font: { size: 9 } } },
+                        y: { title: { display: true, text: 'Tourist Spot (Barangay)', font: { size: 9 } }, ticks: { font: { size: 9 } } }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
+            // Top Tourist Spots (Horizontal Bar)
+            const spotsCtx = document.getElementById('spotsChart').getContext('2d');
+            if (window.spotsChart && typeof window.spotsChart.destroy === 'function') window.spotsChart.destroy();
+            window.spotsChart = new Chart(spotsCtx, {
+                type: 'bar',
+                data: {
+                    labels: spotNames,
+                    datasets: [{
+                        label: 'Total Visitors',
+                        data: spotTotalsByPeriod[period],
+                        backgroundColor: [
+                            'rgba(44, 110, 73, 0.7)',
+                            'rgba(76, 149, 108, 0.7)',
+                            'rgba(56, 176, 0, 0.7)',
+                            'rgba(67, 97, 238, 0.7)',
+                            'rgba(255, 158, 0, 0.7)',
+                            'rgba(230, 57, 70, 0.7)',
+                            'rgba(111, 66, 193, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false, labels: { font: { size: 9 } } },
+                        datalabels: {
+                            anchor: 'end', align: 'end', color: '#000', font: { weight: 'bold', size: 9 },
+                            formatter: v => v.toLocaleString()
+                        }
+                    },
+                    scales: {
+                        x: { beginAtZero: true, title: { display: true, text: 'Visitors', font: { size: 9 } }, ticks: { font: { size: 9 } } },
+                        y: { title: { display: true, text: 'Tourist Spot (Barangay)', font: { size: 9 } }, ticks: { font: { size: 9 } } }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
+            // Monthly Trends (Horizontal Bar)
+            const demographicsCtx = document.getElementById('demographicsChart').getContext('2d');
+            if (window.demographicsChart && typeof window.demographicsChart.destroy === 'function') window.demographicsChart.destroy();
+            window.demographicsChart = new Chart(demographicsCtx, {
+                type: 'bar',
+                data: {
+                    labels: monthsByPeriod[period],
+                    datasets: [{
+                        label: 'Total Visitors',
+                        data: monthlyTotalsByPeriod[period],
+                        backgroundColor: 'rgba(76, 149, 108, 0.7)',
+                        borderColor: 'rgb(76, 149, 108)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false, labels: { font: { size: 9 } } },
+                        datalabels: {
+                            anchor: 'end', align: 'end', color: '#000', font: { weight: 'bold', size: 9 },
+                            formatter: v => v.toLocaleString()
+                        }
+                    },
+                    scales: {
+                        x: { beginAtZero: true, title: { display: true, text: 'Visitors', font: { size: 9 } }, ticks: { font: { size: 9 } } },
+                        y: { title: { display: true, text: period === 'monthly' ? 'Month' : (period === 'quarterly' ? 'Quarter' : 'Year'), font: { size: 9 } }, ticks: { font: { size: 9 } } }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
+            // Revenue Overview (Horizontal Bar)
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            if (window.revenueChart && typeof window.revenueChart.destroy === 'function') window.revenueChart.destroy();
+            window.revenueChart = new Chart(revenueCtx, {
+                type: 'bar',
+                data: {
+                    labels: revenueLabels,
+                    datasets: [{
+                        label: 'Revenue (₱)',
+                        data: revenueData[period],
+                        backgroundColor: [
+                            'rgba(44, 110, 73, 0.7)',
+                            'rgba(76, 149, 108, 0.7)',
+                            'rgba(56, 176, 0, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false, labels: { font: { size: 9 } } },
+                        datalabels: {
+                            anchor: 'end', align: 'end', color: '#000', font: { weight: 'bold', size: 9 },
+                            formatter: v => '₱' + v.toLocaleString()
+                        }
+                    },
+                    scales: {
+                        x: { beginAtZero: true, title: { display: true, text: 'Revenue (₱)', font: { size: 9 } }, ticks: { font: { size: 9 } } },
+                        y: { title: { display: true, text: 'Revenue Source', font: { size: 9 } }, ticks: { font: { size: 9 } } }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
+            // Visitor Origin Demographics (Horizontal Bar)
+            const visitorDemoCtx = document.getElementById('visitorDemographicsChart').getContext('2d');
+            if (window.visitorDemographicsChart && typeof window.visitorDemographicsChart.destroy === 'function') window.visitorDemographicsChart.destroy();
+            window.visitorDemographicsChart = new Chart(visitorDemoCtx, {
+                type: 'bar',
+                data: {
+                    labels: demographicsLabels,
+                    datasets: [{
+                        label: 'Number of Visitors',
+                        data: demographicsData[period],
+                        backgroundColor: [
+                            'rgba(44, 110, 73, 0.7)',
+                            'rgba(76, 149, 108, 0.7)',
+                            'rgba(56, 176, 0, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false, labels: { font: { size: 9 } } },
+                        datalabels: {
+                            anchor: 'end', align: 'end', color: '#000', font: { weight: 'bold', size: 9 },
+                            formatter: v => v.toLocaleString()
+                        }
+                    },
+                    scales: {
+                        x: { beginAtZero: true, title: { display: true, text: 'Visitors', font: { size: 9 } }, ticks: { font: { size: 9 } } },
+                        y: { title: { display: true, text: 'Demographic', font: { size: 9 } }, ticks: { font: { size: 9 } } }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
 
         // --- FILTER BUTTONS ---
         document.addEventListener('DOMContentLoaded', function() {
