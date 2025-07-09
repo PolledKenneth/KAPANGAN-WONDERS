@@ -41,20 +41,22 @@
                 <li class="nav-item">
                     <a href="#" class="nav-link" onclick="showContact()">Contact Us</a>
                 </li>
-            </nav>
-
-            <div class="auth-buttons">
-                <button class="btn btn-outline" onclick="openAuthModal('signin')">Sign In</button>
-                <button class="btn btn-primary" onclick="openAuthModal('signup')">Sign Up</button>
-                <div class="user-menu" id="userMenu" style="display: none;">
+                <!-- Mobile Auth Buttons -->
+                <li class="nav-item mobile-auth-buttons">
+                    <button class="btn btn-outline" onclick="openAuthModal('signin')">Sign In</button>
+                    <button class="btn btn-primary" onclick="openAuthModal('signup')">Sign Up</button>
+                </li>
+                <!-- Mobile User Menu (hidden by default) -->
+                <li class="nav-item mobile-user-menu" id="mobileUserMenu" style="display: none;">
                     <button class="btn btn-primary" onclick="showDashboard()">
-                        <i class="fas fa-user"></i> <span id="userNameDisplay">User</span>
+                        <i class="fas fa-user"></i> <span id="mobileUserNameDisplay">User</span>
                     </button>
                     <button class="btn btn-outline" onclick="logout()">Logout</button>
-                    <button class="btn btn-primary" id="scheduleVisitBtn" style="margin-left: 10px;" onclick="scheduleVisit()">Schedule a Visit</button>
-                </div>
-                
-            </div>
+                    <button class="btn btn-primary" id="mobileScheduleVisitBtn" onclick="scheduleVisit()">Schedule a Visit</button>
+                </li>
+            </nav>
+
+
 
             <div class="mobile-menu" onclick="toggleMobileMenu()">
                 <i class="fas fa-bars"></i>
@@ -66,38 +68,13 @@
     <main id="mainContent">
         <!-- Hero Section -->
         <script>document.documentElement.classList.add('js');</script>
-        <section class="hero">
-      <!-- Add width and height attributes to prevent layout shifts -->
-      <img src="assets/Amburayan Bridge (Cuba).jpg" data-index="0" class="image" width="400" height="400" loading="lazy" alt="Amburayan Bridge">
-      <img src="assets/Badi Falls (Sagubo).jpg" data-index="1" class="image" width="400" height="400" loading="lazy" alt="Badi Falls">
-      <img src="assets/Beleng-Belis Viewing Area.jpg" data-index="2" class="image" width="400" height="400" loading="lazy" alt="Beleng-Belis Viewing Area">
-      <img src="assets/Camp Utopia (Sagubo).jpg" data-index="3" class="image" width="400" height="400" loading="lazy" alt="Camp Utopia">
-      <img src="assets/Dangwa Cave (Taba-ao).jpg" data-index="4" class="image" width="400" height="400" loading="lazy" alt="Dangwa Cave">
-      <img src="assets/Kilong Hanging Coffin (Central).jpg" data-index="5" class="image" width="400" height="400" loading="lazy" alt="Kilong Hanging Coffin">
-      <img src="assets/Mt. Dakiwagan (Balakbak).jpg" data-index="6" class="image" width="400" height="400" loading="lazy" alt="Mt. Dakiwagan">
-      <img src="assets/Mt. Kalukasog (Cuba).jpg" data-index="7" class="image" width="400" height="400" loading="lazy" alt="Mt. Kalukasog">
-      <img src="assets/Pey-og Falls (Boklaoan).jpg" data-index="8" class="image" width="400" height="400" loading="lazy" alt="Pey-og Falls">
-      <img src="assets/Puga Coffin Cave (Sagubo).jpg" data-index="9" class="image" width="400" height="400" loading="lazy" alt="Puga Coffin Cave">
-      <img src="assets/Taba-ao Viewdeck (Taba-ao).jpg" data-index="10" class="image" width="400" height="400" loading="lazy" alt="Taba-ao Viewdeck">
-      <img src="assets/Toplac Falls (Pudong).jpg" data-index="11" class="image" width="400" height="400" loading="lazy" alt="Toplac Falls">
-      <img src="assets/Amburayan River (Taba-ao).jpg" data-index="12" class="image" width="400" height="400" loading="lazy" alt="Amburayan River">
-      <img src="assets/Ampongot Rice Terraces (Sagubo).jpg" data-index="13" class="image" width="400" height="400" loading="lazy" alt="Ampongot Rice Terraces">
-      <img src="assets/Avong Nen Suvani (Datakan).jpg" data-index="14" class="image" width="400" height="400" loading="lazy" alt="Avong Nen Suvani">
-      <img src="assets/Burcio_s Anthurium Forest (Labueg) (1).jpg" data-index="15" class="image" width="400" height="400" loading="lazy" alt="Burcio's Anthurium Forest">
-      <img src="assets/Canuto_s Dragon Fruit Farm (Labueg).jpg" data-index="16" class="image" width="400" height="400" loading="lazy" alt="Canuto's Dragon Fruit Farm">
-      <img src="assets/Dumanay Cave (Pongayan).jpg" data-index="17" class="image" width="400" height="400" loading="lazy" alt="Dumanay Cave">
-      <img src="assets/I love Kapangan Marker (Datakan).jpg" data-index="18" class="image" width="400" height="400" loading="lazy" alt="I love Kapangan Marker">
-      <img src="assets/Kapangan Museum.jpg" data-index="19" class="image" width="400" height="400" loading="lazy" alt="Kapangan Museum">
-      <img src="assets/Longog Cave (Balakbak).jpg" data-index="20" class="image" width="400" height="400" loading="lazy" alt="Longog Cave">
-      <img src="assets/Malagyao Footbridge (Cuba).jpg" data-index="21" class="image" width="400" height="400" loading="lazy" alt="Malagyao Footbridge">
-      <img src="assets/Municipal Hall (Paykek).jpg" data-index="22" class="image" width="400" height="400" loading="lazy" alt="Municipal Hall">
-      <img src="assets/Obellan-Catampan Rice Terraces (Balakbak).jpg" data-index="23" class="image" width="400" height="400" loading="lazy" alt="Obellan-Catampan Rice Terraces">
-      <img src="assets/Toplac Rice Fields (Pudong).jpg" data-index="24" class="image" width="400" height="400" loading="lazy" alt="Toplac Rice Fields">
-      <img src="assets/Welcome Marker (Datakan).jpg" data-index="25" class="image" width="400" height="400" loading="lazy" alt="Welcome Marker">
-        
-        <div class="hero-content" id="heroContent">
-            <h1>Welcome to Kapangan</h1>
-            <p>Discover the natural beauty and cultural heritage of Benguet's hidden gem. Explore majestic mountains, cascading waterfalls, and vibrant traditions.</p>
+        <section class="hero" style="background-image: url('assets/Ampongot Rice Terraces (Sagubo).jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; position: relative;">
+            <!-- Overlay for better text readability -->
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.4);"></div>
+            
+            <div class="hero-content visible" id="heroContent" style="position: relative; z-index: 2;">
+                <h1>Welcome to Kapangan</h1>
+                <p>Discover the natural beauty and cultural heritage of Benguet's hidden gem. Explore majestic mountains, cascading waterfalls, and vibrant traditions.</p>
                 <div class="hero-buttons">
                     <button class="btn btn-primary" onclick="showAllTouristSpots()">Browse Tourist Spots</button>
                     <button class="btn btn-outline" onclick="openAuthModal('signup')">Sign Up Now</button>

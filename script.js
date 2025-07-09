@@ -185,18 +185,28 @@ if (document.readyState === 'loading') {
 }
 
 function updateAuthUI() {
-    const authButtons = document.querySelector('.auth-buttons');
-    const userMenu = document.getElementById('userMenu');
+    const mobileAuthButtons = document.querySelector('.mobile-auth-buttons');
+    const mobileUserMenu = document.getElementById('mobileUserMenu');
     
     if (window.currentUser) {
-        authButtons.querySelector('.btn-outline').style.display = 'none';
-        authButtons.querySelector('.btn-primary').style.display = 'none';
-        userMenu.style.display = 'flex';
-        document.getElementById('userNameDisplay').textContent = window.currentUser.name;
+        // Hide mobile auth buttons when user is logged in
+        if (mobileAuthButtons) {
+            mobileAuthButtons.style.display = 'none';
+        }
+        // Show mobile user menu when user is logged in
+        if (mobileUserMenu) {
+            mobileUserMenu.style.display = 'flex';
+            document.getElementById('mobileUserNameDisplay').textContent = window.currentUser.name;
+        }
     } else {
-        authButtons.querySelector('.btn-outline').style.display = 'inline-flex';
-        authButtons.querySelector('.btn-primary').style.display = 'inline-flex';
-        userMenu.style.display = 'none';
+        // Show mobile auth buttons when user is not logged in
+        if (mobileAuthButtons) {
+            mobileAuthButtons.style.display = 'flex';
+        }
+        // Hide mobile user menu when user is not logged in
+        if (mobileUserMenu) {
+            mobileUserMenu.style.display = 'none';
+        }
     }
 }
 

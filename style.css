@@ -73,11 +73,7 @@
           flex: 1;
         }
 
-        .auth-buttons {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
+
 
         .user-menu {
           display: flex;
@@ -102,7 +98,7 @@
             gap: 0.5rem;
             width: 100%;
           }
-          .auth-buttons, .user-menu {
+          .user-menu {
             width: 100%;
             justify-content: flex-end;
             margin-top: 0.5rem;
@@ -2032,8 +2028,40 @@
                 display: block !important;
             }
             
-            .auth-buttons {
-                display: none;
+
+            
+            /* Mobile Auth Buttons */
+            .mobile-auth-buttons {
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid rgba(255, 255, 255, 0.2);
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                width: 100%;
+            }
+            
+            .mobile-auth-buttons .btn {
+                width: 100%;
+                justify-content: center;
+                margin: 0;
+            }
+            
+            /* Mobile User Menu */
+            .mobile-user-menu {
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid rgba(255, 255, 255, 0.2);
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                width: 100%;
+            }
+            
+            .mobile-user-menu .btn {
+                width: 100%;
+                justify-content: center;
+                margin: 0;
             }
             
             .hero-content h1 {
@@ -3087,7 +3115,7 @@
   padding: 0.2rem 0.5rem;
 }
 
-.auth-buttons, .user-menu {
+.user-menu {
   gap: 0.25rem;
 }
 
