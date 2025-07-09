@@ -2255,9 +2255,9 @@ function openSpotModal(spotId) {
             <div class="additional-info">
                 <h4>Entrance & Other Fees</h4>
                 <ul>
-                    <li>Entrance Fee (Adults 11–59 years): ₱100</li>
-                    <li>Entrance Fee (Seniors & PWDs): ₱80</li>
-                    <li>Entrance Fee (Kids 6–10 years): ₱50</li>
+                    <li>Entrance Fee (Adults 11–59 years): ₱50</li>
+                    <li>Entrance Fee (Seniors & PWDs): ₱40</li>
+                    <li>Entrance Fee (Kids 6–10 years): ₱30</li>
                     <li>Children under 6 years: <strong>Free</strong></li>
                     <li>Environmental Fee: ₱100</li>
                     <li>Tour Guide Fee: ₱500 <span style="color:gray;">(Optional)</span></li>
