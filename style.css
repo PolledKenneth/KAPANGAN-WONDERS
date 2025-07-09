@@ -1973,10 +1973,11 @@
             font-size: 1.5rem;
             cursor: pointer;
             z-index: 1002;
+            padding: 0.5rem;
         }
         
         /* Responsive adjustments */
-        @media (max-width: 1024px) {
+        @media (max-width: 768px) {
             :root {
                 --content-padding: 1.25rem;
             }
@@ -2028,7 +2029,7 @@
             }
             
             .mobile-menu {
-                display: block;
+                display: block !important;
             }
             
             .auth-buttons {
@@ -2354,7 +2355,7 @@
             }
 
             .mobile-menu {
-                display: block;
+                display: block !important;
             }
 
             .hero-content h1 {

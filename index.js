@@ -121,6 +121,7 @@ function init() {
 
 // Mobile menu toggle
 function toggleMobileMenu() {
+    console.log('Hamburger clicked'); // Debug log
     const navMenu = document.querySelector('.nav-menu');
     const mobileMenu = document.querySelector('.mobile-menu');
     
@@ -148,18 +149,10 @@ document.addEventListener('DOMContentLoaded', () => {
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         init();
-        // Initialize mobile menu
-        const mobileMenuButton = document.querySelector('.mobile-menu');
-        if (mobileMenuButton) {
-            mobileMenuButton.addEventListener('click', toggleMobileMenu);
-        }
+        // No need to add another event listener for .mobile-menu
     });
 } else {
     init();
-    // Initialize mobile menu
-    const mobileMenuButton = document.querySelector('.mobile-menu');
-    if (mobileMenuButton) {
-        mobileMenuButton.addEventListener('click', toggleMobileMenu);
-    }
+    // No need to add another event listener for .mobile-menu
 }
 
