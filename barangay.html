@@ -36,6 +36,7 @@
             color: #333;
             min-height: 100vh;
             overflow-x: hidden;
+            margin-top: 60px !important;
         }
         
         /* Sidebar Styles */
@@ -1018,8 +1019,28 @@
             }
         }
     </style>
+    <style>
+    @media (max-width:600px) { body { margin-top: 48px !important; } }
+    </style>
 </head>
 <body>
+    <!-- Top Navbar -->
+    <nav class="top-navbar" style="position:fixed;top:0;left:0;width:100vw;height:60px;background:linear-gradient(90deg,#2c6e49,#4c956c);z-index:2000;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <div style="display:flex;gap:30px;align-items:center;">
+            <a href="main.html" class="nav-link topnav-municipal" style="color:#fff;font-weight:600;font-size:1.1em;text-decoration:none;padding:10px 18px;border-radius:6px;transition:background 0.2s;">Municipal Admin</a>
+            <a href="barangay.html" class="nav-link topnav-barangay" style="color:#fff;font-weight:600;font-size:1.1em;text-decoration:none;padding:10px 18px;border-radius:6px;transition:background 0.2s;">Barangay Admin</a>
+            <a href="privatespot.html" class="nav-link topnav-private" style="color:#fff;font-weight:600;font-size:1.1em;text-decoration:none;padding:10px 18px;border-radius:6px;transition:background 0.2s;">Private Spot Admin</a>
+        </div>
+    </nav>
+    <script>
+    (function(){
+      const path = window.location.pathname;
+      if(path.includes('main.html')) document.querySelector('.topnav-municipal').style.background = 'rgba(255,255,255,0.15)';
+      if(path.includes('barangay.html')) document.querySelector('.topnav-barangay').style.background = 'rgba(255,255,255,0.15)';
+      if(path.includes('privatespot.html')) document.querySelector('.topnav-private').style.background = 'rgba(255,255,255,0.15)';
+    })();
+    </script>
+
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo">
@@ -1047,18 +1068,11 @@
                 <i class="fas fa-blog"></i>
                 <span>Blogs</span>
             </div>
-            <div class="nav-item" data-target="reports">
+            <div class="nav-item" data-target="barangay-reports">
                 <i class="fas fa-file-alt"></i>
-                <span>Generate Report</span>
+                <span>Barangay Reports</span>
             </div>
-            <div class="nav-item" onclick="window.location.href='main.html'">
-                <i class="fas fa-tachometer-alt"></i>
-                <span>Main Dashboard</span>
-            </div>
-            <div class="nav-item" onclick="window.location.href='privatespot.html'">
-                <i class="fas fa-map-marked-alt"></i>
-                <span>Private Spots</span>
-            </div>
+           
             <div class="nav-item">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Logout</span>
@@ -1159,7 +1173,7 @@
                     <h3>Add Tourist Spot</h3>
                     <p>Submit new attraction</p>
                 </div>
-                <div class="card" style="text-align: center; cursor: pointer;" onclick="showSection('reports')">
+                <div class="card" style="text-align: center; cursor: pointer;" onclick="showSection('barangay-reports')">
                     <div class="card-icon icon-orange" style="margin: 0 auto 15px;">
                         <i class="fas fa-chart-bar"></i>
                     </div>
@@ -1390,9 +1404,9 @@
         </div>
 
         <!-- Reports Section -->
-        <div class="content-section" id="reports">
+        <div class="content-section" id="barangay-reports">
             <div class="page-title">
-                <h1>Reports & Analytics</h1>
+                <h1>Barangay Reports</h1>
                 <p>Visitor statistics and revenue reports</p>
                 <div class="filter-options" style="margin-top: 20px;">
                     <button class="filter-btn active" data-period="monthly">Monthly</button>
@@ -2629,7 +2643,7 @@
                 'tourist-spots': 'Tourist Spots',
                 'announcements-section': 'Announcements',
                 'blogs-section': 'Blogs',
-                'reports': 'Reports'
+                'barangay-reports': 'Barangay Reports'
             };
             
             if (sectionNames[sectionId]) {

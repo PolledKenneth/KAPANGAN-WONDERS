@@ -999,6 +999,30 @@
     </style>
 </head>
 <body>
+    <!-- Top Navbar -->
+    <nav class="top-navbar" style="position:fixed;top:0;left:0;width:100vw;height:60px;background:linear-gradient(90deg,var(--primary),var(--secondary));z-index:2000;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <div style="display:flex;gap:30px;align-items:center;">
+            <a href="main.html" class="nav-link topnav-municipal" style="color:#fff;font-weight:600;font-size:1.1em;text-decoration:none;padding:10px 18px;border-radius:6px;transition:background 0.2s;">Municipal Admin</a>
+            <a href="barangay.html" class="nav-link topnav-barangay" style="color:#fff;font-weight:600;font-size:1.1em;text-decoration:none;padding:10px 18px;border-radius:6px;transition:background 0.2s;">Barangay Admin</a>
+            <a href="privatespot.html" class="nav-link topnav-private" style="color:#fff;font-weight:600;font-size:1.1em;text-decoration:none;padding:10px 18px;border-radius:6px;transition:background 0.2s;">Private Spot Admin</a>
+        </div>
+    </nav>
+    <script>
+    // Highlight current page in navbar
+    (function(){
+      const path = window.location.pathname;
+      if(path.includes('main.html')) document.querySelector('.topnav-municipal').style.background = 'rgba(255,255,255,0.15)';
+      if(path.includes('barangay.html')) document.querySelector('.topnav-barangay').style.background = 'rgba(255,255,255,0.15)';
+      if(path.includes('privatespot.html')) document.querySelector('.topnav-private').style.background = 'rgba(255,255,255,0.15)';
+    })();
+    </script>
+    <style>
+    .top-navbar .nav-link:hover { background: rgba(255,255,255,0.18); color: #fefee3 !important; }
+    @media (max-width:600px) {
+      .top-navbar { height:48px; }
+      .top-navbar .nav-link { font-size:1em; padding:7px 10px; }
+    }
+    </style>
     <!-- Mobile Toggle Button -->
     <button class="mobile-toggle">
         <i class="fas fa-bars"></i>
@@ -1038,14 +1062,6 @@
             <div class="nav-item" data-target="barangay-reports">
                 <i class="fas fa-file-alt"></i>
                 <span>Barangay Reports</span>
-            </div>
-            <div class="nav-item" onclick="window.location.href='barangay.html'">
-                <i class="fas fa-map-marked"></i>
-                <span>Barangay Admin</span>
-            </div>
-            <div class="nav-item" onclick="window.location.href='privatespot.html'">
-                <i class="fas fa-map-marked-alt"></i>
-                <span>Private Spots</span>
             </div>
             <div class="nav-item">
                 <i class="fas fa-sign-out-alt"></i>
@@ -1539,6 +1555,7 @@
                 <script>
                     // Show the add user form in the modal
                     function openAddUserForm() {
+                        console.log('openAddUserForm called');
                         const modal = document.getElementById('formModal');
                         modal.style.display = 'flex';
                         document.getElementById('modalTitle').innerText = 'Add New User';
@@ -1599,15 +1616,21 @@
                     
                     // Close modal when clicking the X button or outside the modal
                     document.addEventListener('DOMContentLoaded', function() {
-                        // Close button
-                        document.querySelector('.close-modal').addEventListener('click', closeModal);
+                        // Close button - use event delegation for all close-modal buttons
+                        document.addEventListener('click', function(e) {
+                            if (e.target.classList.contains('close-modal')) {
+                                const modal = e.target.closest('.modal');
+                                if (modal) modal.style.display = 'none';
+                            }
+                        });
                         
                         // Close when clicking outside the modal content
-                        window.addEventListener('click', function(event) {
-                            const modal = document.getElementById('formModal');
-                            if (event.target === modal) {
-                                closeModal();
-                            }
+                        document.querySelectorAll('.modal').forEach(function(modal) {
+                            modal.addEventListener('click', function(e) {
+                                if (e.target === modal) {
+                                    modal.style.display = 'none';
+                                }
+                            });
                         });
                     });
                 </script>
@@ -1936,14 +1959,7 @@
                         if (modal) modal.style.display = 'none';
                     }
                 });
-                // Add direct event listener to the close-modal button for reliability
-                var closeModalBtn = document.querySelector('.close-modal');
-                if (closeModalBtn) {
-                    closeModalBtn.addEventListener('click', function() {
-                        const modal = document.getElementById('formModal');
-                        if (modal) modal.style.display = 'none';
-                    });
-                }
+                
                 // Clicking on the modal background closes the modal
                 document.querySelectorAll('.modal').forEach(function(modal) {
                     modal.addEventListener('click', function(e) {
@@ -2049,6 +2065,7 @@
         
         // Render Admins (Barangay Admins and Tourist Owners)
         function renderAdminsTable() {
+            console.log('renderAdminsTable called');
             const container = document.getElementById('adminsTable');
             if (!container) return;
             container.innerHTML = '';
@@ -2322,11 +2339,14 @@
         
         // Add event listeners to action buttons
         function addActionListeners(selector, handler) {
-            document.querySelectorAll(selector).forEach(btn => {
+            const buttons = document.querySelectorAll(selector);
+            console.log(`Found ${buttons.length} buttons with selector: ${selector}`);
+            buttons.forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
                     const id = btn.getAttribute('data-id');
                     const type = btn.getAttribute('data-type');
+                    console.log(`Button clicked - id: ${id}, type: ${type}`);
                     handler(id, type);
                 });
             });
@@ -2335,6 +2355,7 @@
         // Add User button event handler
         function handleAddUserClick(e) {
             e.preventDefault();
+            console.log('Add User button clicked');
             document.getElementById('formModal').style.display = 'flex';
             openAddUserForm();
         }
@@ -2599,7 +2620,7 @@
                         const user = appData.allUsers.find(item => item.id == id);
                         itemName = user ? user.name : 'User';
                         appData.allUsers = appData.allUsers.filter(item => item.id != id);
-                        renderAllUsers();
+                        renderAdminsTable();
                         break;
                     case 'accommodation':
                         const acc = appData.accommodations.find(item => item.id == id);
@@ -2847,6 +2868,7 @@
         
         // Close modal
         function closeModal() {
+            console.log('closeModal called');
             document.getElementById('formModal').style.display = 'none';
         }
         
@@ -2984,7 +3006,7 @@
             };
             
             appData.allUsers.push(newUser);
-            renderAllUsers();
+            renderAdminsTable();
             closeModal();
             showToast(`User "${name}" added successfully!`, 'success');
             
@@ -3950,6 +3972,7 @@
         }
 
         function suspendItem(id, type) {
+            console.log('suspendItem called with id:', id, 'type:', type);
             let list;
             if (type === 'accommodation') list = appData.accommodations;
             else if (type === 'restaurant') list = appData.restaurants;
@@ -3960,11 +3983,12 @@
                 item.status = 'Suspended';
                 if (type === 'accommodation') renderAccommodations();
                 else if (type === 'restaurant') renderRestaurants();
-                else if (type === 'allUser') renderAllUsers();
+                else if (type === 'allUser') renderAdminsTable();
                 showToast(`${item.name} suspended successfully!`, 'warning');
             }
         }
         function reinstateItem(id, type) {
+            console.log('reinstateItem called with id:', id, 'type:', type);
             let list;
             if (type === 'accommodation') list = appData.accommodations;
             else if (type === 'restaurant') list = appData.restaurants;
@@ -3975,7 +3999,7 @@
                 item.status = 'Active';
                 if (type === 'accommodation') renderAccommodations();
                 else if (type === 'restaurant') renderRestaurants();
-                else if (type === 'allUser') renderAllUsers();
+                else if (type === 'allUser') renderAdminsTable();
                 showToast(`${item.name} reinstated successfully!`, 'success');
             }
         }
