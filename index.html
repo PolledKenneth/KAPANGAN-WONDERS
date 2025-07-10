@@ -156,7 +156,7 @@
         <section class="featured-spots" id="featuredSpots">
             <div class="container">
                 <div class="section-header">
-                    <h2>Featured Tourist Spots</h2>
+                    <h2><i class="fas fa-star"></i> Featured Tourist Spots</h2>
                     <p>Discover the most popular destinations in Kapangan</p>
                 </div>
 
@@ -170,17 +170,29 @@
         <section class="all-tourist-spots" id="allTouristSpots" style="display: none;">
             <div class="container">
                 <div class="section-header">
-                    <h2>All Tourist Spots</h2>
+                    <h2><i class="fas fa-map-marked-alt"></i> All Tourist Spots</h2>
                     <p>Explore all the amazing destinations in Kapangan</p>
                 </div>
 
                 <div class="filter-tabs">
-                    <div class="filter-tab active" onclick="filterSpots('all')">All</div>
-                    <div class="filter-tab" onclick="filterSpots('waterfalls')">Waterfalls</div>
-                    <div class="filter-tab" onclick="filterSpots('mountains')">Mountains</div>
-                    <div class="filter-tab" onclick="filterSpots('rivers')">Rivers</div>
-                    <div class="filter-tab" onclick="filterSpots('viewpoint')">Viewpoints</div>
-                    <div class="filter-tab" onclick="filterSpots('private')">Private Spot</div>
+                    <div class="filter-tab active" onclick="filterSpots('all')">
+                        <i class="fas fa-globe"></i> All
+                    </div>
+                    <div class="filter-tab" onclick="filterSpots('waterfalls')">
+                        <i class="fas fa-water"></i> Waterfalls
+                    </div>
+                    <div class="filter-tab" onclick="filterSpots('mountains')">
+                        <i class="fas fa-mountain"></i> Mountains
+                    </div>
+                    <div class="filter-tab" onclick="filterSpots('rivers')">
+                        <i class="fas fa-water"></i> Rivers
+                    </div>
+                    <div class="filter-tab" onclick="filterSpots('viewpoint')">
+                        <i class="fas fa-eye"></i> Viewpoints
+                    </div>
+                    <div class="filter-tab" onclick="filterSpots('private')">
+                        <i class="fas fa-lock"></i> Private Spot
+                    </div>
                 </div>
 
                 <div class="spots-grid" id="spotsGrid">
@@ -190,30 +202,22 @@
         </section>
 
          <!-- Blog Section -->
-
          <section class="blog-section" id="blogSection" style="display: none;">
-
             <div class="container">
-
                 <div class="section-header">
-
-                    <h2>Kapangan Tourism Blog</h2>
-
+                    <h2><i class="fas fa-blog"></i> Kapangan Tourism Blog</h2>
                     <p>Stay updated with travel tips, local stories, and destination guides</p>
-
                 </div>
+                
                 <!-- Blog Category Tabs -->
                 <div class="filter-tabs" id="blogCategoryTabs" style="margin-bottom: 1.5rem;">
                     <!-- Tabs will be populated by JavaScript -->
                 </div>
+                
                 <div class="blog-grid" id="blogGrid">
-
                     <!-- Blog posts will be populated by JavaScript -->
-
                 </div>
-
             </div>
-
         </section>
 
 
@@ -222,15 +226,19 @@
 <section class="accommodations-section" id="accommodationsSection" style="display: none;">
     <div class="container">
         <div class="section-header">
-            <h2>Eat and Stay in Kapangan</h2>
+            <h2><i class="fas fa-utensils"></i> Eat and Stay in Kapangan</h2>
             <p>Discover comfortable accommodations and delicious dining options</p>
         </div>
 
-        <!-- Tabs Navigation -->
+        <!-- Enhanced Tabs Navigation -->
         <div class="tabs-container">
             <div class="tabs">
-                <button class="tab-btn active" data-tab="accommodations">Accommodations</button>
-                <button class="tab-btn" data-tab="restaurants">Restaurants</button>
+                <button class="tab-btn active" data-tab="accommodations">
+                    <i class="fas fa-bed"></i> Accommodations
+                </button>
+                <button class="tab-btn" data-tab="restaurants">
+                    <i class="fas fa-utensils"></i> Restaurants
+                </button>
             </div>
 
             <!-- Tab Content -->
@@ -239,30 +247,78 @@
                 <div id="accommodations" class="tab-pane active">
                     <div class="accommodations-grid">
                         <div class="accommodation-card">
-                            <img src="assets/Avong Nen Suvani (Datakan).jpg" alt="Avong Nen Suvani">
+                            <div class="card-image-container">
+                                <img src="assets/Avong Nen Suvani (Datakan).jpg" alt="Avong Nen Suvani">
+                                <div class="card-overlay">
+                                    <span class="accommodation-type">
+                                        <i class="fas fa-home"></i> Homestay
+                                    </span>
+                                </div>
+                            </div>
                             <div class="accommodation-info">
-                                <h4>Avong Nen Suvani</h4>
-                                <p>Enjoy a cozy stay with stunning mountain views and genuine Cordilleran hospitality.</p>
-                                <p><strong>Location:</strong> Barangay Datakan</p>
-                                <p><strong>Rate:</strong> ₱800 per night</p>
-                                <a href="https://www.facebook.com/p/Avong-Nen-Suvani-100069230178126/" target="_blank" class="fb-link">
-                                    <i class="fab fa-facebook"></i> Avong Nen Suvani
-                                </a>
-                                <p><strong>Contact Us:</strong> 0950 322 7830</p>
+                                <div class="accommodation-header">
+                                    <h4><i class="fas fa-mountain"></i> Avong Nen Suvani</h4>
+                                </div>
+                                <p class="accommodation-description">Enjoy a cozy stay with stunning mountain views and genuine Cordilleran hospitality.</p>
+                                
+                                <div class="accommodation-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span><strong>Location:</strong> Barangay Datakan</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                        <span><strong>Rate:</strong> ₱800 per night</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-phone"></i>
+                                        <span><strong>Contact:</strong> <a href="tel:09503227830">0950 322 7830</a></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="accommodation-actions">
+                                    <a href="https://www.facebook.com/p/Avong-Nen-Suvani-100069230178126/" target="_blank" class="fb-link">
+                                        <i class="fab fa-facebook"></i> Visit Facebook
+                                    </a>
+                                </div>
                             </div>
                         </div>
 
                         <div class="accommodation-card">
-                            <img src="assets/mayflor.jpg" alt="Mayflor Fastfood Haus and Lodging">
+                            <div class="card-image-container">
+                                <img src="assets/mayflor.jpg" alt="Mayflor Fastfood Haus and Lodging">
+                                <div class="card-overlay">
+                                    <span class="accommodation-type">
+                                        <i class="fas fa-hotel"></i> Lodging
+                                    </span>
+                                </div>
+                            </div>
                             <div class="accommodation-info">
-                                <h4>Mayflor Fastfood Haus and Lodging</h4>
-                                <p>Experience rural living and traditional Cordilleran life with a local host family.</p>
-                                <p><strong>Location:</strong> Barangay Cuba</p>
-                                <p><strong>Rate:</strong> ₱600 per night</p>
-                                <a href="https://www.facebook.com/maylorzzz/" target="_blank" class="fb-link">
-                                    <i class="fab fa-facebook"></i> Mayflor Fastfood Haus and Lodging
-                                </a>
-                                <p><strong>Contact Us:</strong> 0921 243 5406</p>
+                                <div class="accommodation-header">
+                                    <h4><i class="fas fa-users"></i> Mayflor Fastfood Haus and Lodging</h4>
+                                </div>
+                                <p class="accommodation-description">Experience rural living and traditional Cordilleran life with a local host family.</p>
+                                
+                                <div class="accommodation-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span><strong>Location:</strong> Barangay Cuba</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                        <span><strong>Rate:</strong> ₱600 per night</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-phone"></i>
+                                        <span><strong>Contact:</strong> <a href="tel:09212435406">0921 243 5406</a></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="accommodation-actions">
+                                    <a href="https://www.facebook.com/maylorzzz/" target="_blank" class="fb-link">
+                                        <i class="fab fa-facebook"></i> Visit Facebook
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -272,28 +328,78 @@
                 <div id="restaurants" class="tab-pane">
                     <div class="accommodations-grid">
                         <div class="accommodation-card">
-                            <img src="assets/Image.jpg" alt="Marianos Restaurant">
+                            <div class="card-image-container">
+                                <img src="assets/Image.jpg" alt="Marianos Restaurant">
+                                <div class="card-overlay">
+                                    <span class="accommodation-type">
+                                        <i class="fas fa-utensils"></i> Restaurant
+                                    </span>
+                                </div>
+                            </div>
                             <div class="accommodation-info">
-                                <h4>Marianos Restaurant</h4>
-                                <p>Marianos Rice is our best selling come and have a taste of it.</p>
-                                <p><strong>Location:</strong> Barangay Lomon</p>
-                                <a href="https://www.facebook.com/profile.php?id=61559563714525" target="_blank" class="fb-link">
-                                    <i class="fab fa-facebook"></i> Marianos Restaurant
-                                </a>
-                                <p><strong>Contact Us:</strong> 09454520117</p>
+                                <div class="accommodation-header">
+                                    <h4><i class="fas fa-utensils"></i> Marianos Restaurant</h4>
+                                </div>
+                                <p class="accommodation-description">Marianos Rice is our best selling come and have a taste of it.</p>
+                                
+                                <div class="accommodation-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span><strong>Location:</strong> Barangay Lomon</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span><strong>Hours:</strong> 7:00 AM - 9:00 PM</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-phone"></i>
+                                        <span><strong>Contact:</strong> <a href="tel:09454520117">09454520117</a></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="accommodation-actions">
+                                    <a href="https://www.facebook.com/profile.php?id=61559563714525" target="_blank" class="fb-link">
+                                        <i class="fab fa-facebook"></i> Visit Facebook
+                                    </a>
+                                </div>
                             </div>
                         </div>
 
                         <div class="accommodation-card">
-                            <img src="assets/Image (1).jpg" alt="Pakawan Restaurant">
+                            <div class="card-image-container">
+                                <img src="assets/Image (1).jpg" alt="Pakawan Restaurant">
+                                <div class="card-overlay">
+                                    <span class="accommodation-type">
+                                        <i class="fas fa-utensils"></i> Restaurant
+                                    </span>
+                                </div>
+                            </div>
                             <div class="accommodation-info">
-                                <h4>Pakawan Restaurant</h4>
-                                <p>Enjoy our Pakawan style dishes!</p>
-                                <p><strong>Location:</strong> Barangay Cuba</p>
-                                <a href="https://www.facebook.com/p/Pakawan-Restaurant-61556526209239/" target="_blank" class="fb-link">
-                                    <i class="fab fa-facebook"></i> Pakawan Restaurant
-                                </a>
-                                <p><strong>Contact Us:</strong> 090724810971</p>
+                                <div class="accommodation-header">
+                                    <h4><i class="fas fa-utensils"></i> Pakawan Restaurant</h4>
+                                </div>
+                                <p class="accommodation-description">Enjoy our Pakawan style dishes!</p>
+                                
+                                <div class="accommodation-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span><strong>Location:</strong> Barangay Cuba</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span><strong>Hours:</strong> 8:00 AM - 8:00 PM</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-phone"></i>
+                                        <span><strong>Contact:</strong> <a href="tel:090724810971">090724810971</a></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="accommodation-actions">
+                                    <a href="https://www.facebook.com/p/Pakawan-Restaurant-61556526209239/" target="_blank" class="fb-link">
+                                        <i class="fab fa-facebook"></i> Visit Facebook
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -313,30 +419,91 @@
         </div>
 
         <div class="contact-container">
-            <div class="contact-details">
-                <h3>Our Office</h3>
-                <div class="contact-info">
-                    <h4>Office Location:</h4>
-                    <p>Municipal Tourism Office, Kapangan, Benguet</p>
+            <!-- Left Column: Contact Information -->
+            <div class="contact-info-card">
+                <div class="contact-header">
+                    <i class="fas fa-building"></i>
+                    <h3>Our Office</h3>
+                </div>
+                
+                <div class="contact-details-grid">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-content">
+                            <h4>Office Location</h4>
+                            <p>Municipal Tourism Office, Kapangan, Benguet</p>
+                        </div>
+                    </div>
 
-                    <h4>Phone:</h4>
-                    <p>+63 (123) 456-7890</p>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-content">
+                            <h4>Phone</h4>
+                            <p><a href="tel:+631234567890">+63 (123) 456-7890</a></p>
+                        </div>
+                    </div>
 
-                    <h4>Email:</h4>
-                    <p><a href="mailto:info@kapanganwonders.com">info@kapanganwonders.com</a></p>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-content">
+                            <h4>Email</h4>
+                            <p><a href="mailto:info@kapanganwonders.com">info@kapanganwonders.com</a></p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="contact-content">
+                            <h4>Office Hours</h4>
+                            <p>Monday - Friday: 8:00 AM - 5:00 PM</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="getting-there">
-                <h3>Getting to Kapangan</h3>
-                <div class="travel-info">
-                    <p>Travel information to help you plan your journey:</p>
+            <!-- Right Column: Travel Information -->
+            <div class="travel-info-card">
+                <div class="contact-header">
+                    <i class="fas fa-route"></i>
+                    <h3>Getting to Kapangan</h3>
+                </div>
+                
+                <div class="travel-methods">
+                    <div class="travel-method">
+                        <div class="travel-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="travel-content">
+                            <h4>By Private Vehicle</h4>
+                            <p>From Baguio City: Take the Naguilian Road towards La Trinidad. Continue to Kapangan via the Benguet-Nueva Vizcaya Road.</p>
+                            <div class="travel-details">
+                                <span class="travel-time"><i class="fas fa-clock"></i> 1.5–2 hours</span>
+                                <span class="travel-distance"><i class="fas fa-road"></i> ~45 km</span>
+                            </div>
+                        </div>
+                    </div>
 
-                    <h4>By Private Vehicle:</h4>
-                    <p>From Baguio City: Take the Naguilian Road towards La Trinidad. Continue to Kapangan via the Benguet-Nueva Vizcaya Road. Travel time is approximately 1.5–2 hours.</p>
-
-                    <h4>By Public Transportation:</h4>
-                    <p>Regular buses and jeepneys depart from Baguio's Dangwa Terminal to Kapangan. Travel time is about 2 hours. Fare is approximately ₱80–₱100.</p>
+                    <div class="travel-method">
+                        <div class="travel-icon">
+                            <i class="fas fa-bus"></i>
+                        </div>
+                        <div class="travel-content">
+                            <h4>By Public Transportation</h4>
+                            <p>Regular buses and jeepneys depart from Baguio's Dangwa Terminal to Kapangan.</p>
+                            <div class="travel-details">
+                                <span class="travel-time"><i class="fas fa-clock"></i> ~2 hours</span>
+                                <span class="travel-fare"><i class="fas fa-money-bill"></i> ₱80–₱100</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

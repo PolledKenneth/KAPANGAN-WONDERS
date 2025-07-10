@@ -2049,6 +2049,8 @@ function setupEventListeners() {
 
 // Navigation Functions
 function showHome() {
+    // Always show the hero section when navigating home
+    document.querySelector('.hero').style.display = 'block';
     document.getElementById('mainContent').style.display = 'block';
     document.getElementById('dashboard').style.display = 'none';
     document.getElementById('blogSection').style.display = 'none';
@@ -2059,7 +2061,10 @@ function showHome() {
     // Show advisories only on homepage
     var advisories = document.getElementById('advisoriesSection');
     if (advisories) advisories.style.display = 'block';
+    // Scroll to top to show the hero section
     window.scrollTo(0, 0);
+    // Update active navigation item
+    updateActiveNavItem('home');
 }
 
 function showAllTouristSpots() {

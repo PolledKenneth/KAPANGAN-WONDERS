@@ -368,6 +368,15 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-tab i {
+            font-size: 0.9rem;
+            color: #4CAF50;
+            transition: color 0.3s ease;
         }
 
         .filter-tab.active,
@@ -375,6 +384,11 @@
             background: #4CAF50;
             color: #fff;
             border-color: #4CAF50;
+        }
+
+        .filter-tab.active i,
+        .filter-tab:hover i {
+            color: #fff;
         }
 
         .spots-grid {
@@ -3156,7 +3170,7 @@
         }
         .accommodations-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 2rem;
             margin-top: 2rem;
         }
@@ -3168,70 +3182,174 @@
         }
         
         .accommodation-card {
-            display: flex;
-            flex-direction: row;
-            background: #fff;
-            border-radius: 12px;
+            background: white;
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 1.5rem;
+            position: relative;
         }
         
         .accommodation-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
         }
-        
-        .accommodation-card img {
-            width: 200px;
-            height: 150px;
+
+        .card-image-container {
+            position: relative;
+            overflow: hidden;
+            height: 200px;
+        }
+
+        .card-image-container img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            border-top-left-radius: 12px;
-            border-bottom-left-radius: 12px;
+            transition: transform 0.3s ease;
         }
-        
-        .accommodation-info {
-            padding: 1rem 1.5rem;
-            flex: 1;
+
+        .accommodation-card:hover .card-image-container img {
+            transform: scale(1.05);
+        }
+
+        .card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.8), rgba(129, 199, 132, 0.8));
             display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            align-items: flex-start;
+            justify-content: flex-end;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
-        
-        .accommodation-info h4 {
-            margin-bottom: 0.5rem;
+
+        .accommodation-card:hover .card-overlay {
+            opacity: 1;
+        }
+
+        .accommodation-type {
+            background: rgba(255, 255, 255, 0.9);
             color: #2c3e50;
-            font-size: 1.2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        
-        .accommodation-info p {
-            margin: 0.25rem 0;
-            color: #555;
+
+        .accommodation-info {
+            padding: 1.5rem;
+        }
+
+        .accommodation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .accommodation-header h4 {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .accommodation-header h4 i {
+            color: #4CAF50;
+            font-size: 1.1rem;
+        }
+
+        .rating {
+            display: flex;
+            gap: 0.2rem;
+        }
+
+        .rating i {
+            color: #ffc107;
+            font-size: 0.9rem;
+        }
+
+        .accommodation-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
             font-size: 0.95rem;
         }
-        
-        .accommodation-info .fb-link {
-            margin-top: 0.5rem;
-            display: inline-flex;
+
+        .accommodation-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+            display: flex;
             align-items: center;
-            color: #1877f2;
+            gap: 0.75rem;
+            color: #555;
             font-size: 0.9rem;
+        }
+
+        .detail-item i {
+            color: #4CAF50;
+            width: 16px;
+            text-align: center;
+        }
+
+        .detail-item a {
+            color: #4CAF50;
             text-decoration: none;
+            font-weight: 500;
         }
-        
-        .accommodation-info .fb-link i {
-            margin-right: 5px;
-        }
-        
-        .accommodation-info .fb-link:hover {
+
+        .detail-item a:hover {
             text-decoration: underline;
         }
-        
-        .accommodation-info .btn {
-            margin-top: 0.75rem;
-            align-self: start;
+
+        .accommodation-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .fb-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #1877f2;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid #1877f2;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .fb-link:hover {
+            background: #1877f2;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         @media (max-width: 768px) {
@@ -3251,6 +3369,15 @@
         
             .accommodation-info {
                 padding: 1rem;
+            }
+
+            .accommodation-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .fb-link, .btn-sm {
+                justify-content: center;
             }
         }
         
@@ -3906,5 +4033,211 @@
         min-height: 180px;
         max-height: 200px;
         padding: 0.4rem;
+    }
+}
+
+/* Contact Section Styles */
+.contact-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.contact-info-card,
+.travel-info-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-info-card:hover,
+.travel-info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+.contact-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #4CAF50;
+}
+
+.contact-header i {
+    font-size: 2rem;
+    color: #4CAF50;
+}
+
+.contact-header h3 {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.contact-details-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.contact-item:hover {
+    background: #e8f5e8;
+    transform: translateX(5px);
+}
+
+.contact-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background: #4CAF50;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.contact-icon i {
+    color: white;
+    font-size: 1.2rem;
+}
+
+.contact-content h4 {
+    color: #2c3e50;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.contact-content p {
+    color: #555;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.contact-content a {
+    color: #4CAF50;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.contact-content a:hover {
+    color: #3d8b40;
+    text-decoration: underline;
+}
+
+.travel-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.travel-method {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.travel-method:hover {
+    background: #e8f5e8;
+    transform: translateX(5px);
+}
+
+.travel-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #4CAF50, #81c784);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.travel-icon i {
+    color: white;
+    font-size: 1.5rem;
+}
+
+.travel-content h4 {
+    color: #2c3e50;
+    margin: 0 0 0.75rem 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.travel-content p {
+    color: #555;
+    margin: 0 0 1rem 0;
+    line-height: 1.6;
+}
+
+.travel-details {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.travel-details span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.travel-details i {
+    color: #4CAF50;
+    font-size: 0.9rem;
+}
+
+/* Responsive Design for Contact Section */
+@media (max-width: 768px) {
+    .contact-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .contact-info-card,
+    .travel-info-card {
+        padding: 1.5rem;
+    }
+    
+    .contact-header {
+        margin-bottom: 1.5rem;
+    }
+    
+    .contact-header i {
+        font-size: 1.5rem;
+    }
+    
+    .contact-header h3 {
+        font-size: 1.3rem;
+    }
+    
+    .travel-details {
+        flex-direction: column;
+        gap: 0.75rem;
     }
 }
