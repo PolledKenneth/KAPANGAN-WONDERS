@@ -1052,21 +1052,26 @@
     <div class="auth-modal-content landscape-modal">
         <span class="close" onclick="closeScheduleModal()">&times;</span>
         
-
+        <h2>Schedule a Visit</h2>
 
         <div class="modal-body-landscape">
             <!-- Left Column: Advisories -->
             <div class="advisories-column">
-                <h4><i class="fas fa-exclamation-triangle"></i> Important Advisories</h4>
+                <div class="advisories-header">
+                    <div class="advisory-header-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h4><i class="fas fa-bullhorn"></i> Important Advisories</h4>
+                </div>
                 <div class="advisories-list">
                     <div class="advisory-item">
                         <div class="advisory-icon weather">
                             <i class="fas fa-cloud-rain"></i>
                         </div>
                         <div class="advisory-content">
-                            <h5>Weather Alert</h5>
+                            <h5><i class="fas fa-cloud"></i> Weather Alert</h5>
                             <p>Heavy rainfall expected this weekend. Exercise caution when visiting waterfalls.</p>
-                            <span class="advisory-date">June 10, 2025</span>
+                            <span class="advisory-date"><i class="fas fa-calendar"></i> June 10, 2025</span>
                         </div>
                     </div>
                     
@@ -1075,9 +1080,9 @@
                             <i class="fas fa-calendar-alt"></i>
                         </div>
                         <div class="advisory-content">
-                            <h5>Barangay Fiesta</h5>
+                            <h5><i class="fas fa-star"></i> Barangay Fiesta</h5>
                             <p>Road closures in Cuba from 8:00 AM to 5:00 PM on June 15.</p>
-                            <span class="advisory-date">June 8, 2025</span>
+                            <span class="advisory-date"><i class="fas fa-calendar"></i> June 8, 2025</span>
                         </div>
                     </div>
                     
@@ -1086,9 +1091,9 @@
                             <i class="fas fa-tools"></i>
                         </div>
                         <div class="advisory-content">
-                            <h5>Trail Maintenance</h5>
+                            <h5><i class="fas fa-wrench"></i> Trail Maintenance</h5>
                             <p>Mt. Dakiwagan trail closed for maintenance from July 1-7, 2025.</p>
-                            <span class="advisory-date">June 20, 2025</span>
+                            <span class="advisory-date"><i class="fas fa-calendar"></i> June 20, 2025</span>
                         </div>
                     </div>
                     
@@ -1097,93 +1102,128 @@
 
             <!-- Right Column: Schedule Form -->
             <div class="schedule-column">
+                <div class="form-header">
+                    <div class="form-header-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h4><i class="fas fa-edit"></i> Visit Details</h4>
+                </div>
+                
                 <form id="scheduleForm" class="schedule-form-wide" onsubmit="handleScheduleSubmit(event)">
                     
                     <!-- Waiver Notice -->
                     <div class="form-group waiver">
+                        <div class="waiver-header">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Safety Waiver</span>
+                        </div>
                         <p>
                             <strong>Waiver:</strong> By proceeding, I acknowledge that I am responsible for my personal health and safety during the visit. I accept any risks associated with outdoor activities, weather conditions, or physical exertion. I also agree to follow all Barangay tourism guidelines.
                         </p>
                     </div>
 
-                    <!-- Auto-filled User Info -->
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" id="scheduleUserName" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="scheduleUserEmail" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Age</label>
-                        <input type="number" id="scheduleUserAge" required>
-                    </div>
-
-                    <!-- Barangay Selection with Checkboxes -->
-                    <div class="form-group">
-                        <label>Select Barangay(s) <span style="font-size: 0.85rem; color: gray;">(Select one or more)</span></label>
-                        <div class="checkbox-group" id="barangayCheckboxGroup">
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="barangay" value="Balakbak" onchange="updateSpotCheckboxes()">
-                                <span>Balakbak</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="barangay" value="Cuba" onchange="updateSpotCheckboxes()">
-                                <span>Cuba</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="barangay" value="Beleng-Belis" onchange="updateSpotCheckboxes()">
-                                <span>Beleng-Belis</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="barangay" value="Taba-ao" onchange="updateSpotCheckboxes()">
-                                <span>Taba-ao</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="barangay" value="Toplac" onchange="updateSpotCheckboxes()">
-                                <span>Toplac</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="barangay" value="Labueg" onchange="updateSpotCheckboxes()">
-                                <span>Labueg</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="barangay" value="Payapay" onchange="updateSpotCheckboxes()">
-                                <span>Payapay</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="barangay" value="Pudtong" onchange="updateSpotCheckboxes()">
-                                <span>Pudtong</span>
-                            </label>
+                    <!-- Personal Information Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <i class="fas fa-user"></i>
+                            <h5>Personal Information</h5>
                         </div>
-                        <small id="barangayError" style="color: red; display: none;">Please select at least one barangay</small>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-user-circle"></i> Full Name</label>
+                            <input type="text" id="scheduleUserName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" id="scheduleUserEmail" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-birthday-cake"></i> Age</label>
+                            <input type="number" id="scheduleUserAge" required>
+                        </div>
                     </div>
 
-                    <!-- Tourist Spots Checkboxes -->
-                    <div class="form-group">
-                        <label>Select Tourist Spot(s) <span style="font-size: 0.85rem; color: gray;">(Select one or more)</span></label>
-                        <div class="checkbox-group" id="spotCheckboxGroup">
-                            <!-- Spots will be populated by JavaScript -->
-                            <p>Please select one or more barangays first</p>
+                    <!-- Destination Selection Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <h5>Destination Selection</h5>
                         </div>
-                        <small id="spotError" style="color: red; display: none;">Please select at least one tourist spot</small>
+                        
+                        <!-- Barangay Selection with Checkboxes -->
+                        <div class="form-group">
+                            <label><i class="fas fa-building"></i> Select Barangay(s) <span class="helper-text">(Select one or more)</span></label>
+                            <div class="checkbox-group" id="barangayCheckboxGroup">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="barangay" value="Balakbak" onchange="updateSpotCheckboxes()">
+                                    <span><i class="fas fa-mountain"></i> Balakbak</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="barangay" value="Cuba" onchange="updateSpotCheckboxes()">
+                                    <span><i class="fas fa-water"></i> Cuba</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="barangay" value="Beleng-Belis" onchange="updateSpotCheckboxes()">
+                                    <span><i class="fas fa-eye"></i> Beleng-Belis</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="barangay" value="Taba-ao" onchange="updateSpotCheckboxes()">
+                                    <span><i class="fas fa-mountain"></i> Taba-ao</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="barangay" value="Toplac" onchange="updateSpotCheckboxes()">
+                                    <span><i class="fas fa-leaf"></i> Toplac</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="barangay" value="Labueg" onchange="updateSpotCheckboxes()">
+                                    <span><i class="fas fa-seedling"></i> Labueg</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="barangay" value="Payapay" onchange="updateSpotCheckboxes()">
+                                    <span><i class="fas fa-home"></i> Payapay</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="barangay" value="Pudtong" onchange="updateSpotCheckboxes()">
+                                    <span><i class="fas fa-tree"></i> Pudtong</span>
+                                </label>
+                            </div>
+
+                        </div>
+
+                        <!-- Tourist Spots Checkboxes -->
+                        <div class="form-group">
+                            <label><i class="fas fa-map-pin"></i> Select Tourist Spot(s) <span class="helper-text">(Select one or more)</span></label>
+                            <div class="checkbox-group" id="spotCheckboxGroup">
+                                <!-- Spots will be populated by JavaScript -->
+                                <p class="placeholder-text"><i class="fas fa-info-circle"></i> Please select one or more barangays first</p>
+                            </div>
+                            <small id="spotError" class="error-message"><i class="fas fa-exclamation-circle"></i> Please select at least one tourist spot</small>
+                        </div>
                     </div>
 
                     <!-- NEW: Barangay-specific schedule forms -->
                     <div id="barangaySchedulesGroup"></div>
 
-                    <!-- Declaration of Medical Condition Checkbox -->
-                    <div class="form-group">
-                        <label>
-                            I declare that I have no known serious medical condition that would prevent me from participating in this visit.
-                            <input type="checkbox" id="medicalDeclaration" required>
-                        </label>
+                    <!-- Declaration Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <i class="fas fa-check-circle"></i>
+                            <h5>Declaration</h5>
+                        </div>
+                        
+                        <div class="form-group declaration-group">
+                            <label class="declaration-label">
+                                <input type="checkbox" id="medicalDeclaration" required>
+                                <span><i class="fas fa-heart"></i> I declare that I have no known serious medical condition that would prevent me from participating in this visit.</span>
+                            </label>
+                        </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Schedule</button>
+                    <button type="submit" class="btn btn-primary submit-btn">
+                        <i class="fas fa-paper-plane"></i> Submit Schedule
+                    </button>
                 </form>
             </div>
         </div>

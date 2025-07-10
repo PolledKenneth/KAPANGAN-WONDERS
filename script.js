@@ -326,10 +326,7 @@ async function handleScheduleSubmit(e) {
 
         // Validate form
         if (selectedBarangays.length === 0) {
-            document.getElementById('barangayError').style.display = 'block';
             throw new Error('Please select at least one barangay.');
-        } else {
-            document.getElementById('barangayError').style.display = 'none';
         }
 
         if (selectedSpots.length === 0) {
@@ -1777,7 +1774,7 @@ function prefillScheduleForm() {
     // Clear any existing selections
     document.querySelectorAll('input[name="barangay"]').forEach(cb => cb.checked = false);
     document.getElementById('spotCheckboxGroup').innerHTML = '';
-    document.getElementById('barangayError').style.display = 'none';
+    // Removed barangayError element - no longer needed
     document.getElementById('spotError').style.display = 'none';
     // Clear barangay schedules group if present
     if (document.getElementById('barangaySchedulesGroup')) {
