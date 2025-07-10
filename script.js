@@ -2480,7 +2480,11 @@ function displayUserTravels() {
         return;
     }
     
-    const userTravelsFiltered = userTravels.filter(travel => travel.userId === currentUserId);
+    const userTravelsFiltered = userTravels.filter(travel => 
+        travel.userId === currentUserId && 
+        travel.status !== 'canceled' && 
+        travel.status !== 'cancelled'
+    );
     
     if (userTravelsFiltered.length === 0) {
         travelsList.innerHTML = '<tr><td colspan="7" style="text-align: center;">No scheduled travels yet. Start exploring and schedule your visits!</td></tr>';
@@ -2722,12 +2726,25 @@ window.cancelVisit = function(travelId) {
         const travelIndex = userTravels.findIndex(t => t.id === travelId);
         
         if (travelIndex !== -1) {
-            userTravels[travelIndex].status = 'canceled';
-            userTravels[travelIndex].canceledAt = new Date().toISOString();
+            console.log(`Canceling visit ${travelId}. Total visits before: ${userTravels.length}`);
+            
+            // Remove the visit from the list instead of just marking it as canceled
+            userTravels.splice(travelIndex, 1);
             localStorage.setItem('userTravels', JSON.stringify(userTravels));
             
-            showNotification('success', 'Visit canceled successfully!');
+            // Also remove any companions associated with this travel
+            const companions = JSON.parse(localStorage.getItem('travelCompanions') || '{}');
+            if (companions[travelId]) {
+                delete companions[travelId];
+                localStorage.setItem('travelCompanions', JSON.stringify(companions));
+                console.log(`Removed companions for travel ${travelId}`);
+            }
+            
+            console.log(`Visit ${travelId} canceled. Total visits after: ${userTravels.length}`);
+            showNotification('success', 'Visit canceled and removed from your list!');
             updateDashboard();
+        } else {
+            console.log(`Travel ${travelId} not found in userTravels`);
         }
     }
 };
@@ -3411,3 +3428,666 @@ function showTimeRangeConflictNotice(barangay, conflictingBarangay, startTime, e
         }
     }, 3500);
 }
+
+// Enhanced Dashboard Functions
+
+// Toggle notifications panel
+window.toggleNotifications = function() {
+    const panel = document.getElementById('notificationsPanel');
+    panel.classList.toggle('show');
+    
+    // Update notification badge
+    updateNotificationBadge();
+};
+
+// Toggle user menu dropdown
+window.toggleUserMenu = function() {
+    const dropdown = document.getElementById('userMenuDropdown');
+    dropdown.classList.toggle('show');
+};
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(event) {
+    const userMenu = document.querySelector('.user-menu-dropdown');
+    const notificationsPanel = document.getElementById('notificationsPanel');
+    
+    if (userMenu && !userMenu.contains(event.target)) {
+        document.getElementById('userMenuDropdown').classList.remove('show');
+    }
+    
+    if (notificationsPanel && !notificationsPanel.contains(event.target) && 
+        !event.target.closest('.notification-bell')) {
+        notificationsPanel.classList.remove('show');
+    }
+});
+
+// Update notification badge count
+function updateNotificationBadge() {
+    const badge = document.getElementById('notificationBadge');
+    const notifications = JSON.parse(localStorage.getItem('userNotifications') || '[]');
+    const unreadCount = notifications.filter(n => !n.read).length;
+    
+    if (badge) {
+        badge.textContent = unreadCount;
+        badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+    }
+}
+
+// Add notification
+function addNotification(type, title, message) {
+    const notifications = JSON.parse(localStorage.getItem('userNotifications') || '[]');
+    
+    const notification = {
+        id: Date.now(),
+        type: type, // 'success', 'warning', 'error', 'info'
+        title: title,
+        message: message,
+        timestamp: new Date().toISOString(),
+        read: false
+    };
+    
+    notifications.unshift(notification);
+    
+    // Keep only last 50 notifications
+    if (notifications.length > 50) {
+        notifications.splice(50);
+    }
+    
+    localStorage.setItem('userNotifications', JSON.stringify(notifications));
+    updateNotificationBadge();
+    renderNotifications();
+}
+
+// Render notifications
+function renderNotifications() {
+    const notificationsList = document.getElementById('notificationsList');
+    const notifications = JSON.parse(localStorage.getItem('userNotifications') || '[]');
+    
+    if (!notificationsList) return;
+    
+    if (notifications.length === 0) {
+        notificationsList.innerHTML = `
+            <div class="notification-item">
+                <div class="notification-icon info">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="notification-content">
+                    <h4>No Notifications</h4>
+                    <p>You're all caught up! Check back later for updates.</p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    notificationsList.innerHTML = notifications.map(notification => {
+        const iconClass = notification.type || 'info';
+        const iconMap = {
+            success: 'fas fa-check-circle',
+            warning: 'fas fa-exclamation-triangle',
+            error: 'fas fa-times-circle',
+            info: 'fas fa-info-circle'
+        };
+        
+        const timeAgo = getTimeAgo(notification.timestamp);
+        
+        return `
+            <div class="notification-item ${notification.read ? '' : 'unread'}" onclick="markNotificationAsRead(${notification.id})">
+                <div class="notification-icon ${iconClass}">
+                    <i class="${iconMap[iconClass] || iconMap.info}"></i>
+                </div>
+                <div class="notification-content">
+                    <h4>${notification.title}</h4>
+                    <p>${notification.message}</p>
+                    <div class="notification-time">${timeAgo}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Mark notification as read
+window.markNotificationAsRead = function(notificationId) {
+    const notifications = JSON.parse(localStorage.getItem('userNotifications') || '[]');
+    const notification = notifications.find(n => n.id === notificationId);
+    
+    if (notification) {
+        notification.read = true;
+        localStorage.setItem('userNotifications', JSON.stringify(notifications));
+        updateNotificationBadge();
+        renderNotifications();
+    }
+};
+
+// Get time ago string
+function getTimeAgo(timestamp) {
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffInSeconds = Math.floor((now - time) / 1000);
+    
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
+}
+
+// Update dashboard overview
+function updateDashboardOverview() {
+    const userTravels = JSON.parse(localStorage.getItem('userTravels') || '[]');
+    const companions = JSON.parse(localStorage.getItem('travelCompanions') || '{}');
+    const notifications = JSON.parse(localStorage.getItem('userNotifications') || '[]');
+    
+    // Calculate stats
+    const totalTravels = userTravels.length;
+    const totalPlaces = new Set(userTravels.map(t => t.spot?.name)).size;
+    const totalCompanions = Object.values(companions).reduce((sum, comps) => sum + comps.length, 0);
+    const unreadNotifications = notifications.filter(n => !n.read).length;
+    
+    // Update overview cards
+    const totalTravelsEl = document.getElementById('totalTravels');
+    const totalPlacesEl = document.getElementById('totalPlaces');
+    const totalCompanionsEl = document.getElementById('totalCompanions');
+    const totalNotificationsEl = document.getElementById('totalNotifications');
+    
+    if (totalTravelsEl) totalTravelsEl.textContent = totalTravels;
+    if (totalPlacesEl) totalPlacesEl.textContent = totalPlaces;
+    if (totalCompanionsEl) totalCompanionsEl.textContent = totalCompanions;
+    if (totalNotificationsEl) totalNotificationsEl.textContent = unreadNotifications;
+    
+    // Update travel stats
+    const upcomingTravels = userTravels.filter(t => new Date(t.date) >= new Date()).length;
+    const completedTravels = userTravels.filter(t => new Date(t.date) < new Date()).length;
+    
+    const upcomingEl = document.getElementById('upcomingTravels');
+    const completedEl = document.getElementById('completedTravels');
+    
+    if (upcomingEl) upcomingEl.textContent = upcomingTravels;
+    if (completedEl) completedEl.textContent = completedTravels;
+}
+
+// Render recent activities
+function renderRecentActivities() {
+    const activitiesList = document.getElementById('activitiesList');
+    if (!activitiesList) return;
+    
+    const userTravels = JSON.parse(localStorage.getItem('userTravels') || '[]');
+    const activities = [];
+    
+    // Convert travels to activities
+    userTravels.forEach(travel => {
+        activities.push({
+            type: 'schedule',
+            title: `Scheduled visit to ${travel.spot?.name}`,
+            description: `Visit scheduled for ${new Date(travel.date).toLocaleDateString()}`,
+            timestamp: travel.createdAt,
+            icon: 'schedule'
+        });
+    });
+    
+    // Sort by timestamp (newest first)
+    activities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    // Take only the 5 most recent
+    const recentActivities = activities.slice(0, 5);
+    
+    if (recentActivities.length === 0) {
+        activitiesList.innerHTML = `
+            <div class="activity-item">
+                <div class="activity-icon info">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="activity-content">
+                    <h4>No Recent Activities</h4>
+                    <p>Start by scheduling your first visit!</p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    activitiesList.innerHTML = recentActivities.map(activity => {
+        const timeAgo = getTimeAgo(activity.timestamp);
+        
+        return `
+            <div class="activity-item">
+                <div class="activity-icon ${activity.icon}">
+                    <i class="fas fa-${activity.icon === 'schedule' ? 'calendar-plus' : 'map-marker-alt'}"></i>
+                </div>
+                <div class="activity-content">
+                    <h4>${activity.title}</h4>
+                    <p>${activity.description}</p>
+                    <div class="activity-time">${timeAgo}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Enhanced updateDashboard function
+function updateDashboard() {
+    if (!window.currentUser) return;
+    
+    // Update user info
+    const userName = window.currentUser.name || 'User';
+    const userInitial = userName.charAt(0).toUpperCase();
+    
+    // Update all avatar elements
+    const avatarElements = ['dashboardAvatar', 'sidebarAvatar', 'profileAvatarImage'];
+    avatarElements.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = userInitial;
+    });
+    
+    // Update all user name elements
+    const nameElements = ['dashboardUserName', 'sidebarUserName'];
+    nameElements.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = userName;
+    });
+    
+    // Pre-fill profile form
+    document.getElementById('profileName').value = window.currentUser.name || '';
+    document.getElementById('profileEmail').value = window.currentUser.email || '';
+    document.getElementById('profilePhone').value = window.currentUser.phone || '';
+    document.getElementById('profileAddress').value = window.currentUser.address || '';
+    
+    // Update dashboard overview
+    updateDashboardOverview();
+    
+    // Render recent activities
+    renderRecentActivities();
+    
+    // Render notifications
+    renderNotifications();
+    
+    // Display user's travels
+    displayUserTravels();
+}
+
+// Enhanced showDashboardSection function
+function showDashboardSection(section, event) {
+    // Update sidebar active state
+    document.querySelectorAll('.sidebar-link').forEach(link => {
+        link.classList.remove('active');
+    });
+    
+    // Add active class to clicked link
+    if (event && event.target.closest('.sidebar-link')) {
+        event.target.closest('.sidebar-link').classList.add('active');
+    }
+    
+    // Show/hide sections
+    const sections = ['profile', 'overview', 'travels', 'announcements', 'placesVisited'];
+    sections.forEach(s => {
+        const element = document.getElementById(s + 'Section');
+        if (element) {
+            element.style.display = section === s ? 'block' : 'none';
+        }
+    });
+    
+    // Update overview if showing overview section
+    if (section === 'overview') {
+        updateDashboardOverview();
+        renderRecentActivities();
+    }
+}
+
+// Enhanced displayUserTravels function
+function displayUserTravels() {
+    const travelsList = document.getElementById('travelsList');
+    const userTravels = JSON.parse(localStorage.getItem('userTravels') || '[]');
+    const currentUserId = window.currentUser ? window.currentUser.id : null;
+    
+    if (!currentUserId) {
+        travelsList.innerHTML = '<tr><td colspan="7" style="text-align: center;">Please sign in to view your travels.</td></tr>';
+        return;
+    }
+    
+    const userTravelsFiltered = userTravels.filter(travel => 
+        travel.userId === currentUserId && 
+        travel.status !== 'canceled' && 
+        travel.status !== 'cancelled'
+    );
+    
+    if (userTravelsFiltered.length === 0) {
+        travelsList.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 2rem;">
+                    <div style="color: #666; font-size: 1.1rem; margin-bottom: 1rem;">
+                        <i class="fas fa-calendar-plus" style="font-size: 2rem; color: #4CAF50; margin-bottom: 1rem;"></i>
+                        <p>No scheduled travels yet.</p>
+                        <p>Start exploring and schedule your visits!</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="scheduleVisit()">
+                        <i class="fas fa-plus"></i> Schedule Your First Visit
+                    </button>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    // Get companions data
+    const companions = JSON.parse(localStorage.getItem('travelCompanions') || '{}');
+    
+    travelsList.innerHTML = userTravelsFiltered.map(travel => {
+        // Format time range
+        const timeDisplay = travel.endTime 
+            ? `${formatTimeDisplay(travel.time)} - ${formatTimeDisplay(travel.endTime)}`
+            : travel.time || 'N/A';
+        
+        // Get companions for this travel
+        const travelCompanions = companions[travel.id] || [];
+        const companionsDisplay = travelCompanions.length > 0 
+            ? travelCompanions.map(c => `${c.name} (${c.age})`).join(', ')
+            : 'None';
+        
+        return `
+        <tr>
+            <td>
+                <div class="spot-info">
+                    <img src="${travel.spot?.image || 'assets/default-spot.jpg'}" alt="${travel.spot?.name || 'N/A'}" onerror="this.src='assets/default-spot.jpg'">
+                    <span>${travel.spot ? travel.spot.name : 'N/A'}</span>
+                </div>
+            </td>
+            <td>${travel.date || 'N/A'}</td>
+            <td>${timeDisplay}</td>
+            <td>${travel.visitors || '1'}</td>
+            <td><span class="status-badge ${travel.status || 'scheduled'}">${travel.status || 'Scheduled'}</span></td>
+            <td class="companions-cell">
+                <div class="companions-list">
+                    ${travelCompanions.length > 0 
+                        ? travelCompanions.map(c => `
+                            <span class="companion-tag">
+                                ${c.name} (${c.age})
+                                <button class="remove-companion" onclick="deleteCompanion('${travel.id}', '${c.id}')" title="Remove companion">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </span>
+                        `).join('')
+                        : '<span class="no-companions">No companions</span>'
+                    }
+                </div>
+            </td>
+            <td class="actions">
+                <button class="btn-icon" onclick="showAddCompanionModal('${travel.id}')" title="Add Companion">
+                    <i class="fas fa-user-plus"></i>
+                </button>
+                <button class="btn-icon" onclick="viewQR('${travel.id}')" title="View QR Code">
+                    <i class="fas fa-qrcode"></i>
+                </button>
+                <button class="btn-icon btn-delete" onclick="cancelVisit('${travel.id}')" title="Cancel Visit">
+                    <i class="fas fa-times"></i>
+                </button>
+            </td>
+        </tr>
+        `;
+    }).join('');
+}
+
+// Enhanced cancelVisit function with notifications
+window.cancelVisit = function(travelId) {
+    if (confirm('Are you sure you want to cancel this visit? This action cannot be undone.')) {
+        const userTravels = JSON.parse(localStorage.getItem('userTravels') || '[]');
+        const travelIndex = userTravels.findIndex(t => t.id === travelId);
+        
+        if (travelIndex !== -1) {
+            const travel = userTravels[travelIndex];
+            console.log(`Canceling visit ${travelId}. Total visits before: ${userTravels.length}`);
+            
+            // Remove the visit from the list instead of just marking it as canceled
+            userTravels.splice(travelIndex, 1);
+            localStorage.setItem('userTravels', JSON.stringify(userTravels));
+            
+            // Also remove any companions associated with this travel
+            const companions = JSON.parse(localStorage.getItem('travelCompanions') || '{}');
+            if (companions[travelId]) {
+                delete companions[travelId];
+                localStorage.setItem('travelCompanions', JSON.stringify(companions));
+                console.log(`Removed companions for travel ${travelId}`);
+            }
+            
+            console.log(`Visit ${travelId} canceled. Total visits after: ${userTravels.length}`);
+            
+            // Add notification
+            addNotification(
+                'info',
+                'Visit Canceled',
+                `Your visit to ${travel.spot?.name || 'the tourist spot'} has been canceled and removed from your list.`
+            );
+            
+            showNotification('success', 'Visit canceled and removed from your list!');
+            updateDashboard();
+        } else {
+            console.log(`Travel ${travelId} not found in userTravels`);
+        }
+    }
+};
+
+// Enhanced handleScheduleSubmit with notifications
+async function handleScheduleSubmit(e) {
+    e.preventDefault();
+    
+    const form = e.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.textContent;
+    
+    try {
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scheduling...';
+        
+        // Get form values
+        const name = document.getElementById('scheduleUserName').value.trim();
+        const email = document.getElementById('scheduleUserEmail').value.trim();
+        const age = parseInt(document.getElementById('scheduleUserAge').value);
+        const medicalCheckbox = document.getElementById('medicalDeclaration');
+        const visitDate = selectedVisitDate;
+
+        // Get selected barangays and spots
+        const selectedBarangays = Array.from(document.querySelectorAll('input[name="barangay"]:checked')).map(cb => cb.value);
+        const selectedSpots = Array.from(document.querySelectorAll('input[name="spot"]:checked')).map(cb => ({
+            name: cb.value,
+            id: cb.dataset.spotId,
+            barangay: cb.dataset.barangay
+        }));
+
+        // Validate form
+        if (selectedBarangays.length === 0) {
+            document.getElementById('barangayError').style.display = 'block';
+            throw new Error('Please select at least one barangay.');
+        } else {
+            document.getElementById('barangayError').style.display = 'none';
+        }
+
+        if (selectedSpots.length === 0) {
+            document.getElementById('spotError').style.display = 'block';
+            throw new Error('Please select at least one tourist spot.');
+        } else {
+            document.getElementById('spotError').style.display = 'none';
+        }
+
+        if (!visitDate) {
+            throw new Error('Please select a visit date.');
+        }
+
+        // Get general visitors count
+        const generalVisitorsInput = document.getElementById('generalVisitorsInput');
+        const totalVisitors = generalVisitorsInput ? parseInt(generalVisitorsInput.value, 10) : 0;
+        
+        if (isNaN(totalVisitors) || totalVisitors < 1 || totalVisitors > 50) {
+            throw new Error('Total number of visitors must be between 1 and 50.');
+        }
+        
+        // Validate that all selected barangays have a time slot and end time
+        const barangaySchedules = {};
+        for (const barangay of selectedBarangays) {
+            const timeSlot = selectedTimeSlots[barangay]?.time;
+            const endTime = selectedTimeSlots[barangay]?.endTime;
+            
+            if (!timeSlot) {
+                throw new Error(`Please select a time slot for ${barangay}.`);
+            }
+            
+            if (!endTime) {
+                throw new Error(`Please select an end time for ${barangay}.`);
+            }
+            
+            barangaySchedules[barangay] = { 
+                date: visitDate, 
+                time: timeSlot, 
+                endTime: endTime,
+                visitors: totalVisitors // Use the general visitors count for all barangays
+            };
+        }
+
+        if (!medicalCheckbox.checked) {
+            throw new Error('Please confirm your medical condition declaration before submitting.');
+        }
+
+        // Check age restrictions for certain barangays
+        const restrictedBarangays = ['Balakbak', 'Cuba'];
+        const hasRestrictedBarangay = selectedBarangays.some(barangay =>
+            restrictedBarangays.includes(barangay) && age >= 80
+        );
+        if (hasRestrictedBarangay) {
+            throw new Error('Visitors aged 80 and above are not allowed in certain barangays for safety reasons.');
+        }
+
+        // Create travel objects for each selected spot, using barangay-specific schedule
+        const travels = [];
+        for (const spotInfo of selectedSpots) {
+            const spot = touristSpots.find(s => s.id === parseInt(spotInfo.id));
+            if (!spot) {
+                throw new Error(`Tourist spot '${spotInfo.name}' not found.`);
+            }
+            
+            const barangay = spotInfo.barangay;
+            const sched = barangaySchedules[barangay];
+            
+            if (!sched) {
+                console.warn(`No schedule found for barangay ${barangay}`);
+                continue;
+            }
+            
+            // Check for time conflicts with other barangays
+            const hasConflict = Object.entries(barangaySchedules).some(([b, otherSched]) => {
+                if (b === barangay) return false; // Skip current barangay
+                return isTimeOverlap(sched.time, otherSched.time);
+            });
+            
+            if (hasConflict) {
+                throw new Error(`The selected time slot for ${barangay} conflicts with another barangay's schedule.`);
+            }
+            
+            travels.push({
+                id: `visit-${Date.now()}-${spot.id}-${barangay}`,
+                userId: window.currentUser.id,
+                userName: name,
+                userEmail: email,
+                userAge: age,
+                barangay: barangay,
+                spot: spot,
+                date: sched.date,
+                time: sched.time,
+                endTime: sched.endTime,
+                visitors: sched.visitors,
+                status: 'scheduled',
+                referenceNumber: `KWV-${Math.floor(10000 + Math.random() * 90000)}`,
+                createdAt: new Date().toISOString()
+            });
+        }
+        
+        if (travels.length === 0) {
+            throw new Error('No valid travel entries were created. Please check your selections.');
+        }
+
+        // In a real app, you would send this to your backend
+        for (const travel of travels) {
+            userTravels.push(travel);
+        }
+
+        localStorage.setItem('userTravels', JSON.stringify(userTravels));
+
+        // Reset form
+        form.reset();
+        closeScheduleModal();
+        
+        // Reset scheduling state
+        selectedVisitDate = null;
+        selectedTimeSlots = {};
+
+        // Show success message
+        const spotNames = selectedSpots.map(s => s.name).join(', ');
+        showNotification('success', `Visits scheduled successfully for: ${spotNames}`);
+
+        // Add notification
+        addNotification(
+            'success',
+            'Visit Scheduled Successfully',
+            `Your visit to ${spotNames} has been scheduled for ${new Date(visitDate).toLocaleDateString()}. Don't forget to show your QR code when you arrive!`
+        );
+
+        // Show dashboard and My Scheduled Travels
+        showDashboard();
+        showDashboardSection('travels');
+
+        // Generate and show QR code for the first spot
+        if (travels.length > 0) {
+            generateQRCode(travels[0]);
+        }
+
+    } catch (error) {
+        console.error('Scheduling error:', error);
+        showNotification('error', error.message || 'Failed to schedule visits. Please try again.');
+    } finally {
+        // Reset button state
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
+    }
+}
+
+// Initialize enhanced dashboard when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize existing functionality
+    initTabs();
+    
+    // Add event listener for profile form submission
+    const profileForm = document.getElementById('profileForm');
+    if (profileForm) {
+        profileForm.addEventListener('submit', handleProfileUpdate);
+    }
+    
+    // Initialize dashboard if we're on the dashboard page
+    if (document.getElementById('dashboard')) {
+        updateDashboard();
+        showDashboardSection('overview');
+        
+        // Initialize notifications
+        updateNotificationBadge();
+        renderNotifications();
+    }
+    
+    // Add sample notifications for demo
+    if (localStorage.getItem('userNotifications') === null) {
+        const sampleNotifications = [
+            {
+                id: Date.now() - 86400000,
+                type: 'success',
+                title: 'Welcome to Kapangan Wonders!',
+                message: 'Your account has been successfully created. Start exploring our beautiful tourist spots!',
+                timestamp: new Date(Date.now() - 86400000).toISOString(),
+                read: true
+            },
+            {
+                id: Date.now() - 3600000,
+                type: 'info',
+                title: 'New Tourist Spot Added',
+                message: 'Manahongkong Falls has been added to our list of tourist spots. Check it out!',
+                timestamp: new Date(Date.now() - 3600000).toISOString(),
+                read: false
+            }
+        ];
+        localStorage.setItem('userNotifications', JSON.stringify(sampleNotifications));
+    }
+});

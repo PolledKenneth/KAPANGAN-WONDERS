@@ -165,32 +165,7 @@
             </div>
         </section>
 
-        <!-- About Us Section -->
-        <section class="about-section" id="aboutSection">
-            <div class="container">
-                <div class="section-header">
-                    <h2><i class="fas fa-info-circle"></i> About Kapangan Wonders</h2>
-                    <p>Learn more about our mission, our people, and the beauty of Kapangan.</p>
-                </div>
-                <div class="about-cards">
-                    <div class="about-card">
-                        <i class="fas fa-mountain"></i>
-                        <h3>Nature’s Beauty</h3>
-                        <p>Explore breathtaking mountains, rivers, and rice terraces unique to Kapangan.</p>
-                    </div>
-                    <div class="about-card">
-                        <i class="fas fa-users"></i>
-                        <h3>Warm Hospitality</h3>
-                        <p>Experience the genuine warmth and friendliness of our local community.</p>
-                    </div>
-                    <div class="about-card">
-                        <i class="fas fa-landmark"></i>
-                        <h3>Rich Culture</h3>
-                        <p>Discover vibrant traditions, festivals, and the rich heritage of Benguet.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+
 
         <!-- All Tourist Spots Section -->
         <section class="all-tourist-spots" id="allTouristSpots" style="display: none;">
@@ -540,137 +515,423 @@
 
     <!-- User Dashboard -->
     <div class="dashboard" id="dashboard">
-        <div class="dashboard-container">
-            <aside class="sidebar">
-                <div class="user-header">
-                    <div class="user-avatar" id="dashboardAvatar">U</div>
-                    <div>
-                        <h3 id="dashboardUserName">User Name</h3>
-                        <p>Tourist</p>
+        <!-- Dashboard Header with Notifications -->
+        <div class="dashboard-header">
+            <div class="dashboard-header-content">
+                <div class="dashboard-title">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <h1>My Dashboard</h1>
+                </div>
+                <div class="dashboard-actions">
+                    <div class="notification-bell" onclick="toggleNotifications()">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="notificationBadge">0</span>
+                    </div>
+                    <div class="user-menu-dropdown">
+                        <div class="user-menu-trigger" onclick="toggleUserMenu()">
+                            <div class="user-avatar" id="dashboardAvatar">U</div>
+                            <span id="dashboardUserName">User Name</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="user-menu-dropdown-content" id="userMenuDropdown">
+                            <a href="#" onclick="showDashboardSection('profile')">
+                                <i class="fas fa-user"></i> Profile
+                            </a>
+                            <a href="#" onclick="logout()">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </div>
                     </div>
                 </div>
-                <ul class="sidebar-menu">
-                    <li class="sidebar-item">
-                        <a href="#" class="sidebar-link active" onclick="showDashboardSection('profile')">
-                            <i class="fas fa-user"></i> Profile
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a href="#" class="sidebar-link" onclick="showDashboardSection('travels')">
-                            <i class="fas fa-map-marker-alt"></i> My Travels
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a href="#" class="sidebar-link" onclick="showDashboardSection('announcements')">
-                            <i class="fas fa-bullhorn"></i> Announcements
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a href="#" class="sidebar-link" onclick="showDashboardSection('placesVisited')">
-                            <i class="fas fa-map"></i> Places Visited
-                        </a>
-                    </li>
-                </ul>
+            </div>
+        </div>
+
+        <!-- Notifications Panel -->
+        <div class="notifications-panel" id="notificationsPanel">
+            <div class="notifications-header">
+                <h3><i class="fas fa-bell"></i> Notifications</h3>
+                <button class="close-notifications" onclick="toggleNotifications()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="notifications-list" id="notificationsList">
+                <!-- Notifications will be populated here -->
+            </div>
+        </div>
+
+        <div class="dashboard-container">
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <div class="user-profile">
+                        <div class="user-avatar-large" id="sidebarAvatar">U</div>
+                        <div class="user-info">
+                            <h3 id="sidebarUserName">User Name</h3>
+                            <p class="user-role"><i class="fas fa-user-tag"></i> Tourist</p>
+                            <p class="user-status"><i class="fas fa-circle"></i> Online</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <nav class="sidebar-nav">
+                    <div class="nav-section">
+                        <h4 class="nav-section-title"><i class="fas fa-user-circle"></i> Account</h4>
+                        <ul class="sidebar-menu">
+                            <li class="sidebar-item">
+                                <a href="#" class="sidebar-link active" onclick="showDashboardSection('profile')">
+                                    <i class="fas fa-user"></i>
+                                    <span>Profile</span>
+                                    <div class="link-indicator"></div>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a href="#" class="sidebar-link" onclick="showDashboardSection('overview')">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span>Overview</span>
+                                    <div class="link-indicator"></div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="nav-section">
+                        <h4 class="nav-section-title"><i class="fas fa-map-marked-alt"></i> Travel</h4>
+                        <ul class="sidebar-menu">
+                            <li class="sidebar-item">
+                                <a href="#" class="sidebar-link" onclick="showDashboardSection('travels')">
+                                    <i class="fas fa-calendar-check"></i>
+                                    <span>My Travels</span>
+                                    <div class="link-indicator"></div>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a href="#" class="sidebar-link" onclick="showDashboardSection('placesVisited')">
+                                    <i class="fas fa-map"></i>
+                                    <span>Places Visited</span>
+                                    <div class="link-indicator"></div>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a href="#" class="sidebar-link" onclick="scheduleVisit()">
+                                    <i class="fas fa-plus-circle"></i>
+                                    <span>Schedule Visit</span>
+                                    <div class="link-indicator"></div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="nav-section">
+                        <h4 class="nav-section-title"><i class="fas fa-bullhorn"></i> Updates</h4>
+                        <ul class="sidebar-menu">
+                            <li class="sidebar-item">
+                                <a href="#" class="sidebar-link" onclick="showDashboardSection('announcements')">
+                                    <i class="fas fa-bullhorn"></i>
+                                    <span>Announcements</span>
+                                    <div class="link-indicator"></div>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a href="#" class="sidebar-link" onclick="showDashboardSection('notifications')">
+                                    <i class="fas fa-bell"></i>
+                                    <span>Notifications</span>
+                                    <div class="link-indicator"></div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
             </aside>
 
             <div class="main-content">
+                <!-- Overview Section -->
+                <div id="overviewSection" style="display: none;">
+                    <div class="section-header">
+                        <h2><i class="fas fa-chart-line"></i> Dashboard Overview</h2>
+                        <p>Welcome back! Here's your travel summary</p>
+                    </div>
+                    
+                    <div class="overview-cards">
+                        <div class="overview-card">
+                            <div class="card-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="totalTravels">0</h3>
+                                <p>Scheduled Travels</p>
+                            </div>
+                        </div>
+                        
+                        <div class="overview-card">
+                            <div class="card-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="totalPlaces">0</h3>
+                                <p>Places Visited</p>
+                            </div>
+                        </div>
+                        
+                        <div class="overview-card">
+                            <div class="card-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="totalCompanions">0</h3>
+                                <p>Total Companions</p>
+                            </div>
+                        </div>
+                        
+                        <div class="overview-card">
+                            <div class="card-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="totalNotifications">0</h3>
+                                <p>New Notifications</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="recent-activities">
+                        <h3><i class="fas fa-clock"></i> Recent Activities</h3>
+                        <div class="activities-list" id="activitiesList">
+                            <!-- Recent activities will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Section -->
                 <div id="profileSection">
-                    <h2>Profile Information</h2>
-                    <form id="profileForm">
-                        <div class="form-group">
-                            <label>Full Name</label>
-                            <input type="text" id="profileName" required>
+                    <div class="section-header">
+                        <h2><i class="fas fa-user"></i> Profile Information</h2>
+                        <p>Manage your personal information and preferences</p>
+                    </div>
+                    
+                    <div class="profile-container">
+                        <div class="profile-avatar-section">
+                            <div class="profile-avatar">
+                                <div class="avatar-image" id="profileAvatarImage">U</div>
+                                <button class="change-avatar-btn">
+                                    <i class="fas fa-camera"></i>
+                                </button>
+                            </div>
+                            <div class="profile-status">
+                                <span class="status-indicator online"></span>
+                                <span>Online</span>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" id="profileEmail" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Phone</label>
-                            <input type="tel" id="profilePhone">
-                        </div>
-                        <div class="form-group">
-                            <label>Address</label>
-                            <textarea id="profileAddress" rows="3"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Update Profile</button>
-                    </form>
+                        
+                        <form id="profileForm" class="profile-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-user"></i> Full Name</label>
+                                    <input type="text" id="profileName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-envelope"></i> Email</label>
+                                    <input type="email" id="profileEmail" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-phone"></i> Phone</label>
+                                    <input type="tel" id="profilePhone">
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-birthday-cake"></i> Age</label>
+                                    <input type="number" id="profileAge" min="1" max="120">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label><i class="fas fa-map-marker-alt"></i> Address</label>
+                                <textarea id="profileAddress" rows="3"></textarea>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Update Profile
+                                </button>
+                                <button type="button" class="btn btn-outline">
+                                    <i class="fas fa-undo"></i> Reset
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
+                <!-- Travels Section -->
                 <div id="travelsSection" style="display: none;">
-                    <h2>My Scheduled Travels</h2>
-                    <div class="table-responsive">
-                        <table class="travels-table">
-                            <thead>
-                                <tr>
-                                    <th>Spot</th>
-                                    <th>Date</th>
-                                    <th>Time</th>
-                                    <th>Visitors</th>
-                                    <th>Status</th>
-                                    <th>Companions</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="travelsList">
-                                <!-- Scheduled travels will be displayed here -->
-                            </tbody>
-                        </table>
+                    <div class="section-header">
+                        <h2><i class="fas fa-calendar-check"></i> My Scheduled Travels</h2>
+                        <p>Manage your upcoming visits and travel plans</p>
+                    </div>
+                    
+                    <div class="travels-container">
+                        <div class="travels-header">
+                            <div class="travels-stats">
+                                <span class="stat-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span id="upcomingTravels">0</span> Upcoming
+                                </span>
+                                <span class="stat-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span id="completedTravels">0</span> Completed
+                                </span>
+                            </div>
+                            <button class="btn btn-primary" onclick="scheduleVisit()">
+                                <i class="fas fa-plus"></i> Schedule New Visit
+                            </button>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="travels-table">
+                                <thead style="background: #43a047; color: #fff;">
+                                    <tr>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody id="travelsList">
+                                    <!-- Scheduled travels will be displayed here -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Announcements Section -->
                 <div id="announcementsSection" style="display: none;">
-                    <h2>Announcements</h2>
-                    <div class="announcement-tabs" style="display: flex; gap: 10px; margin-bottom: 1rem;">
-                        <button class="announcement-tab active" id="tabAnnouncement" onclick="switchAnnouncementTab('announcement')" style="padding:8px 20px;border:none;background:#eee;cursor:pointer;border-radius:5px 5px 0 0;font-weight:600;transition:background 0.2s;">Announcement</button>
-                        <button class="announcement-tab" id="tabNotice" onclick="switchAnnouncementTab('notice')" style="padding:8px 20px;border:none;background:#eee;cursor:pointer;border-radius:5px 5px 0 0;font-weight:600;transition:background 0.2s;">Notice</button>
+                    <div class="section-header">
+                        <h2><i class="fas fa-bullhorn"></i> Announcements</h2>
+                        <p>Stay updated with the latest news and important notices</p>
                     </div>
-                    <div class="announcements-container" id="announcementsContainer" style="display: block; background: #fff; border-radius: 0 0 10px 10px; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
-                        <!-- Regular announcements go here -->
-                        <div class="announcement">
-                            <h3>New Tourist Spot Added!</h3>
-                            <p>We are excited to announce the addition of "Manahongkong Falls" to our list of tourist spots. Visit now!</p>
+                    
+                    <div class="announcements-container">
+                        <div class="announcement-tabs">
+                            <button class="announcement-tab active" id="tabAnnouncement" onclick="switchAnnouncementTab('announcement')">
+                                <i class="fas fa-bullhorn"></i> Announcements
+                            </button>
+                            <button class="announcement-tab" id="tabNotice" onclick="switchAnnouncementTab('notice')">
+                                <i class="fas fa-exclamation-triangle"></i> Notices
+                            </button>
                         </div>
-                        <div class="announcement">
-                            <h3>Maintenance Notice</h3>
-                            <p>The "Puga Coffin Cave" will be closed for maintenance from July 15 to July 20, 2025.</p>
+                        
+                        <div class="announcements-content" id="announcementsContainer">
+                            <div class="announcement">
+                                <div class="announcement-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="announcement-content">
+                                    <h3>New Tourist Spot Added!</h3>
+                                    <p>We are excited to announce the addition of "Manahongkong Falls" to our list of tourist spots. Visit now!</p>
+                                    <div class="announcement-meta">
+                                        <span><i class="fas fa-calendar"></i> June 15, 2025</span>
+                                        <span><i class="fas fa-user"></i> Kapangan Tourism</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="announcement">
+                                <div class="announcement-icon maintenance">
+                                    <i class="fas fa-tools"></i>
+                                </div>
+                                <div class="announcement-content">
+                                    <h3>Maintenance Notice</h3>
+                                    <p>The "Puga Coffin Cave" will be closed for maintenance from July 15 to July 20, 2025.</p>
+                                    <div class="announcement-meta">
+                                        <span><i class="fas fa-calendar"></i> June 10, 2025</span>
+                                        <span><i class="fas fa-user"></i> Tourism Office</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="announcements-container" id="noticesContainer" style="display: none; background: #fff; border-radius: 0 0 10px 10px; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
-                        <!-- Violation notices will be injected here -->
+                        
+                        <div class="announcements-content" id="noticesContainer" style="display: none;">
+                            <!-- Violation notices will be injected here -->
+                        </div>
                     </div>
                 </div>
 
                 <!-- Places Visited Section -->
                 <div id="placesVisitedSection" style="display: none;">
-                    <h2>Places Visited</h2>
-                    <div class="table-responsive">
-                        <table class="travels-table">
-                            <thead>
-                                <tr>
-                                    <th>Spot</th>
-                                    <th>Barangay</th>
-                                    <th>Date Visited</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Amburayan Bridge</td>
-                                    <td>Cuba</td>
-                                    <td>2025-06-10</td>
-                                </tr>
-                                <tr>
-                                    <td>Badi Falls</td>
-                                    <td>Sagubo</td>
-                                    <td>2025-05-22</td>
-                                </tr>
-                                <tr>
-                                    <td>Beleng-Belis Viewing Area</td>
-                                    <td>Beleng-Belis</td>
-                                    <td>2025-04-15</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="section-header">
+                        <h2><i class="fas fa-map"></i> Places Visited</h2>
+                        <p>Track your travel history and visited destinations</p>
+                    </div>
+                    
+                    <div class="places-container">
+                        <div class="places-stats">
+                            <div class="stat-card">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>
+                                    <h3 id="totalPlacesVisited">3</h3>
+                                    <p>Places Visited</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-calendar-alt"></i>
+                                <div>
+                                    <h3 id="totalVisits">5</h3>
+                                    <p>Total Visits</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-star"></i>
+                                <div>
+                                    <h3 id="favoritePlace">Badi Falls</h3>
+                                    <p>Favorite Place</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="travels-table">
+                                <thead>
+                                    <tr>
+                                        <th><i class="fas fa-map-marker-alt"></i> Spot</th>
+                                        <th><i class="fas fa-map"></i> Barangay</th>
+                                        <th><i class="fas fa-calendar"></i> Date Visited</th>
+                                        <th><i class="fas fa-star"></i> Rating</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="spot-info">
+                                                <img src="assets/Amburayan Bridge (Cuba).jpg" alt="Amburayan Bridge">
+                                                <span>Amburayan Bridge</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge">Cuba</span></td>
+                                        <td>2025-06-10</td>
+                                        <td><div class="rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></div></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="spot-info">
+                                                <img src="assets/Badi Falls (Sagubo).jpg" alt="Badi Falls">
+                                                <span>Badi Falls</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge">Sagubo</span></td>
+                                        <td>2025-05-22</td>
+                                        <td><div class="rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="spot-info">
+                                                <img src="assets/Beleng-Belis Viewing Area.jpg" alt="Beleng-Belis Viewing Area">
+                                                <span>Beleng-Belis Viewing Area</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge">Beleng-Belis</span></td>
+                                        <td>2025-04-15</td>
+                                        <td><div class="rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i></div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1347,6 +1608,7 @@
     function renderViolationAnnouncements() {
         const container = document.getElementById('noticesContainer');
         if (!container) return;
+        
         // Get current user email (if available)
         let userEmail = null;
         try {
@@ -1356,28 +1618,121 @@
                 if (emailInput) userEmail = emailInput.value;
             }
         } catch (e) { userEmail = null; }
+        
         // Fetch violations from localStorage
         let violations = [];
         try {
             violations = JSON.parse(localStorage.getItem('userViolations') || '[]');
         } catch (e) { violations = []; }
+        
         // Only show for this user if logged in
         if (userEmail) {
             violations = violations.filter(v => v.email === userEmail);
         }
+        
         // Remove old violation announcements
         container.innerHTML = '';
-        // Add violation announcements
-        violations.forEach(v => {
-            const div = document.createElement('div');
-            div.className = 'announcement violation-announcement';
-            div.innerHTML = `
-                <h3 style="color:#e63946;">Violation Notice</h3>
-                <p><strong>Reason:</strong> ${v.violation}</p>
-                <p style="font-size:0.95em;color:#888;">Date: ${new Date(v.date).toLocaleString()}</p>
-            `;
-            container.appendChild(div);
-        });
+        
+        // Add sample violation announcements if no user violations exist
+        if (violations.length === 0) {
+            const sampleViolations = [
+                {
+                    violation: "Littering in tourist area - Please dispose of waste properly in designated bins",
+                    date: new Date('2025-06-15T10:30:00'),
+                    severity: "warning"
+                },
+                {
+                    violation: "Unauthorized camping in restricted area - Camping is only allowed in designated camping grounds",
+                    date: new Date('2025-06-10T14:15:00'),
+                    severity: "moderate"
+                },
+                {
+                    violation: "Feeding wildlife - Please do not feed wild animals as it disrupts their natural behavior",
+                    date: new Date('2025-06-05T09:45:00'),
+                    severity: "warning"
+                },
+                {
+                    violation: "Off-trail hiking - Stay on marked trails to protect the environment and ensure your safety",
+                    date: new Date('2025-05-28T16:20:00'),
+                    severity: "moderate"
+                },
+                {
+                    violation: "Noise disturbance - Please keep noise levels down to respect other visitors and wildlife",
+                    date: new Date('2025-05-20T11:10:00'),
+                    severity: "warning"
+                },
+                {
+                    violation: "Smoking in non-designated areas - Smoking is only allowed in designated smoking areas",
+                    date: new Date('2025-05-15T13:30:00'),
+                    severity: "warning"
+                },
+                {
+                    violation: "Bringing pets without permission - Pets are not allowed in most tourist areas unless specifically permitted",
+                    date: new Date('2025-05-10T08:45:00'),
+                    severity: "moderate"
+                },
+                {
+                    violation: "Removing natural resources - Please do not take plants, rocks, or other natural items from the area",
+                    date: new Date('2025-05-05T15:20:00'),
+                    severity: "serious"
+                }
+            ];
+            
+            // Add sample violations to container
+            sampleViolations.forEach(v => {
+                const div = document.createElement('div');
+                div.className = 'announcement violation-announcement';
+                
+                // Determine severity color
+                let severityColor = '#e63946'; // default red
+                let severityText = 'Violation Notice';
+                if (v.severity === 'warning') {
+                    severityColor = '#f39c12'; // orange
+                    severityText = 'Warning Notice';
+                } else if (v.severity === 'moderate') {
+                    severityColor = '#e67e22'; // dark orange
+                    severityText = 'Moderate Violation';
+                } else if (v.severity === 'serious') {
+                    severityColor = '#c0392b'; // dark red
+                    severityText = 'Serious Violation';
+                }
+                
+                div.innerHTML = `
+                    <div class="announcement-icon violation" style="background-color: ${severityColor};">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="announcement-content">
+                        <h3 style="color:${severityColor};">${severityText}</h3>
+                        <p><strong>Reason:</strong> ${v.violation}</p>
+                        <div class="announcement-meta">
+                            <span><i class="fas fa-calendar"></i> ${v.date.toLocaleDateString()}</span>
+                            <span><i class="fas fa-clock"></i> ${v.date.toLocaleTimeString()}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        } else {
+            // Add actual user violation announcements
+            violations.forEach(v => {
+                const div = document.createElement('div');
+                div.className = 'announcement violation-announcement';
+                div.innerHTML = `
+                    <div class="announcement-icon violation">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="announcement-content">
+                        <h3 style="color:#e63946;">Violation Notice</h3>
+                        <p><strong>Reason:</strong> ${v.violation}</p>
+                        <div class="announcement-meta">
+                            <span><i class="fas fa-calendar"></i> ${new Date(v.date).toLocaleDateString()}</span>
+                            <span><i class="fas fa-clock"></i> ${new Date(v.date).toLocaleTimeString()}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
     }
     // Call on dashboard load
     if (document.getElementById('noticesContainer')) {
