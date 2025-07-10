@@ -264,7 +264,7 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
-       /* Hero Section */
+               /* Hero Section */
         .hero {
             position: relative;
             width: 100%;
@@ -278,6 +278,11 @@
             z-index: 1;
             padding-top: 80px;
             box-sizing: border-box;
+            /* Ensure hero maintains its design */
+            background-image: url('assets/Ampongot Rice Terraces (Sagubo).jpg') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
         }
         
         .hero-content {
@@ -286,14 +291,23 @@
             padding: 2.5rem 1.25rem;
             position: relative;
             z-index: 100;
-           
             width: 100%;
-          
+            /* Ensure hero content maintains its design */
+            max-width: 800px;
+            margin: 0 auto;
         }
         
         .hero-content.visible {
             opacity: 1;
             transform: translateY(0);
+        }
+
+        /* Ensure hero section maintains design when navigating home */
+        #mainContent:not([style*="display: none"]) .hero {
+            background-image: url('assets/Ampongot Rice Terraces (Sagubo).jpg') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
         }
         
         .hero-content h1 {
@@ -4239,5 +4253,364 @@
     .travel-details {
         flex-direction: column;
         gap: 0.75rem;
+    }
+}
+
+/* Enhanced Blog and Tourist Spots Styles */
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.blog-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.blog-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.blog-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #4CAF50, #81c784);
+    z-index: 1;
+}
+
+.blog-image {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.blog-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.blog-card:hover .blog-image img {
+    transform: scale(1.1);
+}
+
+.blog-content {
+    padding: 1.5rem;
+    position: relative;
+}
+
+.blog-date {
+    color: #4CAF50;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.blog-date::before {
+    content: '\f073';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+}
+
+.blog-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+}
+
+.blog-excerpt {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.read-more {
+    color: #4CAF50;
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.read-more::after {
+    content: '\f061';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    transition: transform 0.3s ease;
+}
+
+.read-more:hover {
+    color: #388e3c;
+}
+
+.read-more:hover::after {
+    transform: translateX(3px);
+}
+
+/* Enhanced Tourist Spots Styles */
+.spots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.spot-card {
+    background: #fff;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+}
+
+.spot-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+}
+
+.spot-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #2196F3, #64b5f6);
+    z-index: 1;
+}
+
+.spot-image {
+    position: relative;
+    padding-top: 66.67%;
+    overflow: hidden;
+    background: #f5f5f5;
+}
+
+.spot-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.spot-card:hover .spot-image img {
+    transform: scale(1.1);
+}
+
+.spot-location {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.spot-content {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.spot-content h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.spot-content h3::before {
+    content: '\f3c5';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: #2196F3;
+    font-size: 1rem;
+}
+
+.spot-content p {
+    color: #666;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    line-clamp: 3;
+    max-height: 4.5em;
+    line-height: 1.6;
+}
+
+.spot-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-sm::before {
+    content: '\f06e';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+}
+
+/* Enhanced Section Headers */
+.section-header h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.section-header h2 i {
+    color: #4CAF50;
+    font-size: 2rem;
+}
+
+.section-header p {
+    font-size: 1.1rem;
+    color: #666;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .blog-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .spots-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .section-header h2 {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .section-header h2 i {
+        font-size: 1.5rem;
+    }
+    
+    .filter-tab {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .filter-tab i {
+        font-size: 0.8rem;
+    }
+}
+
+/* About Us Section Styles */
+.about-section {
+    background: #f8f9fa;
+    padding: 5rem 0 4rem 0;
+}
+.about-cards {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 2.5rem;
+}
+.about-card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    padding: 2.5rem 2rem 2rem 2rem;
+    text-align: center;
+    max-width: 320px;
+    flex: 1 1 260px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.about-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 16px 48px rgba(76,175,80,0.13);
+}
+.about-card i {
+    font-size: 2.5rem;
+    color: #4CAF50;
+    margin-bottom: 1.2rem;
+    transition: color 0.3s;
+}
+.about-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.7rem;
+}
+.about-card p {
+    color: #666;
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+@media (max-width: 900px) {
+    .about-cards {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    .about-card {
+        max-width: 95%;
     }
 }

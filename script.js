@@ -2050,7 +2050,25 @@ function setupEventListeners() {
 // Navigation Functions
 function showHome() {
     // Always show the hero section when navigating home
-    document.querySelector('.hero').style.display = 'block';
+    const hero = document.querySelector('.hero');
+    const heroContent = document.getElementById('heroContent');
+    
+    // Reset hero section to original state
+    hero.style.display = 'block';
+    hero.style.backgroundImage = "url('assets/Ampongot Rice Terraces (Sagubo).jpg')";
+    hero.style.backgroundSize = 'cover';
+    hero.style.backgroundPosition = 'center';
+    hero.style.backgroundRepeat = 'no-repeat';
+    hero.style.position = 'relative';
+    
+    // Ensure hero content is visible
+    if (heroContent) {
+        heroContent.style.position = 'relative';
+        heroContent.style.zIndex = '2';
+        heroContent.classList.add('visible');
+    }
+    
+    // Show main content sections
     document.getElementById('mainContent').style.display = 'block';
     document.getElementById('dashboard').style.display = 'none';
     document.getElementById('blogSection').style.display = 'none';
@@ -2058,11 +2076,14 @@ function showHome() {
     document.getElementById('contactSection').style.display = 'none';
     document.getElementById('allTouristSpots').style.display = 'none';
     document.getElementById('featuredSpots').style.display = 'block';
+    
     // Show advisories only on homepage
     var advisories = document.getElementById('advisoriesSection');
     if (advisories) advisories.style.display = 'block';
+    
     // Scroll to top to show the hero section
     window.scrollTo(0, 0);
+    
     // Update active navigation item
     updateActiveNavItem('home');
 }
