@@ -2719,54 +2719,40 @@ window.generateQRCode = function(travel) {
     const qrCodeContainer = document.getElementById('qrCode');
     const qrInfoContainer = document.getElementById('qrInfo');
     
-    // Generate a simple QR code representation (in a real app, you'd use a QR library)
+    // Generate QR code data with all necessary information
     const qrData = JSON.stringify({
+        type: 'kapangan_visit',
         travelId: travel.id,
         userId: travel.userId,
+        userName: travel.userName,
+        userEmail: travel.userEmail,
         spotId: travel.spot.id,
+        spotName: travel.spot.name,
+        barangay: travel.spot.barangay,
         date: travel.date,
         time: travel.time,
-        referenceNumber: travel.referenceNumber
+        endTime: travel.endTime,
+        visitors: travel.visitors || 1,
+        companions: travel.companions || [],
+        timestamp: new Date().toISOString(),
+        status: 'confirmed'
     });
     
-    // Create a simple QR code visualization
-    qrCodeContainer.innerHTML = `
-        <div style="
-            width: 200px; 
-            height: 200px; 
-            background: white; 
-            border: 2px solid #333; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            font-family: monospace;
-            font-size: 8px;
-            line-height: 1;
-            word-break: break-all;
-            padding: 10px;
-            text-align: center;
-        ">
-            <div style="
-                background: repeating-linear-gradient(
-                    0deg,
-                    #000,
-                    #000 2px,
-                    transparent 2px,
-                    transparent 4px
-                ),
-                repeating-linear-gradient(
-                    90deg,
-                    #000,
-                    #000 2px,
-                    transparent 2px,
-                    transparent 4px
-                );
-                width: 180px;
-                height: 180px;
-                opacity: 0.8;
-            "></div>
-        </div>
-    `;
+    // Clear previous QR code
+    qrCodeContainer.innerHTML = '';
+    
+    // Generate real QR code using QRCode.js library
+    const qr = new QRCode(qrCodeContainer, {
+        text: qrData,
+        width: 200,
+        height: 200,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+    });
+    
+    // Store QR data for potential download
+    qrCodeContainer.setAttribute('data-qr-content', qrData);
     
     // Display travel information
     qrInfoContainer.innerHTML = `
@@ -2798,13 +2784,7 @@ window.generateQRCode = function(travel) {
                 <span class="qr-info-value">${travel.visitors || 1}</span>
             </div>
         </div>
-        <div class="qr-info-item">
-            <i class="fas fa-hashtag"></i>
-            <div>
-                <span class="qr-info-label">Reference Number</span>
-                <span class="qr-info-value">${travel.referenceNumber}</span>
-            </div>
-        </div>
+
         <div class="qr-info-item">
             <i class="fas fa-user"></i>
             <div>
@@ -2820,8 +2800,22 @@ window.generateQRCode = function(travel) {
 };
 
 window.downloadQRCode = function() {
-    // In a real app, this would generate and download a QR code image
-    alert('QR code download feature would be implemented here. For now, you can take a screenshot of the QR code.');
+    const qrCodeContainer = document.getElementById('qrCode');
+    const qrCanvas = qrCodeContainer.querySelector('canvas');
+    
+    if (qrCanvas) {
+        // Create a download link
+        const link = document.createElement('a');
+        link.download = 'kapangan-visit-qr.png';
+        link.href = qrCanvas.toDataURL();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showNotification('success', 'QR code downloaded successfully!');
+    } else {
+        showNotification('error', 'QR code not found. Please try again.');
+    }
 };
 
 // Test function to manually trigger time range selection

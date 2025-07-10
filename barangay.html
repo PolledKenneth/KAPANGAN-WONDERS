@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
         :root {
             --primary: #2c6e49;
@@ -407,6 +408,44 @@
             font-size: 3rem;
             color: var(--success);
             display: none;
+        }
+        
+        /* QR Scanner Styles */
+        #qr-reader {
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+        
+        #qr-reader__scan_region {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        #qr-reader__scan_region video {
+            border-radius: 8px;
+        }
+        
+        #qr-reader__dashboard {
+            background: var(--primary);
+            color: white;
+            padding: 10px;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        #qr-reader__dashboard button {
+            background: var(--accent);
+            color: var(--dark);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        #qr-reader__dashboard button:hover {
+            background: #e8e8d0;
         }
         
         /* Charts */
@@ -1106,7 +1145,7 @@
             </div>
             
             <div class="dashboard-cards">
-                <div class="card" style="text-align: center; cursor: pointer;" onclick="showModal('qrModal')">
+                <div class="card" style="text-align: center; cursor: pointer;" onclick="openScanQrWithSample()">
                     <div class="card-icon icon-blue" style="margin: 0 auto 15px;">
                         <i class="fas fa-qrcode"></i>
                     </div>
@@ -1182,10 +1221,15 @@
                         <i class="fas fa-camera fa-3x"></i>
                         <i class="fas fa-check-circle qr-success"></i>
                     </div>
-                    <button class="action-btn qr-btn" onclick="startScanning()">
-                        <i class="fas fa-qrcode"></i> Start QR Scanning
-                    </button>
-                    <p style="margin-top: 15px; color: var(--gray);" id="scanStatus">Ready to scan. Press the button to start.</p>
+                    <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 15px;">
+                        <button class="action-btn qr-btn" onclick="startScanning()">
+                            <i class="fas fa-qrcode"></i> Start QR Scanning
+                        </button>
+                        <button class="action-btn add-btn" onclick="uploadQRCode()">
+                            <i class="fas fa-upload"></i> Upload QR Code
+                        </button>
+                    </div>
+                    <p style="margin-top: 15px; color: var(--gray);" id="scanStatus">Ready to scan. Press the button to start or upload a QR code image.</p>
                 </div>
             </div>
         </div>
@@ -1583,7 +1627,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Scan Visitor QR Code</h3>
-                <button class="close-btn" onclick="closeModal('qrModal')">&times;</button>
+                <button class="close-btn" onclick="closeQRModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="qr-container">
@@ -1591,6 +1635,14 @@
                         <div class="scanner-animation"></div>
                         <i class="fas fa-camera fa-3x"></i>
                         <i class="fas fa-check-circle qr-success"></i>
+                    </div>
+                    <div style="display: flex; gap: 10px; justify-content: center; margin: 15px 0;">
+                        <button class="action-btn qr-btn" onclick="startModalScanning()">
+                            <i class="fas fa-qrcode"></i> Start Scanning
+                        </button>
+                        <button class="action-btn add-btn" onclick="uploadQRCodeModal()">
+                            <i class="fas fa-upload"></i> Upload QR
+                        </button>
                     </div>
                     <p style="margin: 15px 0; color: var(--gray);" id="modalScanStatus">Scanning in progress...</p>
                 </div>
@@ -1858,40 +1910,528 @@
             }, 1000);
         });
         
+        // QR Scanner instance
+        let html5QrcodeScanner = null;
+        let isScanning = false;
+
         // Start scanning process
         function startScanning() {
-            document.getElementById('scanStatus').textContent = "Scanning... Looking for QR code";
-            
-            // Show scanning notification
-            showToast("QR Scanner activated. Scanning for visitor code...", 'info');
-            
-            // Simulate scanning process
+            if (isScanning) {
+                showToast("Scanner is already active", 'warning');
+                return;
+            }
+            showModal('qrModal');
             setTimeout(() => {
-                // Select a random visitor
-                const randomVisitor = visitors[Math.floor(Math.random() * visitors.length)];
+                fillFormWithSampleData();
+            }, 200);
+
+            const scanStatus = document.getElementById('scanStatus');
+            const qrPlaceholder = document.querySelector('.qr-placeholder');
+            
+            scanStatus.textContent = "Initializing camera...";
+            showToast("QR Scanner activated. Please allow camera access.", 'info');
+            
+            // Create scanner instance
+            html5QrcodeScanner = new Html5QrcodeScanner(
+                "qr-reader", 
+                { 
+                    fps: 10, 
+                    qrbox: { width: 250, height: 250 },
+                    aspectRatio: 1.0
+                },
+                false
+            );
+            
+            // Handle successful scans
+            html5QrcodeScanner.render((decodedText, decodedResult) => {
+                try {
+                    const qrData = JSON.parse(decodedText);
+                    
+                    // Validate QR code format
+                    if (qrData.type !== 'kapangan_visit') {
+                        showToast("Invalid QR code format", 'error');
+                        return;
+                    }
+                    
+                    // Create visitor object from QR data
+                    const visitor = {
+                        name: qrData.userName,
+                        email: qrData.userEmail,
+                        spot: qrData.spotName,
+                        barangay: qrData.barangay,
+                        date: qrData.date,
+                        time: qrData.time,
+                        endTime: qrData.endTime,
+                        visitors: qrData.visitors,
+                        companions: qrData.companions || [],
+                        travelId: qrData.travelId,
+                        fee: 50, // Default fee
+                        groupSize: qrData.visitors || 1
+                    };
+                    
+                    // Add to scanned visitors
+                    scannedVisitors.push({
+                        ...visitor,
+                        scanTime: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                        scanDate: new Date().toLocaleDateString()
+                    });
+                    
+                    // Show success in scanner page
+                    scanStatus.innerHTML = `
+                        <span style="color: var(--success)">QR Code Scanned Successfully!</span><br>
+                        Visitor: ${visitor.name} | Group: ${visitor.groupSize} | Spot: ${visitor.spot}
+                    `;
+                    
+                    // Show success notification
+                    showToast(`QR Code scanned successfully! Found visitor: ${visitor.name}`, 'success');
+                    
+                    // Update recent visitors
+                    updateRecentVisitors();
+                    
+                    // Show modal with details
+                    showModalWithVisitor(visitor);
+                    
+                    // Stop scanning
+                    stopScanning();
+                    
+                } catch (error) {
+                    console.error('Error parsing QR code:', error);
+                    showToast("Invalid QR code format", 'error');
+                }
+            }, (errorMessage) => {
+                // Handle scan errors (optional)
+                console.log('Scan error:', errorMessage);
+            });
+            
+            isScanning = true;
+            
+            // Replace placeholder with scanner
+            qrPlaceholder.innerHTML = '<div id="qr-reader"></div>';
+            
+            // Fill form with sample data after 2 seconds for demonstration
+            setTimeout(() => {
+                if (isScanning) {
+                    fillFormWithSampleData();
+                    stopScanning();
+                }
+            }, 2000);
+        }
+        
+        // Stop scanning
+        function stopScanning() {
+            if (html5QrcodeScanner && isScanning) {
+                html5QrcodeScanner.clear();
+                html5QrcodeScanner = null;
+                isScanning = false;
                 
-                // Add to scanned visitors
-                scannedVisitors.push({
-                    ...randomVisitor,
-                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                    date: new Date().toLocaleDateString()
-                });
+                // Restore placeholder
+                const qrPlaceholder = document.querySelector('.qr-placeholder');
+                qrPlaceholder.innerHTML = `
+                    <div class="scanner-animation"></div>
+                    <i class="fas fa-camera fa-3x"></i>
+                    <i class="fas fa-check-circle qr-success"></i>
+                `;
+            }
+        }
+        
+        // Start scanning in modal
+        function startModalScanning() {
+            const modalScanStatus = document.getElementById('modalScanStatus');
+            modalScanStatus.innerHTML = `
+                <span style="color: var(--warning)">Camera scanning activated...</span>
+            `;
+            showToast("Camera scanning activated in modal", 'info');
+        }
+        
+        // Upload QR code in modal
+        function uploadQRCodeModal() {
+            // Create a file input element
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.style.display = 'none';
+            
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
                 
-                // Show success in scanner page
-                document.getElementById('scanStatus').innerHTML = `
-                    <span style="color: var(--success)">QR Code Scanned Successfully!</span><br>
-                    Visitor: ${randomVisitor.name} | Group: ${randomVisitor.groupSize} | Spot: ${randomVisitor.spot}
+                // Show loading status
+                const modalScanStatus = document.getElementById('modalScanStatus');
+                modalScanStatus.innerHTML = `
+                    <span style="color: var(--warning)">Processing uploaded QR code...</span>
                 `;
                 
-                // Show success notification
-                showToast(`QR Code scanned successfully! Found visitor: ${randomVisitor.name}`, 'success');
+                // Create HTML5 QR code reader for file
+                const html5QrCode = new Html5Qrcode("qr-reader");
+                
+                // Read QR code from file
+                html5QrCode.readFromFile(file)
+                    .then((decodedText) => {
+                        try {
+                            const qrData = JSON.parse(decodedText);
+                            
+                            // Validate QR code format
+                            if (qrData.type !== 'kapangan_visit') {
+                                showToast("Invalid QR code format", 'error');
+                                modalScanStatus.innerHTML = `
+                                    <span style="color: var(--danger)">Invalid QR code format</span>
+                                `;
+                                return;
+                            }
+                            
+                            // Create visitor object from QR data
+                            const visitor = {
+                                name: qrData.userName,
+                                email: qrData.userEmail,
+                                spot: qrData.spotName,
+                                barangay: qrData.barangay,
+                                date: qrData.date,
+                                time: qrData.time,
+                                endTime: qrData.endTime,
+                                visitors: qrData.visitors,
+                                companions: qrData.companions || [],
+                                travelId: qrData.travelId,
+                                fee: 50, // Default fee
+                                groupSize: qrData.visitors || 1
+                            };
+                            
+                            // Add to scanned visitors
+                            scannedVisitors.push({
+                                ...visitor,
+                                scanTime: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                                scanDate: new Date().toLocaleDateString()
+                            });
+                            
+                            // Show success in modal
+                            modalScanStatus.innerHTML = `
+                                <span style="color: var(--success)">QR Code Uploaded Successfully!</span><br>
+                                Visitor: ${visitor.name} | Group: ${visitor.groupSize} | Spot: ${visitor.spot}
+                            `;
+                            
+                            // Show success notification
+                            showToast(`QR Code uploaded successfully! Found visitor: ${visitor.name}`, 'success');
+                            
+                            // Update recent visitors
+                            updateRecentVisitors();
+                            
+                            // Fill form with uploaded data
+                            fillFormWithUploadedData(visitor);
+                            
+                            // Show modal with details
+                            showModalWithVisitor(visitor);
+                            
+                        } catch (error) {
+                            console.error('Error parsing QR code:', error);
+                            showToast("Invalid QR code format", 'error');
+                            modalScanStatus.innerHTML = `
+                                <span style="color: var(--danger)">Invalid QR code format</span>
+                            `;
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error reading QR code:', error);
+                        showToast("Could not read QR code from image", 'error');
+                        modalScanStatus.innerHTML = `
+                            <span style="color: var(--danger)">Could not read QR code from image</span>
+                        `;
+                    });
+            });
+            
+            // Trigger file selection
+            fileInput.click();
+            
+            // Clean up
+            fileInput.remove();
+        }
+        
+        // Upload and read QR code from image file
+        function uploadQRCode() {
+            showModal('qrModal');
+            setTimeout(() => {
+                fillFormWithSampleData();
+            }, 200);
+            // Create a file input element
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.style.display = 'none';
+            
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                // Show loading status
+                const scanStatus = document.getElementById('scanStatus');
+                scanStatus.innerHTML = `
+                    <span style="color: var(--warning)">Processing uploaded QR code...</span>
+                `;
+                
+                // Create HTML5 QR code reader for file
+                const html5QrCode = new Html5Qrcode("qr-reader");
+                
+                // Read QR code from file
+                html5QrCode.readFromFile(file)
+                    .then((decodedText) => {
+                        try {
+                            const qrData = JSON.parse(decodedText);
+                            
+                            // Validate QR code format
+                            if (qrData.type !== 'kapangan_visit') {
+                                showToast("Invalid QR code format", 'error');
+                                scanStatus.innerHTML = `
+                                    <span style="color: var(--danger)">Invalid QR code format</span>
+                                `;
+                                return;
+                            }
+                            
+                            // Create visitor object from QR data
+                            const visitor = {
+                                name: qrData.userName,
+                                email: qrData.userEmail,
+                                spot: qrData.spotName,
+                                barangay: qrData.barangay,
+                                date: qrData.date,
+                                time: qrData.time,
+                                endTime: qrData.endTime,
+                                visitors: qrData.visitors,
+                                companions: qrData.companions || [],
+                                travelId: qrData.travelId,
+                                fee: 50, // Default fee
+                                groupSize: qrData.visitors || 1
+                            };
+                            
+                            // Add to scanned visitors
+                            scannedVisitors.push({
+                                ...visitor,
+                                scanTime: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                                scanDate: new Date().toLocaleDateString()
+                            });
+                            
+                            // Show success in scanner page
+                            scanStatus.innerHTML = `
+                                <span style="color: var(--success)">QR Code Uploaded Successfully!</span><br>
+                                Visitor: ${visitor.name} | Group: ${visitor.groupSize} | Spot: ${visitor.spot}
+                            `;
+                            
+                            // Show success notification
+                            showToast(`QR Code uploaded successfully! Found visitor: ${visitor.name}`, 'success');
+                            
+                            // Update recent visitors
+                            updateRecentVisitors();
+                            
+                            // Show modal with details
+                            showModalWithVisitor(visitor);
+                            
+                        } catch (error) {
+                            console.error('Error parsing QR code:', error);
+                            showToast("Invalid QR code format", 'error');
+                            scanStatus.innerHTML = `
+                                <span style="color: var(--danger)">Invalid QR code format</span>
+                            `;
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error reading QR code:', error);
+                        showToast("Could not read QR code from image", 'error');
+                        scanStatus.innerHTML = `
+                            <span style="color: var(--danger)">Could not read QR code from image</span>
+                        `;
+                    });
+            });
+            
+            // Trigger file selection
+            fileInput.click();
+            
+            // Clean up
+            fileInput.remove();
+        }
+        
+        // Add sample visitor data for demonstration
+        function addSampleVisitorData() {
+            const sampleVisitors = [
+                {
+                    name: "Maria Santos",
+                    email: "maria.santos@email.com",
+                    spot: "Balakbak Falls",
+                    barangay: "Balakbak",
+                    date: new Date().toLocaleDateString(),
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    endTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    visitors: 3,
+                    companions: ["Juan Santos", "Ana Santos"],
+                    travelId: "TRAVEL-" + Math.random().toString(36).substr(2, 8).toUpperCase(),
+                    fee: 150,
+                    groupSize: 3,
+                    scanTime: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    scanDate: new Date().toLocaleDateString()
+                },
+                {
+                    name: "Robert Johnson",
+                    email: "robert.johnson@email.com",
+                    spot: "Mount Tagpaya Trail",
+                    barangay: "Tagpaya",
+                    date: new Date().toLocaleDateString(),
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    endTime: new Date(Date.now() + 4 * 60 * 60 * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    visitors: 2,
+                    companions: ["Sarah Johnson"],
+                    travelId: "TRAVEL-" + Math.random().toString(36).substr(2, 8).toUpperCase(),
+                    fee: 200,
+                    groupSize: 2,
+                    scanTime: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    scanDate: new Date().toLocaleDateString()
+                },
+                {
+                    name: "Tour Group #5",
+                    email: "guide@mountainadventures.com",
+                    spot: "River Rock Pools",
+                    barangay: "Taba-ao",
+                    date: new Date().toLocaleDateString(),
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    endTime: new Date(Date.now() + 3 * 60 * 60 * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    visitors: 8,
+                    companions: ["Tour Guide", "Assistant Guide"],
+                    travelId: "TRAVEL-" + Math.random().toString(36).substr(2, 8).toUpperCase(),
+                    fee: 400,
+                    groupSize: 8,
+                    scanTime: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    scanDate: new Date().toLocaleDateString()
+                }
+            ];
+            
+            // Add sample visitors to scanned visitors array
+            sampleVisitors.forEach(visitor => {
+                scannedVisitors.push(visitor);
+            });
+            
+            // Update the allScans array as well for backward compatibility
+            sampleVisitors.forEach(visitor => {
+                allScans.push({
+                    id: "V" + new Date().getTime() + "-" + Math.random().toString(36).substr(2, 3),
+                    name: visitor.name,
+                    groupSize: visitor.groupSize,
+                    spot: visitor.spot,
+                    fee: visitor.fee,
+                    timestamp: new Date(),
+                    type: 'local'
+                });
+            });
+            
+            // Update recent visitors display
+            updateRecentVisitors();
+            
+            // Show success notification
+            showToast("Sample visitor data added successfully! 3 new visitors registered.", 'success');
+            
+            // Update scan status
+            const scanStatus = document.getElementById('scanStatus');
+            if (scanStatus) {
+                scanStatus.innerHTML = `
+                    <span style="color: var(--success)">Sample Data Added!</span><br>
+                    Added 3 sample visitors for demonstration
+                `;
+            }
+            
+            // Fill the form below scanning with sample data
+            fillFormWithSampleData();
+            
+            // Stop scanning after adding sample data
+            stopScanning();
+        }
+        
+        // Fill form with uploaded data
+        function fillFormWithUploadedData(visitor) {
+            if (visitor) {
+                // Fill visitor information in both modal and main page
+                document.querySelectorAll('#visitorName').forEach(el => el.textContent = visitor.name);
+                document.querySelectorAll('#touristSpotName').forEach(el => el.textContent = visitor.spot);
+                document.querySelectorAll('#adultsInput').forEach(el => el.value = Math.max(1, Math.floor(visitor.groupSize * 0.6)));
+                document.querySelectorAll('#seniorsInput').forEach(el => el.value = Math.floor(visitor.groupSize * 0.2));
+                document.querySelectorAll('#kidsInput').forEach(el => el.value = Math.floor(visitor.groupSize * 0.15));
+                document.querySelectorAll('#childrenInput').forEach(el => el.value = Math.floor(visitor.groupSize * 0.05));
+                updateTotalAmount();
+                document.querySelectorAll('#scanStatus').forEach(el => el.innerHTML = `<span style=\"color: var(--success)\">Uploaded Data Loaded!</span><br>Visitor: ${visitor.name} | Group: ${visitor.groupSize} | Spot: ${visitor.spot}`);
+                document.querySelectorAll('#modalScanStatus').forEach(el => el.innerHTML = `<span style=\"color: var(--success)\">Uploaded Data Loaded!</span><br>Visitor: ${visitor.name} | Group: ${visitor.groupSize} | Spot: ${visitor.spot}`);
+                const cameraIcon = document.querySelector('.qr-placeholder .fa-camera');
+                const scannerAnim = document.querySelector('.qr-placeholder .scanner-animation');
+                const qrSuccess = document.querySelector('.qr-placeholder .qr-success');
+                if (cameraIcon) cameraIcon.style.display = 'none';
+                if (scannerAnim) scannerAnim.style.display = 'none';
+                if (qrSuccess) qrSuccess.style.display = 'block';
+            }
+        }
+        
+        // Fill form with sample data
+        function fillFormWithSampleData() {
+            // Create sample visitor data if none exists
+            let sampleVisitor;
+            
+            if (scannedVisitors.length === 0) {
+                // Create a new sample visitor
+                sampleVisitor = {
+                    name: "Maria Santos",
+                    email: "maria.santos@email.com",
+                    spot: "Balakbak Falls",
+                    barangay: "Balakbak",
+                    date: new Date().toLocaleDateString(),
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    endTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    visitors: 3,
+                    companions: ["Juan Santos", "Ana Santos"],
+                    travelId: "TRAVEL-" + Math.random().toString(36).substr(2, 8).toUpperCase(),
+                    fee: 150,
+                    groupSize: 3,
+                    scanTime: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    scanDate: new Date().toLocaleDateString()
+                };
+                
+                // Add to scanned visitors
+                scannedVisitors.push(sampleVisitor);
+                
+                // Also add to allScans for backward compatibility
+                allScans.push({
+                    id: "V" + new Date().getTime() + "-" + Math.random().toString(36).substr(2, 3),
+                    name: sampleVisitor.name,
+                    groupSize: sampleVisitor.groupSize,
+                    spot: sampleVisitor.spot,
+                    fee: sampleVisitor.fee,
+                    timestamp: new Date(),
+                    type: 'local'
+                });
                 
                 // Update recent visitors
                 updateRecentVisitors();
                 
-                // Show modal with details
-                showModalWithVisitor(randomVisitor);
-            }, 2000);
+                // Show success notification
+                showToast("Sample visitor data created and form filled!", 'success');
+            } else {
+                // Use the last added visitor
+                sampleVisitor = scannedVisitors[scannedVisitors.length - 1];
+            }
+            
+            if (sampleVisitor) {
+                // Show the QR modal with filled data
+                showModal('qrModal');
+                // Fill the fields after a short delay to ensure modal DOM is ready
+                setTimeout(() => {
+                    // Fill visitor information in both modal and main page
+                    document.querySelectorAll('#visitorName').forEach(el => el.textContent = sampleVisitor.name);
+                    document.querySelectorAll('#touristSpotName').forEach(el => el.textContent = sampleVisitor.spot);
+                    document.querySelectorAll('#adultsInput').forEach(el => el.value = Math.max(1, Math.floor(sampleVisitor.groupSize * 0.6)));
+                    document.querySelectorAll('#seniorsInput').forEach(el => el.value = Math.floor(sampleVisitor.groupSize * 0.2));
+                    document.querySelectorAll('#kidsInput').forEach(el => el.value = Math.floor(sampleVisitor.groupSize * 0.15));
+                    document.querySelectorAll('#childrenInput').forEach(el => el.value = Math.floor(sampleVisitor.groupSize * 0.05));
+                    updateTotalAmount();
+                    document.querySelectorAll('#scanStatus').forEach(el => el.innerHTML = `<span style=\"color: var(--success)\">Sample Data Loaded!</span><br>Visitor: ${sampleVisitor.name} | Group: ${sampleVisitor.groupSize} | Spot: ${sampleVisitor.spot}`);
+                    document.querySelectorAll('#modalScanStatus').forEach(el => el.innerHTML = `<span style=\"color: var(--success)\">Sample Data Loaded!</span><br>Visitor: ${sampleVisitor.name} | Group: ${sampleVisitor.groupSize} | Spot: ${sampleVisitor.spot}`);
+                    const cameraIcon = document.querySelector('.qr-placeholder .fa-camera');
+                    const scannerAnim = document.querySelector('.qr-placeholder .scanner-animation');
+                    const qrSuccess = document.querySelector('.qr-placeholder .qr-success');
+                    if (cameraIcon) cameraIcon.style.display = 'none';
+                    if (scannerAnim) scannerAnim.style.display = 'none';
+                    if (qrSuccess) qrSuccess.style.display = 'block';
+                }, 150);
+            }
         }
         
         // Current visitor object reference
@@ -1917,18 +2457,25 @@
             const envFeeEl = document.getElementById('envFee');
             const entranceFeeEl = document.getElementById('entranceFee');
 
-            if (adultsInput) adultsInput.value = visitor.groupSize;
+            // Set values from QR code data
+            if (adultsInput) adultsInput.value = visitor.groupSize || 1;
             if (seniorsInput) seniorsInput.value = 0;
             if (kidsInput) kidsInput.value = 0;
             if (childrenInput) childrenInput.value = 0;
             if (spotNameEl) spotNameEl.textContent = visitor.spot;
-            if (entranceFeeEl) entranceFeeEl.textContent = 'Adults: ₱50 x 1 = ₱50';
-            if (envFeeEl) envFeeEl.textContent = '₱100 x 1 = ₱100';
+            
+            // Calculate fees based on group size
+            const groupSize = visitor.groupSize || 1;
+            const entranceFee = 50 * groupSize;
+            const envFee = 100 * groupSize;
+            
+            if (entranceFeeEl) entranceFeeEl.textContent = `Adults: ₱50 x ${groupSize} = ₱${entranceFee}`;
+            if (envFeeEl) envFeeEl.textContent = `₱100 x ${groupSize} = ₱${envFee}`;
 
             updateTotalAmount();
             const scanStatusEl = document.getElementById('modalScanStatus');
             if (scanStatusEl) {
-                scanStatusEl.innerHTML = `<span style=\"color: var(--success)\">QR Code Scanned Successfully!</span>`;
+                scanStatusEl.innerHTML = `<span style="color: var(--success)">QR Code Scanned Successfully!</span>`;
             }
 
             // Show success icon in scanner
@@ -1961,7 +2508,10 @@
             if (!currentVisitor) return;
             
             const groupSize = parseInt(document.getElementById('groupSizeInput').value);
-            const total = currentVisitor.fee * groupSize;
+            const entranceFee = 50 * groupSize;
+            const envFee = 100 * groupSize;
+            const total = entranceFee + envFee;
+            
             document.getElementById('totalAmount').textContent = `₱${total}`;
             
             // Update the visitor object with the new group size
@@ -1970,6 +2520,32 @@
             // Update the scanned visitors array with the new group size
             if (scannedVisitors.length > 0) {
                 scannedVisitors[scannedVisitors.length - 1].groupSize = groupSize;
+            }
+        }
+        
+        // Close QR modal and reset scanner
+        function closeQRModal() {
+            const modal = document.getElementById('qrModal');
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            }
+            
+            // Reset scanner state
+            stopScanning();
+            
+            // Reset scan status
+            const scanStatus = document.getElementById('scanStatus');
+            if (scanStatus) {
+                scanStatus.textContent = "Ready to scan. Press the button to start.";
+            }
+            
+            // Reset modal scan status
+            const modalScanStatus = document.getElementById('modalScanStatus');
+            if (modalScanStatus) {
+                modalScanStatus.textContent = "Scanning in progress...";
             }
         }
         
@@ -2000,16 +2576,10 @@
             // Show success notification
             showToast(`Payment processed successfully! ${visitorName} registered for ${spotName}`, 'success');
             
-            closeModal('qrModal');
+            closeQRModal();
             setTimeout(() => {
                 showModal('successModal');
             }, 300);
-            setTimeout(() => {
-                document.querySelector('.qr-placeholder .fa-camera').style.display = 'block';
-                document.querySelector('.qr-placeholder .scanner-animation').style.display = 'block';
-                document.querySelector('.qr-placeholder .qr-success').style.display = 'none';
-                document.getElementById('scanStatus').textContent = "Ready to scan. Press the button to start.";
-            }, 1000);
         }
         
         // Update recent visitors table
@@ -2073,6 +2643,7 @@
             if (modal) {
                 modal.style.display = 'flex';
                 setTimeout(() => modal.classList.add('show'), 10); // allow transition
+                // Removed fillFormWithSampleData() from here
             }
         }
         
@@ -3073,6 +3644,14 @@
             showToast('Report submitted successfully!', 'success');
             closeModal('reportSubmissionModal');
             document.getElementById('pdfPreviewModal').style.display = 'none';
+        }
+
+        // Add this function:
+        function openScanQrWithSample() {
+            showModal('qrModal');
+            setTimeout(() => {
+                fillFormWithSampleData();
+            }, 200);
         }
     </script>
 </body>
